@@ -1,6 +1,13 @@
+.loginPage {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f1ed;
+}
+
 .loginCard {
   width: 420px;
-  margin: 20% auto;
   padding: 3rem;
   display: flex;
   flex-direction: column;
@@ -13,7 +20,6 @@
 
 .info h1 {
   margin: 0 0 0.5rem 0;
-  font-family: "Roboto", sans-serif;
   font-weight: 500;
   color: #252323;
 }

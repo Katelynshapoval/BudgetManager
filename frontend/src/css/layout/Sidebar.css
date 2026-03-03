@@ -1,0 +1,97 @@
+.sideBar {
+  position: absolute;
+  left: 0;
+  height: 100vh;
+  width: 300px;
+  padding: 1rem;
+  background-color: #252323;
+  color: #f5f1ed;
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+
+.sideBar.expanded {
+  width: 280px;
+}
+
+.sideBar.collapsed {
+  width: 80px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 15px 0 2rem;
+  font-size: 1.25rem;
+}
+
+#menuIcon {
+  font-size: 2.5rem;
+  padding: 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 5px;
+}
+
+#menuIcon:hover {
+  background-color: #a99985;
+}
+
+.logoText,
+.label {
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.sideBar.collapsed .logoText,
+.sideBar.collapsed .label {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  display: none;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.15rem;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  height: 46px;
+  padding: 13px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #f5f1ed;
+  cursor: pointer;
+}
+
+.navItem:hover {
+  background-color: #70798c;
+}
+
+.navItem.active {
+  background-color: #a99985;
+  color: #252323;
+}
+
+.sideBar.collapsed .navItem {
+  gap: 0;
+}
+
+.optionIcon {
+  display: flex;
+  justify-content: center;
+  min-width: 24px;
+  font-size: 1.25rem;
+}
