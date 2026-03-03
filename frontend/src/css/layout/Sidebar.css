@@ -85,10 +85,6 @@
   color: #252323;
 }
 
-.sideBar.collapsed .navItem {
-  gap: 0;
-}
-
 .optionIcon {
   display: flex;
   justify-content: center;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { GoPeople } from "react-icons/go";
 import { FiShoppingCart } from "react-icons/fi";
@@ -9,9 +9,32 @@ import "../css/layout/Sidebar.css";
 
 function Sidebar() {
   const [showMenu, setShowMenu] = useState(false);
+  const sidebarRef = useRef(null);
+
+  // Close the menu if clicked outside of it
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        showMenu &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target)
+      ) {
+        setShowMenu(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMenu]);
 
   return (
-    <div className={`sideBar ${showMenu ? "expanded" : "collapsed"}`}>
+    <div
+      ref={sidebarRef}
+      className={`sideBar ${showMenu ? "expanded" : "collapsed"}`}
+    >
       <div className="top">
         <IoMdMenu
           id="menuIcon"
