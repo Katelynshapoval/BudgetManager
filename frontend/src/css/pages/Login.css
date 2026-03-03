@@ -1,0 +1,99 @@
+.loginCard {
+  width: 420px;
+  margin: 20% auto;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  text-align: center;
+  background-color: #f5f1ed;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(37, 35, 35, 0.08);
+}
+
+.info h1 {
+  margin: 0 0 0.5rem 0;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  color: #252323;
+}
+
+.info p {
+  margin: 0;
+  color: #70798c;
+  font-size: 0.95rem;
+}
+
+.loginCard form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.input label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #252323;
+}
+
+.input input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #a99985;
+  background-color: #dad2bc;
+  font-family: "Roboto", sans-serif;
+  transition:
+    box-shadow 0.2s ease,
+    border 0.2s ease;
+  outline: none;
+}
+
+.input input:focus {
+  border: 1px solid #a99985;
+  box-shadow: 0 0 0 3px rgba(169, 153, 133, 0.3);
+}
+
+.buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.buttons button {
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #a99985;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#signinButton {
+  background-color: #a99985;
+  color: #252323;
+}
+
+#signinButton:hover {
+  background-color: #8f7c66;
+  transform: translateY(-2px);
+}
+
+#signupButton {
+  background-color: transparent;
+  color: #70798c;
+}
+
+#signupButton:hover {
+  background-color: rgba(169, 153, 133, 0.15);
+  color: #a99985;
+}
