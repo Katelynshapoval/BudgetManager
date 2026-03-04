@@ -8,11 +8,11 @@ function Proveedor() {
       <h1>Panel de Proveedores</h1>
       <div className="buttonsProveedores">
         <div className="searchByName">
-          <CiSearch className="search-icon" />
+          <CiSearch className="search-icon iconProveedores" />
           <input type="text" placeholder="Buscar por nombre" />
         </div>
-        <button>
-          <IoAddOutline />
+        <button className="nuevoProveedor">
+          <IoAddOutline className="iconProveedores" />
           Nuevo proveedor
         </button>
       </div>
