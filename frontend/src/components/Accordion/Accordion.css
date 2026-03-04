@@ -33,7 +33,7 @@
 
 .accordionContent {
   padding: 0rem;
-  background-color: white;
+  background-color: #f5f1ed;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.35s ease;

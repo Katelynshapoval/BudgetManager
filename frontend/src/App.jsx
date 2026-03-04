@@ -1,10 +1,10 @@
 import { useState } from "react";
 import "./App.css";
-import Login from "./pages/Login";
-import Proveedor from "./pages/Proveedor";
-import Presupuesto from "./pages/Presupuesto";
+import Login from "./pages/Login/Login";
+import Proveedor from "./pages/Proveedor/Proveedor";
+import Presupuesto from "./pages/Presupuesto/Presupuesto";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import DashboardLayout from "./layout/DashboardLayout";
+import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
 
 function App() {
   return (

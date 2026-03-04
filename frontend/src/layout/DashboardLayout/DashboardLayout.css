@@ -1,0 +1,14 @@
+.dashboardLayout {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.mainContent {
+  flex: 1;
+  background-color: #f5f1ed;
+  padding: 2rem;
+  width: 100%;
+  overflow-y: auto;
+}

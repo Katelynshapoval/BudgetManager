@@ -1,4 +1,4 @@
-import "../css/components/Accordion.css";
+import "./Accordion.css";
 
 import { useState } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";

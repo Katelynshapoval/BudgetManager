@@ -5,7 +5,7 @@ import { FiShoppingCart } from "react-icons/fi";
 import { MdHistory } from "react-icons/md";
 import { IoMdMenu } from "react-icons/io";
 import { NavLink } from "react-router-dom";
-import "../css/layout/Sidebar.css";
+import "./Sidebar.css";
 
 function Sidebar() {
   const [showMenu, setShowMenu] = useState(false);
