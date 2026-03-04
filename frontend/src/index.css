@@ -30,6 +30,10 @@ h6 {
   color: #6b6968;
 }
 
+.tableParent {
+  padding: 2.25rem;
+}
+
 .table {
   width: 100%;
   text-align: left;
@@ -56,6 +60,10 @@ td {
 
 .actionCell {
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .tableActionIcon {
