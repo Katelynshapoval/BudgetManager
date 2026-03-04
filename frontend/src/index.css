@@ -67,3 +67,12 @@ td {
 .tableActionIcon:hover {
   color: black;
 }
+
+.page {
+  background-color: var(--color-background);
+  padding: 1rem;
+  margin-top: 40px;
+}
+.page h1 {
+  margin-bottom: 2rem;
+}

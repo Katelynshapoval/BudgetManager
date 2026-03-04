@@ -1,13 +1,3 @@
-.presupuesto {
-  background-color: var(--color-background);
-  padding: 1rem;
-  margin-top: 40px;
-}
-
-.mainPanel h1 {
-  margin-bottom: 2rem;
-}
-
 .accordions {
   display: flex;
   flex-direction: column;

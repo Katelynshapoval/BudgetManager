@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import Login from "./pages/Login/Login";
-import Proveedor from "./pages/Proveedor/Proveedor";
+import Proveedores from "./pages/Proveedores/Proveedores";
 import Presupuesto from "./pages/Presupuesto/Presupuesto";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
@@ -13,7 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Presupuesto />} />
-          <Route path="/dashboard/proveedor" element={<Proveedor />} />
+          <Route path="/dashboard/proveedores" element={<Proveedores />} />
         </Route>
       </Routes>
     </Router>
