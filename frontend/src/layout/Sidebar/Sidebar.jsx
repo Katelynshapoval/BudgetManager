@@ -5,6 +5,8 @@ import { FiShoppingCart } from "react-icons/fi";
 import { MdHistory } from "react-icons/md";
 import { IoMdMenu } from "react-icons/io";
 import { NavLink } from "react-router-dom";
+import { MdLogout } from "react-icons/md";
+
 import "./Sidebar.css";
 
 function Sidebar() {
@@ -86,6 +88,13 @@ function Sidebar() {
           </NavLink>
         </li>
       </ul>
+      <div className="logoutSidebar">
+        <hr />
+        <div className="navItem">
+          <MdLogout className="optionIcon" />
+          <span className="logoutText">Salir</span>
+        </div>
+      </div>
     </div>
   );
 }

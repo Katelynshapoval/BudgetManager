@@ -6,9 +6,6 @@ import { RiEditLine } from "react-icons/ri";
 function Presupuesto() {
   return (
     <div className="presupuesto">
-      <div className="userInfo">
-        <p>Hola, User</p>
-      </div>
       <div className="mainPanel">
         <h1>Panel de Presupuestos</h1>
         <div className="accordions">

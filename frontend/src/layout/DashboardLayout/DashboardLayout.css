@@ -12,3 +12,28 @@
   width: 100%;
   overflow-y: auto;
 }
+
+.topBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99;
+
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+
+  padding: 30px;
+  padding-right: 40px;
+
+  background-color: #f5f1ed;
+  color: #6b6968;
+}
+
+#logoutTopbar:hover {
+  cursor: pointer;
+  color: black;
+}

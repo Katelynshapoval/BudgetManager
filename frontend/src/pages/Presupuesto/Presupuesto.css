@@ -1,11 +1,7 @@
 .presupuesto {
   background-color: #f5f1ed;
   padding: 1rem;
-}
-
-.userInfo {
-  text-align: right;
-  color: #6b6968;
+  margin-top: 40px;
 }
 
 .mainPanel h1 {

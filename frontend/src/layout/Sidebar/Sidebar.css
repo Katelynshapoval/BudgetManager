@@ -8,6 +8,10 @@
   color: #f5f1ed;
   overflow: hidden;
   transition: width 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 999;
 }
 
 .sideBar.expanded {
@@ -46,7 +50,8 @@
 }
 
 .sideBar.collapsed .logoText,
-.sideBar.collapsed .label {
+.sideBar.collapsed .label,
+.sideBar.collapsed .logoutText {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -61,6 +66,7 @@
   padding: 0;
   list-style: none;
   font-size: 1.15rem;
+  flex: 1;
 }
 
 .navItem {
@@ -90,4 +96,17 @@
   justify-content: center;
   min-width: 24px;
   font-size: 1.25rem;
+}
+
+.logoutSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.logoutSidebar div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
 }
