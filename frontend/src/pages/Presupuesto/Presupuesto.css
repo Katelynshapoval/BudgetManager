@@ -60,3 +60,21 @@ td {
 .presupuestosTable tbody tr {
   border-bottom: 1px solid #dad2bc;
 }
+
+.presupuestosTable tbody tr:hover {
+  background-color: #dad2bc;
+}
+
+.actionCell {
+  text-align: center;
+}
+
+.tableActionIcon {
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #70798c;
+}
+
+.tableActionIcon:hover {
+  color: black;
+}
