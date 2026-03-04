@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f5f1ed;
+  background-color: var(--color-background);
 }
 
 .loginCard {
@@ -13,7 +13,7 @@
   flex-direction: column;
   gap: 2.5rem;
   text-align: center;
-  background-color: #f5f1ed;
+  background-color: var(--color-background);
   border-radius: 12px;
   box-shadow: 0 20px 40px rgba(37, 35, 35, 0.08);
 }
@@ -21,12 +21,12 @@
 .info h1 {
   margin: 0 0 0.5rem 0;
   font-weight: 500;
-  color: #252323;
+  color: var(--color-text);
 }
 
 .info p {
   margin: 0;
-  color: #70798c;
+  color: var(--color-primary);
   font-size: 0.95rem;
 }
 
@@ -53,8 +53,8 @@
   width: 100%;
   padding: 12px 14px;
   border-radius: 8px;
-  border: 1px solid #a99985;
-  background-color: #dad2bc;
+  border: 1px solid var(--color-accent);
+  background-color: var(--color-secondary);
   font-family: "Roboto", sans-serif;
   transition:
     box-shadow 0.2s ease,
@@ -63,7 +63,7 @@
 }
 
 .input input:focus {
-  border: 1px solid #a99985;
+  border: 1px solid var(--color-accent);
   box-shadow: 0 0 0 3px rgba(169, 153, 133, 0.3);
 }
 
@@ -77,7 +77,7 @@
 .buttons button {
   padding: 14px;
   border-radius: 8px;
-  border: 1px solid #a99985;
+  border: 1px solid var(--color-accent);
   font-family: "Roboto", sans-serif;
   font-weight: 500;
   cursor: pointer;
@@ -85,8 +85,8 @@
 }
 
 #signinButton {
-  background-color: #a99985;
-  color: #252323;
+  background-color: var(--color-accent);
+  color: var(--color-text);
 }
 
 #signinButton:hover {
@@ -96,10 +96,10 @@
 
 #signupButton {
   background-color: transparent;
-  color: #70798c;
+  color: var(--color-primary);
 }
 
 #signupButton:hover {
   background-color: rgba(169, 153, 133, 0.15);
-  color: #a99985;
+  color: var(--color-accent);
 }

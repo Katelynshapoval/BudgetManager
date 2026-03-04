@@ -7,10 +7,11 @@
 
 .mainContent {
   flex: 1;
-  background-color: #f5f1ed;
+  background-color: var(--color-background);
   padding: 2rem;
   width: 100%;
   overflow-y: auto;
+  color: var(--color-text);
 }
 
 .topBar {
@@ -29,7 +30,7 @@
   padding: 30px;
   padding-right: 40px;
 
-  background-color: #f5f1ed;
+  background-color: var(--color-background);
   color: #6b6968;
 }
 

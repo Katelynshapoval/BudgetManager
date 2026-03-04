@@ -1,5 +1,5 @@
 .presupuesto {
-  background-color: #f5f1ed;
+  background-color: var(--color-background);
   padding: 1rem;
   margin-top: 40px;
 }
@@ -26,51 +26,14 @@
   margin-bottom: 2rem;
 }
 
-.filter label {
-  color: #6b6968;
-}
 .filter select {
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #a99985;
-  background-color: #dad2bc;
+  border: 1px solid var(--color-accent);
+  background-color: var(--color-secondary);
   font-size: 1rem;
 }
 
-.presupuestosTable {
-  width: 100%;
-  text-align: left;
-  border-collapse: collapse;
-}
-
-.presupuestosTable thead tr {
-  border-bottom: 2px solid #70798c;
-  color: #70798c;
-}
-
-.presupuestosTable th,
-td {
-  padding: 20px;
-}
-
-.presupuestosTable tbody tr {
-  border-bottom: 1px solid #dad2bc;
-}
-
-.presupuestosTable tbody tr:hover {
-  background-color: #dad2bc;
-}
-
-.actionCell {
-  text-align: center;
-}
-
-.tableActionIcon {
-  font-size: 1.25rem;
-  cursor: pointer;
-  color: #70798c;
-}
-
-.tableActionIcon:hover {
-  color: black;
+.tableParent {
+  padding: 3rem;
 }

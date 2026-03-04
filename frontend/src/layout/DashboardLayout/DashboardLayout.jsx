@@ -8,7 +8,7 @@ function DashboardLayout() {
     <div className="dashboardLayout">
       <Sidebar />
       <div className="mainContent">
-        <div className="topBar">
+        <div className="topBar lightText">
           <p>Hola, User</p>
           <MdLogout id="logoutTopbar" />
         </div>

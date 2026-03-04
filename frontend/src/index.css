@@ -5,13 +5,65 @@
   font-family: "Roboto", sans-serif;
 }
 
+:root {
+  --color-background: #f5f1ed;
+  --color-text: #252323;
+  --color-primary: #70798c;
+  --color-secondary: #dad2bc;
+  --color-accent: #a99985;
+}
+
 body {
-  background-color: #f5f1ed;
-  /* height: 100vh; */
+  background-color: var(--color-background);
 }
 
 h1,
 h2,
-h3 {
+h3,
+h4,
+h5,
+h6 {
   font-weight: 400;
+}
+
+.lightText {
+  color: #6b6968;
+}
+
+.table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.table thead tr {
+  border-bottom: 2px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.table th,
+td {
+  padding: 20px;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--color-secondary);
+}
+
+.table tbody tr:hover {
+  background-color: var(--color-secondary);
+}
+
+.actionCell {
+  text-align: center;
+}
+
+.tableActionIcon {
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--color-primary);
+}
+
+.tableActionIcon:hover {
+  color: black;
 }

@@ -10,9 +10,11 @@ function Presupuesto() {
         <h1>Panel de Presupuestos</h1>
         <div className="accordions">
           <Accordion title={"Presupuestos"}>
-            <div className="presupuestoTable">
+            <div className="tableParent">
               <div className="filter">
-                <label htmlFor="departamento">Filtrar por departamento:</label>
+                <label htmlFor="departamento" className="lightText">
+                  Filtrar por departamento:
+                </label>
                 <select id="departamento">
                   <option value="">Todos</option>
                   <option>Recursos Humanos</option>
@@ -22,7 +24,7 @@ function Presupuesto() {
                 </select>
               </div>
 
-              <table className="presupuestosTable">
+              <table className="table">
                 <thead>
                   <tr>
                     <th>Departamento</th>
@@ -75,7 +77,7 @@ function Presupuesto() {
             </div>
           </Accordion>
           <Accordion title={"Plan de Inversión"}>
-            <div className="presupuestoTable">
+            <div className="tableParent">
               <div className="filter">
                 <label htmlFor="departamento">Filtrar por departamento:</label>
                 <select id="departamento">
@@ -87,7 +89,7 @@ function Presupuesto() {
                 </select>
               </div>
 
-              <table className="presupuestosTable">
+              <table className="table">
                 <thead>
                   <tr>
                     <th>Departamento</th>

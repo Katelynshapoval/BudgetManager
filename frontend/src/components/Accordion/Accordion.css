@@ -14,7 +14,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem;
-  background-color: #dad2bc;
+  background-color: var(--color-secondary);
   cursor: pointer;
 }
 
