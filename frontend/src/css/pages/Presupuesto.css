@@ -1,0 +1,23 @@
+.presupuesto {
+  background-color: #f5f1ed;
+  padding: 1rem;
+}
+
+.userInfo {
+  text-align: right;
+  color: #6b6968;
+}
+
+.mainPanel h1 {
+  margin-bottom: 2rem;
+}
+
+.accordions {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.presupuestoTable {
+  padding: 2rem;
+}

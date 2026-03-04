@@ -3,9 +3,9 @@ import Sidebar from "./Sidebar";
 
 function DashboardLayout() {
   return (
-    <div>
+    <div className="dashboardLayout">
       <Sidebar />
-      <div>
+      <div className="mainContent">
         <Outlet />
       </div>
     </div>
