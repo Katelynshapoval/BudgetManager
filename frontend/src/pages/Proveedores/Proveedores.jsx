@@ -3,17 +3,29 @@ import { CiSearch } from "react-icons/ci";
 import { IoAddOutline } from "react-icons/io5";
 import { RiEditLine } from "react-icons/ri";
 import { MdDeleteOutline } from "react-icons/md";
+import NuevoProveedor from "../../components/NuevoProveedor/NuevoProveedor";
+import { useState } from "react";
 
 function Proveedor() {
+  const [addProveedorShow, setAddProveedorShow] = useState(false);
   return (
     <div className="page proveedores">
       <h1>Panel de Proveedores</h1>
+      {addProveedorShow && (
+        <NuevoProveedor
+          hidePopup={() => setAddProveedorShow(false)}
+          show={addProveedorShow}
+        />
+      )}
       <div className="buttonsProveedores">
         <div className="searchByName">
           <CiSearch className="search-icon iconProveedores" />
           <input type="text" placeholder="Buscar por nombre" />
         </div>
-        <button className="nuevoProveedor">
+        <button
+          className="nuevoProveedor"
+          onClick={() => setAddProveedorShow(true)}
+        >
           <IoAddOutline className="iconProveedores" />
           Nuevo proveedor
         </button>

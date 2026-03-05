@@ -9,20 +9,22 @@ function Login() {
           <p>Gestiona tus finanzas con claridad.</p>
         </div>
         <form action="#">
-          <div className="username input">
+          <div className="username inputContainer">
             <label htmlFor="usuario">Usuario</label>
             <input
               id="usuario"
               type="text"
               placeholder="Ingresa tu usuario"
+              className="input"
               required
             />
           </div>
-          <div className="password input">
+          <div className="password inputContainer">
             <label htmlFor="password">Contraseña</label>
             <input
               id="password"
               type="password"
+              className="input"
               placeholder="Ingresa tu contraseña"
               required
             />
