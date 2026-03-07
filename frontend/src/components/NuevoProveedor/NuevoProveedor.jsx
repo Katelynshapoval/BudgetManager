@@ -22,7 +22,7 @@ function NuevoProveedor({ hidePopup, show }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [show]);
+  }, [show, hidePopup]);
   return (
     <div className="modalOverlay">
       <form
@@ -38,23 +38,17 @@ function NuevoProveedor({ hidePopup, show }) {
         </div>
 
         <div className="popupInputContainer">
-          <label className="lightText" htmlFor="nombreProveedor">
-            Nombre
-          </label>
+          <label htmlFor="nombreProveedor">Nombre</label>
           <input id="nombreProveedor" type="text" className="input" />
         </div>
 
         <div className="popupInputContainer">
-          <label className="lightText" htmlFor="correoProveedor">
-            Correo
-          </label>
+          <label htmlFor="correoProveedor">Correo</label>
           <input id="correoProveedor" type="text" className="input" />
         </div>
 
         <div className="popupInputContainer">
-          <label className="lightText" htmlFor="telefonoProveedor">
-            Teléfono
-          </label>
+          <label htmlFor="telefonoProveedor">Teléfono</label>
           <input id="telefonoProveedor" type="text" className="input" />
         </div>
 

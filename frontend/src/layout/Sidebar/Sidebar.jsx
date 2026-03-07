@@ -85,7 +85,7 @@ function Sidebar() {
             onClick={() => setIsOpen((prev) => !prev)}
           />
           <span
-            className={`whitespace-nowrap transition-opacity duration-200 ease-in-out ${labelClass}`}
+            className={`whitespace-nowrap transition-opacity duration-150 ease-in-out ${labelClass}`}
           >
             BudgetManager
           </span>

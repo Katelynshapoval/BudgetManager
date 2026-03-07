@@ -47,8 +47,8 @@
   input {
     @apply w-full rounded-lg border border-primary bg-secondary
            px-3 py-2 md:py-3.5
-           outline-none transition-all duration-200 ease-in-out
-           focus:border-accent focus:ring-4 focus:border-accent focus:ring-accent/30 focus:outline-none;
+           transition-all duration-150 ease-in-out
+           focus:border-accent focus:ring-4 focus:ring-accent/30 focus:outline-none;
   }
 
   /* Tables */
@@ -101,7 +101,7 @@
 
   /* Search Bar */
   .searchBar {
-    @apply relative w-full max-w-100 rounded-[10px] bg-secondary;
+    @apply relative w-full max-w-100 rounded-xl bg-secondary;
   }
 
   .search-icon {
@@ -109,10 +109,10 @@
   }
 
   .searchBar input {
-    @apply w-full rounded-[10px] border border-primary bg-transparent
+    @apply w-full rounded-xl border border-primary bg-transparent
            p-2 px-10 md:p-3 md:px-10
            text-sm md:text-base outline-none
-           transition-all duration-300 ease-in-out;
+           transition-all duration-150 ease-in-out;
   }
 
   .searchBar input:focus {
@@ -122,10 +122,10 @@
   /* Add-New Button */
   .addNewButton {
     @apply flex w-full items-center justify-center gap-2
-           rounded-[10px] border-none bg-accent
+           rounded-xl border-none bg-accent
            p-2 md:w-50 md:p-3
            cursor-pointer text-sm md:text-base
-           transition-all duration-300 ease-in-out;
+           transition-all duration-150 ease-in-out;
   }
 
   .addNewButton:hover {

@@ -19,8 +19,8 @@ function Accordion({ title, children, defaultOpen = false }) {
         </span>
       </div>
       <div
-        className={`bg-background overflow-y-hidden transition-all duration-200 ease-in-out ${
-          isOpen ? "max-h-[500px]" : "max-h-0"
+        className={`bg-background overflow-y-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? "max-h-screen" : "max-h-0"
         }`}
       >
         {children}

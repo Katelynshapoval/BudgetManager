@@ -8,6 +8,6 @@
     @apply text-sm font-medium text-shadow-text;
   }
   .loginPageButton {
-    @apply text-base font-medium text-shadow-text p-2.5 md:p-3.5 rounded-lg w-full cursor-pointer transition-all duration-200 ease-in-out;
+    @apply text-base font-medium text-shadow-text p-2.5 md:p-3.5 rounded-lg w-full cursor-pointer transition-all duration-150 ease-in-out;
   }
 }

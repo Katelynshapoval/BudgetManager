@@ -42,7 +42,7 @@ function Login() {
               Iniciar Sesión
             </button>
             <button
-              className="loginPageButton bg-transparent text-primary hover:bg-[rgba(169, 153, 133, 0.15)] hover:text-accent border border-primary hover:border-accent"
+              className="loginPageButton bg-transparent text-primary hover:bg-accent/10 hover:text-accent border border-primary hover:border-accent"
               type="button"
               id="signupButton"
             >

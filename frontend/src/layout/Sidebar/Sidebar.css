@@ -16,6 +16,6 @@
   }
 
   .label-hidden {
-    @apply opacity-0 invisible hidden pointer-events-none;
+    @apply opacity-0 invisible pointer-events-none;
   }
 }
