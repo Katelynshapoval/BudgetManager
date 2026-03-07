@@ -1,116 +1,21 @@
-.sideBar {
-  position: relative;
-  left: 0;
-  height: 100vh;
-  width: 300px;
-  padding: 1rem;
-  background-color: var(--color-text);
-  color: var(--color-background);
-  overflow: hidden;
-  transition: width 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  z-index: 999;
-}
+@reference "../../index.css";
 
-.sideBar.expanded {
-  width: 280px;
-}
+@layer components {
+  .navItem {
+    @apply flex items-center gap-5 w-full h-11 p-3 rounded-lg cursor-pointer
+           whitespace-nowrap text-nowrap transition-colors duration-150
+           hover:bg-primary;
+  }
 
-.sideBar.collapsed {
-  width: 80px;
-}
+  .navItem.active {
+    @apply bg-accent text-text;
+  }
 
-.top {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 15px 0 2rem;
-  font-size: 1.25rem;
-}
+  .optionIcon {
+    @apply text-xl min-w-6 shrink-0;
+  }
 
-#menuIcon {
-  font-size: 2.5rem;
-  padding: 6px;
-  border-radius: 10px;
-  cursor: pointer;
-  flex-shrink: 0;
-  margin-left: 5px;
-}
-
-#menuIcon:hover {
-  background-color: #a99985;
-}
-
-.logoText,
-.label {
-  white-space: nowrap;
-  transition: opacity 0.2s ease;
-}
-
-.sideBar.collapsed .logoText,
-.sideBar.collapsed .label,
-.sideBar.collapsed .logoutText {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  display: none;
-}
-
-.sections {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 1.15rem;
-  flex: 1;
-}
-
-.navItem {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  width: 100%;
-  height: 46px;
-  padding: 13px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: #f5f1ed;
-  cursor: pointer;
-}
-
-.navItem:hover {
-  background-color: var(--color-primary);
-}
-
-.navItem.active {
-  background-color: #a99985;
-  color: var(--color-text);
-}
-
-.optionIcon {
-  display: flex;
-  justify-content: center;
-  min-width: 24px;
-  font-size: 1.25rem;
-}
-
-.logoutSidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.logoutSidebar div {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.logoutSidebar hr {
-  color: rgba(212, 208, 208, 0.338);
+  .label-hidden {
+    @apply opacity-0 invisible hidden pointer-events-none;
+  }
 }

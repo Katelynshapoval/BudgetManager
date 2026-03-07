@@ -18,6 +18,6 @@
   input {
     @apply w-full px-3 py-2 md:py-3.5 rounded-lg border border-accent bg-secondary
   transition-all duration-200 ease-in-out outline-none
-  focus:border-accent focus:ring-4 focus:ring-accent/30;
+  focus:border-accent focus:ring-4 focus:ring-accent/30 focus:outline-none;
   }
 }
