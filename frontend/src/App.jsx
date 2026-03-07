@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./App.css";
+// import "./App.css";
 import Login from "./pages/Login/Login";
 import Proveedores from "./pages/Proveedores/Proveedores";
 import Presupuesto from "./pages/Presupuesto/Presupuesto";
