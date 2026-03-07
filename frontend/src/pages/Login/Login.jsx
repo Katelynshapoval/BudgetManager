@@ -18,8 +18,8 @@ function Login() {
             <input
               id="usuario"
               type="text"
+              className="text-sm md:text-base"
               placeholder="Ingresa tu usuario"
-              className="input"
               required
             />
           </div>
@@ -29,6 +29,7 @@ function Login() {
               id="password"
               type="password"
               placeholder="Ingresa tu contraseña"
+              className="text-sm md:text-base"
               required
             />
           </div>
