@@ -48,7 +48,7 @@ function DepartmentFilter({ id, value, onChange }) {
 
 function BudgetTable({ data }) {
   return (
-    <div className="overflow-x-auto w-full">
+    <div className="hideHorizontalScroll">
       <table className="table">
         <thead>
           <tr>

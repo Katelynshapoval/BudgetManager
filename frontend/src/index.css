@@ -1,36 +1,59 @@
+/* Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
+
+/* Tailwind */
 @import "tailwindcss";
 
+/* Theme / Design Tokens */
 @theme {
+  /* Colors */
   --color-background: #f5f1ed;
   --color-text: #252323;
   --color-primary: #70798c;
   --color-secondary: #dad2bc;
   --color-accent: #a99985;
   --color-light: #6b6968;
+
+  /* Typography */
   --font-sans: "Roboto", sans-serif;
 }
 
+/* BASE LAYER */
 @layer base {
+  /* Global Reset / Scroll */
+  html,
+  body {
+    @apply w-full;
+    overflow-x: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    height: 0;
+  }
+
   /* Typography */
   body {
     @apply font-sans font-medium text-xl;
   }
 
   h1 {
-    @apply mb-7;
+    @apply mb-7 text-xl md:text-3xl;
   }
 
   /* Forms */
   input {
-    @apply w-full px-3 py-2 md:py-3.5 rounded-lg border border-accent bg-secondary
-           transition-all duration-200 ease-in-out outline-none
+    @apply w-full rounded-lg border border-accent bg-secondary
+           px-3 py-2 md:py-3.5
+           outline-none transition-all duration-200 ease-in-out
            focus:border-accent focus:ring-4 focus:ring-accent/30 focus:outline-none;
   }
 
   /* Tables */
   table {
-    @apply w-full text-left border-collapse;
+    @apply w-full border-collapse text-left;
   }
 
   thead tr {
@@ -55,14 +78,73 @@
   }
 }
 
+/* COMPONENT LAYER */
 @layer components {
+  /* Page Layout */
   .page {
     @apply bg-background p-5;
   }
+
+  /* Table Actions */
   .actionCell {
-    @apply flex justify-center;
+    @apply flex justify-center gap-3;
   }
+
   .tableActionIcon {
-    @apply text-base md:text-lg text-primary hover:text-text cursor-pointer;
+    @apply cursor-pointer text-base md:text-lg text-primary hover:text-text;
+  }
+
+  /* Control Bar (search + add-new) */
+  .controlButtons {
+    @apply mb-6 flex flex-col gap-4 items-center justify-between md:flex-row;
+  }
+
+  /* Search Bar */
+  .searchBar {
+    @apply relative w-full max-w-100 rounded-[10px] bg-secondary;
+  }
+
+  .search-icon {
+    @apply absolute left-2.5 top-1/2 -translate-y-1/2 text-primary;
+  }
+
+  .searchBar input {
+    @apply w-full rounded-[10px] border border-primary bg-transparent
+           p-2 px-10 md:p-3 md:px-10
+           text-sm md:text-base outline-none
+           transition-all duration-300 ease-in-out;
+  }
+
+  .searchBar input:focus {
+    @apply border-accent ring-[3px] ring-accent/30;
+  }
+
+  /* Add-New Button */
+  .addNewButton {
+    @apply flex w-full items-center justify-center gap-2
+           rounded-[10px] border-none bg-accent
+           p-2 md:w-50 md:p-3
+           cursor-pointer text-sm md:text-base
+           transition-all duration-300 ease-in-out;
+  }
+
+  .addNewButton:hover {
+    @apply -translate-y-0.5 bg-primary text-white;
+  }
+
+  /* Icons */
+  .iconProveedores {
+    @apply text-[1.4rem];
+  }
+
+  /* Utilities */
+  .hideHorizontalScroll {
+    @apply w-full overflow-x-auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hideHorizontalScroll::-webkit-scrollbar {
+    display: none;
   }
 }
