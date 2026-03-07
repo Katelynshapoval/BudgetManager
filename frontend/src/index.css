@@ -45,10 +45,10 @@
 
   /* Forms */
   input {
-    @apply w-full rounded-lg border border-accent bg-secondary
+    @apply w-full rounded-lg border border-primary bg-secondary
            px-3 py-2 md:py-3.5
            outline-none transition-all duration-200 ease-in-out
-           focus:border-accent focus:ring-4 focus:ring-accent/30 focus:outline-none;
+           focus:border-accent focus:ring-4 focus:border-accent focus:ring-accent/30 focus:outline-none;
   }
 
   /* Tables */
@@ -146,5 +146,9 @@
 
   .hideHorizontalScroll::-webkit-scrollbar {
     display: none;
+  }
+  /* Modal */
+  .modalOverlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/30;
   }
 }

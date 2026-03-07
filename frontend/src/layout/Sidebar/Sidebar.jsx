@@ -48,12 +48,12 @@ function Sidebar() {
   return (
     <>
       {/* Mobile-only top bar */}
-      <div className="fixed top-0 left-0 right-0 z-[998] flex items-center gap-3 bg-text text-background px-4 py-3 md:hidden">
+      <div className="fixed top-0 left-0 right-0 z-998 flex items-center gap-3 bg-text text-background px-4 py-3 md:hidden">
         <IoMdMenu
-          className="min-w-10 p-1.5 text-4xl rounded-lg cursor-pointer hover:bg-accent"
+          className="min-w-10 text-3xl rounded-lg cursor-pointer hover:bg-accent"
           onClick={() => setIsOpen(true)}
         />
-        <span className="text-lg font-normal">BudgetManager</span>
+        <span className="text-lg font-normal ">BudgetManager</span>
       </div>
 
       {/* Mobile overlay backdrop */}

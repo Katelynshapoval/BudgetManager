@@ -25,42 +25,51 @@ function NuevoProveedor({ hidePopup, show }) {
   }, [show]);
   return (
     <div className="modalOverlay">
-      <form ref={popupRef} className="popup">
-        <div className="headerPopup">
-          <h1>Agregar un Proveedor</h1>
+      <form
+        ref={popupRef}
+        className="bg-background p-8 rounded-lg flex flex-col gap-4 md:w-110 lg:w-140"
+      >
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="mb-0">Agregar un Proveedor</h2>
           <IoMdClose
-            id="closePopupIcon"
-            className="lightText"
+            className="text-light text-2xl md:text-3xl cursor-pointer hover:text-text"
             onClick={() => hidePopup()}
           />
         </div>
 
-        <div className="inputPopup">
+        <div className="popupInputContainer">
           <label className="lightText" htmlFor="nombreProveedor">
             Nombre
           </label>
           <input id="nombreProveedor" type="text" className="input" />
         </div>
 
-        <div className="inputPopup">
+        <div className="popupInputContainer">
           <label className="lightText" htmlFor="correoProveedor">
             Correo
           </label>
           <input id="correoProveedor" type="text" className="input" />
         </div>
 
-        <div className="inputPopup">
+        <div className="popupInputContainer">
           <label className="lightText" htmlFor="telefonoProveedor">
             Teléfono
           </label>
           <input id="telefonoProveedor" type="text" className="input" />
         </div>
 
-        <div className="popupButtons">
-          <button id="cancelButton" type="button">
+        <div className="flex justify-center md:justify-end gap-4 mt-2">
+          <button
+            className="popupButton border-primary outline-none text-primary hover:text-accent hover:border-accent"
+            type="button"
+          >
             Cancelar
           </button>
-          <button id="submitButton" type="submit">
+          <button
+            className="popupButton border-none outline-none bg-accent text-text hover:bg-primary hover:text-background"
+            id="submitButton"
+            type="submit"
+          >
             Añadir proveedor
           </button>
         </div>
