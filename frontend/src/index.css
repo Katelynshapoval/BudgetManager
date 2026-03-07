@@ -12,12 +12,57 @@
 }
 
 @layer base {
+  /* Typography */
   body {
-    @apply font-sans;
+    @apply font-sans font-medium text-xl;
   }
+
+  h1 {
+    @apply mb-7;
+  }
+
+  /* Forms */
   input {
     @apply w-full px-3 py-2 md:py-3.5 rounded-lg border border-accent bg-secondary
-  transition-all duration-200 ease-in-out outline-none
-  focus:border-accent focus:ring-4 focus:ring-accent/30 focus:outline-none;
+           transition-all duration-200 ease-in-out outline-none
+           focus:border-accent focus:ring-4 focus:ring-accent/30 focus:outline-none;
+  }
+
+  /* Tables */
+  table {
+    @apply w-full text-left border-collapse;
+  }
+
+  thead tr {
+    @apply border-b-2 border-primary text-sm md:text-base text-primary;
+  }
+
+  th {
+    @apply font-medium;
+  }
+
+  th,
+  td {
+    @apply p-4;
+  }
+
+  td {
+    @apply text-sm md:text-base;
+  }
+
+  tbody tr {
+    @apply border-b border-secondary font-normal hover:bg-secondary;
+  }
+}
+
+@layer components {
+  .page {
+    @apply bg-background p-5;
+  }
+  .actionCell {
+    @apply flex justify-center;
+  }
+  .tableActionIcon {
+    @apply text-base md:text-lg text-primary hover:text-text cursor-pointer;
   }
 }

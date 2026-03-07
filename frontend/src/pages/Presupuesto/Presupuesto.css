@@ -1,21 +1,10 @@
-.accordions {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-}
+@reference "../../index.css";
 
-.filter {
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.filter select {
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid var(--color-accent);
-  background-color: var(--color-secondary);
-  font-size: 1rem;
+@layer components {
+  .filter {
+    @apply flex flex-col sm:flex-row text-base justify-end items-center gap-4 mb-8;
+  }
+  .filter select {
+    @apply text-sm p-2.5 rounded-lg border border-primary bg-secondary focus:outline-none;
+  }
 }
