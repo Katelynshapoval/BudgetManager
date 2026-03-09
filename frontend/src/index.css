@@ -96,7 +96,7 @@
 
   /* Control Bar (search + add-new) */
   .controlButtons {
-    @apply mb-6 flex flex-col gap-4 items-center justify-between md:flex-row;
+    @apply flex flex-col gap-4 items-center justify-between md:flex-row;
   }
 
   /* Search Bar */
