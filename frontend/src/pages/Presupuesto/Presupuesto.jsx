@@ -1,19 +1,9 @@
 import "./Presupuesto.css";
 import Accordion from "../../components/Accordion/Accordion";
+import DepartmentFilter from "../../components/DepartmentFilter";
 import { useState } from "react";
 import { RiEditLine } from "react-icons/ri";
-
-const DEPARTMENTS = [
-  "Recursos Humanos",
-  "Tecnología",
-  "Operaciones",
-  "Marketing",
-];
-
-const EUR = new Intl.NumberFormat("es-ES", {
-  style: "currency",
-  currency: "EUR",
-});
+import { EUR } from "../../utils/currency";
 
 const BUDGET_DATA = [
   { department: "Recursos Humanos", assigned: 2500000, spent: 1875000 },
@@ -27,24 +17,6 @@ const INVESTMENT_DATA = [
   { department: "Operaciones", assigned: 2100000, spent: 2100000 },
   { department: "Marketing", assigned: 1950000, spent: 1950000 },
 ];
-
-function DepartmentFilter({ id, value, onChange }) {
-  return (
-    <div className="filter">
-      <label htmlFor={id} className="text-primary">
-        Filtrar por departamento:
-      </label>
-      <select id={id} value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">Todos</option>
-        {DEPARTMENTS.map((dept) => (
-          <option key={dept} value={dept}>
-            {dept}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
 
 function BudgetTable({ data }) {
   return (

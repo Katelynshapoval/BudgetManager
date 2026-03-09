@@ -23,7 +23,7 @@ function Login() {
               required
             />
           </div>
-          <div className="password inputContainer">
+          <div className=" inputContainer">
             <label htmlFor="password">Contraseña</label>
             <input
               id="password"

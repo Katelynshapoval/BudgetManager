@@ -2,7 +2,7 @@
 
 @layer components {
   .filter {
-    @apply flex flex-col sm:flex-row text-base justify-end items-center gap-4 mb-8;
+    @apply flex flex-col sm:flex-row text-base justify-end items-center gap-4;
   }
   .filter select {
     @apply text-sm p-2.5 rounded-lg border border-primary bg-secondary focus:outline-none;
