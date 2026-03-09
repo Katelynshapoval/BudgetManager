@@ -39,7 +39,7 @@ function Ordenes() {
   return (
     <div className="page">
       <h1>Panel de Órdenes de Compra</h1>
-      <div className="flex flex-col md:flex-row gap-4 md:items-center">
+      <div className="flex flex-col lg:flex-row gap-4 md:items-center">
         <div className="order-2 md:order-1 searchBar">
           <CiSearch className="search-icon iconProveedores" />
           <input
