@@ -53,7 +53,7 @@
 
   /* Tables */
   table {
-    @apply w-full md:table-fixed border-collapse text-left mt-8;
+    @apply w-full lg:table-fixed border-collapse text-left mt-8;
   }
 
   thead tr {
@@ -101,7 +101,7 @@
 
   /* Search Bar */
   .searchBar {
-    @apply relative w-full lg:max-w-100 rounded-xl bg-secondary;
+    @apply relative w-full md:max-w-100 rounded-xl bg-secondary;
   }
 
   .search-icon {
