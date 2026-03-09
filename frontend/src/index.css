@@ -87,11 +87,11 @@
 
   /* Table Actions */
   .actionCell {
-    @apply flex justify-center gap-3;
+    @apply text-center align-middle whitespace-nowrap;
   }
 
   .tableActionIcon {
-    @apply cursor-pointer text-base md:text-lg text-primary hover:text-text;
+    @apply inline-flex cursor-pointer text-base md:text-lg text-primary hover:text-text mx-1;
   }
 
   /* Control Bar (search + add-new) */
