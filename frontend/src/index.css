@@ -151,4 +151,15 @@
   .modalOverlay {
     @apply fixed inset-0 z-50 flex items-center justify-center bg-black/30;
   }
+
+  /* Popup */
+  .popupInputContainer {
+    @apply text-sm flex flex-col gap-1 text-text font-normal;
+  }
+  .popupInputContainer label {
+    @apply text-primary font-medium;
+  }
+  .popupButton {
+    @apply px-6 py-2 border rounded-lg text-sm md:text-base cursor-pointer transition-all duration-150 ease-in-out;
+  }
 }

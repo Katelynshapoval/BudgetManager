@@ -3,6 +3,7 @@ import { CiSearch } from "react-icons/ci";
 import DepartmentFilter from "../../components/DepartmentFilter";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
+import NuevoOrdenDeCompra from "../../components/NuevoOrdenDeCompra/NuevoOrdenCompra";
 
 const ORDENES = [
   {
@@ -39,6 +40,12 @@ function Ordenes() {
   return (
     <div className="page">
       <h1>Panel de Órdenes de Compra</h1>
+      {addOrdenShow && (
+        <NuevoOrdenDeCompra
+          hidePopup={() => setAddOrdenShow(false)}
+          popupStatus={addOrdenShow}
+        />
+      )}
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
         <div className="order-2 md:order-1 md:max-w-full lg:max-w-100 searchBar">
           <CiSearch className="search-icon iconProveedores" />
@@ -56,7 +63,12 @@ function Ordenes() {
             value={filter}
             onChange={setFilter}
           />
-          <button className="addNewButton">Crear orden de compra</button>
+          <button
+            className="addNewButton"
+            onClick={() => setAddOrdenShow(true)}
+          >
+            Crear orden de compra
+          </button>
         </div>
       </div>
       <div className="hideHorizontalScroll">

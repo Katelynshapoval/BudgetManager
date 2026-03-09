@@ -1,15 +1,14 @@
 import { IoMdClose } from "react-icons/io";
-import "./NuevoProveedor.css";
 import { useRef, useEffect } from "react";
 
-function NuevoProveedor({ hidePopup, show }) {
+function NuevoOrdenDeCompra({ hidePopup, popupStatus }) {
   const popupRef = useRef(null);
 
   // Close the menu if clicked outside of it
   useEffect(() => {
     function handleClickOutside(event) {
       if (
-        show &&
+        popupStatus &&
         popupRef.current &&
         !popupRef.current.contains(event.target)
       ) {
@@ -22,7 +21,7 @@ function NuevoProveedor({ hidePopup, show }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [show, hidePopup]);
+  }, [popupStatus, hidePopup]);
   return (
     <div className="modalOverlay">
       <form
@@ -30,7 +29,7 @@ function NuevoProveedor({ hidePopup, show }) {
         className="bg-background p-8 rounded-lg flex flex-col gap-4 md:w-110 lg:w-140"
       >
         <div className="flex justify-between items-center mb-2">
-          <h2 className="mb-0">Agregar un Proveedor</h2>
+          <h2 className="mb-0">Agregar un Órden de Compra</h2>
           <IoMdClose
             className="text-light text-2xl md:text-3xl cursor-pointer hover:text-text"
             onClick={() => hidePopup()}
@@ -72,4 +71,4 @@ function NuevoProveedor({ hidePopup, show }) {
   );
 }
 
-export default NuevoProveedor;
+export default NuevoOrdenDeCompra;
