@@ -1,15 +1,14 @@
 import { IoMdClose } from "react-icons/io";
-import "./NuevoProveedor.css";
 import { useRef, useEffect } from "react";
 
-function NuevoProveedor({ hidePopup, show }) {
+function AgregarFacturaPopup({ hidePopup, popupStatus }) {
   const popupRef = useRef(null);
 
   // Close the menu if clicked outside of it
   useEffect(() => {
     function handleClickOutside(event) {
       if (
-        show &&
+        popupStatus &&
         popupRef.current &&
         !popupRef.current.contains(event.target)
       ) {
@@ -22,7 +21,7 @@ function NuevoProveedor({ hidePopup, show }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [show, hidePopup]);
+  }, [popupStatus, hidePopup]);
   return (
     <div className="modalOverlay">
       <form
@@ -30,7 +29,7 @@ function NuevoProveedor({ hidePopup, show }) {
         className="bg-background p-8 rounded-lg flex flex-col gap-4 md:w-110 lg:w-140"
       >
         <div className="flex justify-between items-center mb-2">
-          <h2 className="mb-0">Agregar un Proveedor</h2>
+          <h2 className="mb-0">Crear un Órden de Compra</h2>
           <IoMdClose
             className="text-light text-2xl md:text-3xl cursor-pointer hover:text-text"
             onClick={() => hidePopup()}
@@ -43,21 +42,12 @@ function NuevoProveedor({ hidePopup, show }) {
         </div>
 
         <div className="popupInputContainer">
-          <label htmlFor="correoProveedor">Email</label>
+          <label htmlFor="correoProveedor">Correo</label>
           <input id="correoProveedor" type="text" className="input" />
         </div>
 
         <div className="popupInputContainer">
           <label htmlFor="telefonoProveedor">Teléfono</label>
-          <input id="telefonoProveedor" type="text" className="input" />
-        </div>
-
-        <div className="popupInputContainer">
-          <label htmlFor="telefonoProveedor">Identificación fiscal</label>
-          <input id="telefonoProveedor" type="text" className="input" />
-        </div>
-        <div className="popupInputContainer">
-          <label htmlFor="telefonoProveedor">Notas</label>
           <input id="telefonoProveedor" type="text" className="input" />
         </div>
 
@@ -73,7 +63,7 @@ function NuevoProveedor({ hidePopup, show }) {
             id="submitButton"
             type="submit"
           >
-            Añadir
+            Crear
           </button>
         </div>
       </form>
@@ -81,4 +71,4 @@ function NuevoProveedor({ hidePopup, show }) {
   );
 }
 
-export default NuevoProveedor;
+export default AgregarFacturaPopup;

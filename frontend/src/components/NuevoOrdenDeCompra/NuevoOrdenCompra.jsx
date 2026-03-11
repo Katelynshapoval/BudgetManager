@@ -29,7 +29,7 @@ function NuevoOrdenDeCompra({ hidePopup, popupStatus }) {
         className="bg-background p-8 rounded-lg flex flex-col gap-4 md:w-110 lg:w-140"
       >
         <div className="flex justify-between items-center mb-2">
-          <h2 className="mb-0">Agregar un Órden de Compra</h2>
+          <h2 className="mb-0">Crear un Órden de Compra</h2>
           <IoMdClose
             className="text-light text-2xl md:text-3xl cursor-pointer hover:text-text"
             onClick={() => hidePopup()}
@@ -63,7 +63,7 @@ function NuevoOrdenDeCompra({ hidePopup, popupStatus }) {
             id="submitButton"
             type="submit"
           >
-            Añadir
+            Crear
           </button>
         </div>
       </form>

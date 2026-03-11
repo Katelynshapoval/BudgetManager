@@ -4,37 +4,73 @@ import DepartmentFilter from "../../components/DepartmentFilter";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
 import NuevoOrdenDeCompra from "../../components/NuevoOrdenDeCompra/NuevoOrdenCompra";
+import AgregarFacturaPopup from "./AgregarFactura";
+import { RiInfoI } from "react-icons/ri";
 
 const ORDENES = [
   {
-    id: "OC-2026-001",
-    department: "Marketing",
-    cantidad: 125000.0,
-    observaciones: "Compra de licencias de software empresarial",
-    fecha: "15/02/2026",
-    facturas: null,
+    purchase_order_id: 1,
+    description:
+      "Adquisición de licencias anuales para herramientas de gestión y colaboración.",
+    order_amount: 125000.0,
+    notes: "Aprobado por dirección de TI.",
+    generated_order_code: "OC-2026-001",
+    investment_plan_code: "INV2026",
+    is_fungible: 0,
+    order_sequence: 1,
+    locked_at: null,
+    order_date: "2026-02-15",
+    supplier_id: 2,
+    budget_id: 5,
+    created_by: 1,
+    created_at: "2026-02-15 10:30:00",
+    updated_at: "2026-02-15 10:30:00",
+    facturas: [],
   },
   {
-    id: "OC-2026-002",
-    department: "Recursos Humanos",
-    cantidad: 89500.0,
-    observaciones: "Servicios de consultoría tecnológica",
-    fecha: "20/02/2026",
-    facturas: null,
+    purchase_order_id: 2,
+    description:
+      "Contratación de consultoría externa para modernización de infraestructura digital.",
+    order_amount: 89500.0,
+    notes: "Proyecto estratégico de transformación digital.",
+    generated_order_code: "OC-2026-002",
+    investment_plan_code: "INV2026",
+    is_fungible: 0,
+    order_sequence: 2,
+    locked_at: null,
+    order_date: "2026-02-20",
+    supplier_id: 4,
+    budget_id: 3,
+    created_by: 1,
+    created_at: "2026-02-20 09:15:00",
+    updated_at: "2026-02-20 09:15:00",
+    facturas: [{ lol: 100 }],
   },
   {
-    id: "OC-2026-003",
-    department: "Ingeneria",
-    cantidad: 45000.0,
-    observaciones: "Equipamiento de oficina",
-    fecha: "28/02/2026",
-    facturas: null,
+    purchase_order_id: 3,
+    description:
+      "Compra de mobiliario y equipo para nuevas estaciones de trabajo.",
+    order_amount: 45000.0,
+    notes: "Incluye escritorios ergonómicos y sillas.",
+    generated_order_code: "OC-2026-003",
+    investment_plan_code: "INV2026",
+    is_fungible: 1,
+    order_sequence: 3,
+    locked_at: null,
+    order_date: "2026-02-28",
+    supplier_id: 3,
+    budget_id: 2,
+    created_by: 1,
+    created_at: "2026-02-28 14:45:00",
+    updated_at: "2026-02-28 14:45:00",
+    facturas: [{ lol: 100 }, { o: 100 }],
   },
 ];
 
 function Ordenes() {
   const [search, setSearch] = useState("");
   const [addOrdenShow, setAddOrdenShow] = useState(false);
+  const [addInvoiceShow, setAddInvoiceShow] = useState(false);
   const [filter, setFilter] = useState("");
 
   return (
@@ -44,6 +80,12 @@ function Ordenes() {
         <NuevoOrdenDeCompra
           hidePopup={() => setAddOrdenShow(false)}
           popupStatus={addOrdenShow}
+        />
+      )}
+      {addInvoiceShow && (
+        <AgregarFacturaPopup
+          hidePopup={() => setAddInvoiceShow(false)}
+          popupStatus={addInvoiceShow}
         />
       )}
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
@@ -75,10 +117,12 @@ function Ordenes() {
         <table className="table">
           <thead>
             <tr>
-              <th>Departamento</th>
-              <th>Asignado</th>
-              <th>Gastado</th>
-              <th>Disponible</th>
+              <th>Tipo</th>
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Importe</th>
+              <th>Facturas</th>
+              <th>Fecha </th>
               <th className="actionCell">Acciones</th>
             </tr>
           </thead>
@@ -86,12 +130,23 @@ function Ordenes() {
             {ORDENES.filter((row) => !filter || row.department === filter).map(
               (row) => (
                 <tr key={row.id}>
-                  <td>{row.id}</td>
-                  <td>{EUR.format(row.cantidad)}</td>
-                  <td>{row.observaciones}</td>
-                  <td>{row.facturas}</td>
+                  <td>tipo</td>
+                  <td>{row.generated_order_code}</td>
+                  <td>{row.description}</td>
+                  <td>{EUR.format(row.order_amount)}</td>
+                  <td>
+                    {row.facturas.length === 0 ? (
+                      <button className="addInvoice">Agregar factura</button>
+                    ) : (
+                      <button className="viewInvoice">
+                        {row.facturas.length} facturas
+                      </button>
+                    )}
+                  </td>
+                  <td>{row.order_date}</td>
                   <td className="actionCell">
                     <RiEditLine className="tableActionIcon" />
+                    <RiInfoI className="tableActionIcon" />
                   </td>
                 </tr>
               ),

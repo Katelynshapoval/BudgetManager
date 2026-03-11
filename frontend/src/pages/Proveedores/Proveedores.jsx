@@ -10,41 +10,57 @@ const PROVEEDORES = [
     name: "Sistemas Corporativos S.A.",
     email: "contacto@sistemascorp.com",
     phone: "+52 55 1234 5678",
+    taxId: "RFC: SCO010203AB1",
+    notes: "Proveedor de soluciones ERP y soporte técnico empresarial.",
   },
   {
     name: "Tech Solutions México",
     email: "ventas@techsolutions.mx",
     phone: "+52 55 8765 4321",
+    taxId: "TSM040506CD2",
+    notes: "Especialistas en infraestructura tecnológica y redes.",
   },
   {
     name: "Oficina Global",
     email: "info@oficinaglobal.com",
     phone: "+52 55 2468 1357",
+    taxId: "OGL070809EF3",
+    notes: "Distribuidor de material de oficina y mobiliario corporativo.",
   },
   {
     name: "Servicios Integrales Pro",
     email: "servicios@integralespro.mx",
     phone: "+52 55 9876 5432",
+    taxId: "SIP100112GH4",
+    notes: "Servicios de mantenimiento y soporte administrativo.",
   },
   {
     name: "Distribuidora Nacional",
     email: "admin@distribuidoranacional.com",
     phone: "+52 55 3691 2580",
+    taxId: "DNA130415IJ5",
+    notes: "Proveedor mayorista de suministros industriales.",
   },
   {
     name: "Consultoría Empresarial",
     email: "contacto@consultoriaempresarial.mx",
     phone: "+52 55 7531 9514",
+    taxId: "CEM160718KL6",
+    notes: "Consultoría en estrategia empresarial y gestión financiera.",
   },
   {
     name: "Suministros Industriales",
     email: "ventas@suministrosindustriales.com",
     phone: "+52 55 1592 7538",
+    taxId: "SIN190921MN7",
+    notes: "Venta de herramientas y equipo industrial.",
   },
   {
     name: "Tecnología Avanzada",
     email: "info@tecavanzada.mx",
     phone: "+52 55 9517 5362",
+    taxId: "TAV220324OP8",
+    notes: "Proveedor de hardware, software y soluciones en la nube.",
   },
 ];
 
@@ -95,6 +111,8 @@ function Proveedor() {
               <th>Nombre</th>
               <th>Email</th>
               <th>Teléfono</th>
+              <th>Identificación fiscal</th>
+              <th>Notas</th>
               <th className="actionCell">Acciones</th>
             </tr>
           </thead>
@@ -104,6 +122,8 @@ function Proveedor() {
                 <td>{p.name}</td>
                 <td>{p.email}</td>
                 <td>{p.phone}</td>
+                <td>{p.taxId}</td>
+                <td>{p.notes}</td>
                 <td className="actionCell">
                   <RiEditLine className="tableActionIcon" />
                   <MdDeleteOutline className="tableActionIcon" />

@@ -53,7 +53,7 @@
 
   /* Tables */
   table {
-    @apply w-full lg:table-fixed border-collapse text-left mt-8;
+    @apply w-full border-collapse text-left mt-8;
   }
 
   thead tr {
@@ -161,5 +161,13 @@
   }
   .popupButton {
     @apply px-6 py-2 border rounded-lg text-sm md:text-base cursor-pointer transition-all duration-150 ease-in-out;
+  }
+
+  /* Invoices buttons */
+  .addInvoice {
+    @apply cursor-pointer bg-secondary text-xs md:text-sm rounded-md p-2 border border-primary text-primary hover:opacity-90 hover:text-text hover:border-text;
+  }
+  .viewInvoice {
+    @apply cursor-pointer bg-accent text-xs md:text-sm rounded-md p-2 border border-primary text-text hover:opacity-90;
   }
 }
