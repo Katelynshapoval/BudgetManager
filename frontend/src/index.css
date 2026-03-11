@@ -165,9 +165,9 @@
 
   /* Invoices buttons */
   .addInvoice {
-    @apply cursor-pointer bg-secondary text-xs md:text-sm rounded-md p-2 border border-primary text-primary hover:opacity-90 hover:text-text hover:border-text;
+    @apply cursor-pointer bg-secondary text-xs md:text-sm rounded-lg p-2 border border-primary text-primary hover:opacity-90 hover:text-text hover:border-text;
   }
   .viewInvoice {
-    @apply cursor-pointer bg-accent text-xs md:text-sm rounded-md p-2 border border-primary text-text hover:opacity-90;
+    @apply cursor-pointer bg-accent text-xs md:text-sm rounded-lg p-2 border border-primary text-text hover:opacity-90;
   }
 }

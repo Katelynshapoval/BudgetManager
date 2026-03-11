@@ -4,8 +4,8 @@ import DepartmentFilter from "../../components/DepartmentFilter";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
 import NuevoOrdenDeCompra from "../../components/NuevoOrdenDeCompra/NuevoOrdenCompra";
-import AgregarFacturaPopup from "./AgregarFactura";
 import { RiInfoI } from "react-icons/ri";
+import AgregarFacturaPopup from "../../components/AgregarFactura/AgregarFacturaPopup";
 
 const ORDENES = [
   {
@@ -44,7 +44,7 @@ const ORDENES = [
     created_by: 1,
     created_at: "2026-02-20 09:15:00",
     updated_at: "2026-02-20 09:15:00",
-    facturas: [{ lol: 100 }],
+    facturas: [{ file: "lol", amount: 1000 }],
   },
   {
     purchase_order_id: 3,
@@ -63,7 +63,10 @@ const ORDENES = [
     created_by: 1,
     created_at: "2026-02-28 14:45:00",
     updated_at: "2026-02-28 14:45:00",
-    facturas: [{ lol: 100 }, { o: 100 }],
+    facturas: [
+      { file: "lol", amount: 1000 },
+      { file: "ll", amount: 222 },
+    ],
   },
 ];
 
@@ -71,6 +74,7 @@ function Ordenes() {
   const [search, setSearch] = useState("");
   const [addOrdenShow, setAddOrdenShow] = useState(false);
   const [addInvoiceShow, setAddInvoiceShow] = useState(false);
+  const [selectedOrden, setSelectedOrden] = useState(null);
   const [filter, setFilter] = useState("");
 
   return (
@@ -86,6 +90,7 @@ function Ordenes() {
         <AgregarFacturaPopup
           hidePopup={() => setAddInvoiceShow(false)}
           popupStatus={addInvoiceShow}
+          data={selectedOrden.facturas}
         />
       )}
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
@@ -107,7 +112,10 @@ function Ordenes() {
           />
           <button
             className="addNewButton"
-            onClick={() => setAddOrdenShow(true)}
+            onClick={() => {
+              setAddOrdenShow(true);
+              setSelectedOrden(row);
+            }}
           >
             Crear orden de compra
           </button>
@@ -135,13 +143,19 @@ function Ordenes() {
                   <td>{row.description}</td>
                   <td>{EUR.format(row.order_amount)}</td>
                   <td>
-                    {row.facturas.length === 0 ? (
-                      <button className="addInvoice">Agregar factura</button>
-                    ) : (
-                      <button className="viewInvoice">
-                        {row.facturas.length} facturas
-                      </button>
-                    )}
+                    <button
+                      className={
+                        row.facturas.length === 0 ? "addInvoice" : "viewInvoice"
+                      }
+                      onClick={() => {
+                        setSelectedOrden(row);
+                        setAddInvoiceShow(true);
+                      }}
+                    >
+                      {row.facturas.length === 0
+                        ? "Agregar factura"
+                        : `${row.facturas.length} facturas`}
+                    </button>
                   </td>
                   <td>{row.order_date}</td>
                   <td className="actionCell">
