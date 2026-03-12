@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { IoAddOutline } from "react-icons/io5";
-import { RiEditLine } from "react-icons/ri";
 import { MdDeleteOutline } from "react-icons/md";
+import { RiEditLine } from "react-icons/ri";
+
 import NuevoProveedor from "../../components/NuevoProveedor/NuevoProveedor";
-import { useState } from "react";
 
 const PROVEEDORES = [
   {
@@ -64,6 +65,46 @@ const PROVEEDORES = [
   },
 ];
 
+const COLUMN_HEADERS = [
+  "Nombre",
+  "Email",
+  "Teléfono",
+  "Identificación fiscal",
+  "Notas",
+];
+
+const TOTAL_COLUMNS = COLUMN_HEADERS.length + 1; // +1 for "Acciones"
+
+// Sub-components
+
+function ProveedorRow({ proveedor }) {
+  return (
+    <tr>
+      <td>{proveedor.name}</td>
+      <td>{proveedor.email}</td>
+      <td>{proveedor.phone}</td>
+      <td>{proveedor.taxId}</td>
+      <td>{proveedor.notes}</td>
+      <td className="actionCell">
+        <RiEditLine className="tableActionIcon" />
+        <MdDeleteOutline className="tableActionIcon" />
+      </td>
+    </tr>
+  );
+}
+
+function EmptyRow() {
+  return (
+    <tr>
+      <td colSpan={TOTAL_COLUMNS} className="text-center text-primary">
+        No se encontraron proveedores
+      </td>
+    </tr>
+  );
+}
+
+// Main component
+
 function Proveedor() {
   const [addProveedorShow, setAddProveedorShow] = useState(false);
   const [search, setSearch] = useState("");
@@ -108,34 +149,19 @@ function Proveedor() {
         <table className="table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Teléfono</th>
-              <th>Identificación fiscal</th>
-              <th>Notas</th>
+              {COLUMN_HEADERS.map((header) => (
+                <th key={header}>{header}</th>
+              ))}
               <th className="actionCell">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {filteredProveedores.map((p) => (
-              <tr key={p.email}>
-                <td>{p.name}</td>
-                <td>{p.email}</td>
-                <td>{p.phone}</td>
-                <td>{p.taxId}</td>
-                <td>{p.notes}</td>
-                <td className="actionCell">
-                  <RiEditLine className="tableActionIcon" />
-                  <MdDeleteOutline className="tableActionIcon" />
-                </td>
-              </tr>
-            ))}
-            {filteredProveedores.length === 0 && (
-              <tr>
-                <td colSpan={4} className="text-center text-primary">
-                  No se encontraron proveedores
-                </td>
-              </tr>
+            {filteredProveedores.length > 0 ? (
+              filteredProveedores.map((p) => (
+                <ProveedorRow key={p.email} proveedor={p} />
+              ))
+            ) : (
+              <EmptyRow />
             )}
           </tbody>
         </table>

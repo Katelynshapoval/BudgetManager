@@ -54,7 +54,6 @@ function AddInvoiceForm({ onCancel }) {
           <span className="text-sm font-medium">Seleccionar archivo...</span>
         </label>
 
-        {/* ✅ FIX: Added accept=".pdf" to restrict to PDF files only */}
         <input id="factura" type="file" accept=".pdf" className="hidden" />
       </div>
 
@@ -62,7 +61,6 @@ function AddInvoiceForm({ onCancel }) {
         <label htmlFor="amount" className="font-normal text-primary">
           Importe de la factura
         </label>
-        {/* ✅ FIX: Added required attribute */}
         <input
           id="amount"
           type="text"
@@ -92,7 +90,6 @@ function AddInvoiceForm({ onCancel }) {
 }
 
 // Hooks
-
 function useClickOutside(ref, isActive, onClose) {
   useEffect(() => {
     function handleClickOutside(event) {

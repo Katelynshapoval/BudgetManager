@@ -1,76 +1,80 @@
-import { IoMdClose } from "react-icons/io";
-import "./NuevoProveedor.css";
 import { useRef, useEffect } from "react";
+import { IoMdClose } from "react-icons/io";
 
-function NuevoProveedor({ hidePopup, show }) {
-  const popupRef = useRef(null);
+// Hooks
 
-  // Close the menu if clicked outside of it
+function useClickOutside(ref, isActive, onClose) {
   useEffect(() => {
     function handleClickOutside(event) {
-      if (
-        show &&
-        popupRef.current &&
-        !popupRef.current.contains(event.target)
-      ) {
-        hidePopup();
+      if (isActive && ref.current && !ref.current.contains(event.target)) {
+        onClose();
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [ref, isActive, onClose]);
+}
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [show, hidePopup]);
+// Constants
+
+const FIELDS = [
+  { id: "nombreProveedor", label: "Nombre", type: "text" },
+  { id: "correoProveedor", label: "Email", type: "email" },
+  { id: "telefonoProveedor", label: "Teléfono", type: "tel" },
+  { id: "fiscalProveedor", label: "Identificación fiscal", type: "text" },
+  { id: "notasProveedor", label: "Notas", type: "text" },
+];
+
+// Sub-components
+
+function FormField({ id, label, type }) {
+  return (
+    <div className="popupInputContainer">
+      <label htmlFor={id}>{label}</label>
+      <input id={id} type={type} className="input" />
+    </div>
+  );
+}
+
+// Main component
+
+function NuevoProveedor({ hidePopup, popupStatus }) {
+  const popupRef = useRef(null);
+
+  useClickOutside(popupRef, popupStatus, hidePopup);
+
   return (
     <div className="modalOverlay">
       <form
         ref={popupRef}
-        className="bg-background p-8 rounded-lg flex flex-col gap-4 md:w-110 lg:w-140"
+        className="flex flex-col gap-4 rounded-lg bg-background p-6 md:p-8 w-80 md:w-110 lg:w-140"
       >
-        <div className="flex justify-between items-center mb-2">
+        {/* Header */}
+        <div className="mb-2 flex items-center justify-between">
           <h2 className="mb-0">Agregar un Proveedor</h2>
           <IoMdClose
-            className="text-light text-2xl md:text-3xl cursor-pointer hover:text-text"
-            onClick={() => hidePopup()}
+            className="cursor-pointer text-2xl text-light hover:text-text md:text-3xl"
+            onClick={hidePopup}
           />
         </div>
 
-        <div className="popupInputContainer">
-          <label htmlFor="nombreProveedor">Nombre</label>
-          <input id="nombreProveedor" type="text" className="input" />
-        </div>
+        {/* Form fields */}
+        {FIELDS.map((field) => (
+          <FormField key={field.id} {...field} />
+        ))}
 
-        <div className="popupInputContainer">
-          <label htmlFor="correoProveedor">Email</label>
-          <input id="correoProveedor" type="text" className="input" />
-        </div>
-
-        <div className="popupInputContainer">
-          <label htmlFor="telefonoProveedor">Teléfono</label>
-          <input id="telefonoProveedor" type="text" className="input" />
-        </div>
-
-        <div className="popupInputContainer">
-          <label htmlFor="telefonoProveedor">Identificación fiscal</label>
-          <input id="telefonoProveedor" type="text" className="input" />
-        </div>
-        <div className="popupInputContainer">
-          <label htmlFor="telefonoProveedor">Notas</label>
-          <input id="telefonoProveedor" type="text" className="input" />
-        </div>
-
-        <div className="flex justify-center md:justify-end gap-4 mt-2">
+        {/* Actions */}
+        <div className="mt-2 flex justify-center gap-4 md:justify-end">
           <button
-            className="popupButton border-primary outline-none text-primary hover:text-accent hover:border-accent"
+            className="popupButton border-primary text-primary outline-none hover:border-accent hover:text-accent"
             type="button"
+            onClick={hidePopup}
           >
             Cancelar
           </button>
           <button
-            className="popupButton border-none outline-none bg-accent text-text hover:bg-primary hover:text-background"
-            id="submitButton"
+            className="popupButton border-none bg-accent text-text outline-none hover:bg-primary hover:text-background"
             type="submit"
           >
             Añadir
