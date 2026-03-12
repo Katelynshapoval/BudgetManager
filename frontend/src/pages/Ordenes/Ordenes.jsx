@@ -98,7 +98,7 @@ function Ordenes() {
       {showDetails && (
         <DetallesOrden
           hidePopup={() => setShowDetails(false)}
-          popupStatus={showDetails}
+          isOpen={showDetails}
           data={selectedOrden}
         />
       )}
@@ -146,7 +146,7 @@ function Ordenes() {
           <tbody>
             {ORDENES.filter((row) => !filter || row.department === filter).map(
               (row) => (
-                <tr key={row.id}>
+                <tr key={row.purchase_order_id}>
                   <td>tipo</td>
                   <td>{row.generated_order_code}</td>
                   <td>{row.description}</td>
@@ -171,7 +171,7 @@ function Ordenes() {
                     <RiEditLine className="tableActionIcon" />
                     <RiInfoI
                       onClick={() => {
-                        showDetails(true);
+                        setShowDetails(true);
                         setSelectedOrden(row);
                       }}
                       className="tableActionIcon"

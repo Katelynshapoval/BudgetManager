@@ -1,0 +1,10 @@
+@reference "../../../index.css";
+
+@layer components {
+  .detailsPopupField {
+    @apply text-sm font-normal;
+  }
+  .detailsPopupField p {
+    @apply text-primary;
+  }
+}
