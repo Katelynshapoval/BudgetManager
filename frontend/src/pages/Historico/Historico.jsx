@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
-import { RiEditLine } from "react-icons/ri";
-import { EUR } from "../../utils/currency";
-import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/NuevoOrdenCompra";
-import { RiInfoI } from "react-icons/ri";
-import AgregarFacturaPopup from "../../components/Popups/AgregarFactura/AgregarFactura";
+import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactura";
 import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
+import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
 
 const ORDENES = [
   {
@@ -70,38 +67,52 @@ const ORDENES = [
     ],
   },
 ];
-
 function Historico() {
   const [search, setSearch] = useState("");
-  const [showDetails, setShowDetails] = useState(false);
-  const [addInvoiceShow, setAddInvoiceShow] = useState(false);
-  const [selectedOrden, setSelectedOrden] = useState(null);
   const [filter, setFilter] = useState("");
+
+  const [addInvoiceShow, setAddInvoiceShow] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+
+  const [selectedOrden, setSelectedOrden] = useState(null);
+
+  const filteredOrdenes = ORDENES.filter((row) => {
+    const matchesSearch =
+      row.description.toLowerCase().includes(search.toLowerCase()) ||
+      row.generated_order_code.toLowerCase().includes(search.toLowerCase());
+
+    const matchesDepartment = !filter || row.department === filter;
+
+    return matchesSearch && matchesDepartment;
+  });
 
   return (
     <div className="page">
       <h1>Histórico de Órdenes de Compra</h1>
-      {addInvoiceShow && (
-        <AgregarFacturaPopup
+
+      {addInvoiceShow && selectedOrden && (
+        <AgregarFactura
           hidePopup={() => setAddInvoiceShow(false)}
-          popupStatus={addInvoiceShow}
+          isOpen={addInvoiceShow}
           data={selectedOrden.facturas}
           hide={true}
         />
       )}
-      {showDetails && (
+
+      {showDetails && selectedOrden && (
         <DetallesOrden
           hidePopup={() => setShowDetails(false)}
           isOpen={showDetails}
           data={selectedOrden}
         />
       )}
+
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
         <div className="order-2 md:order-1 md:max-w-full lg:max-w-100 searchBar">
           <CiSearch className="search-icon iconProveedores" />
           <input
             type="text"
-            placeholder="Buscar por nombre"
+            placeholder="Buscar por nombre o código"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -115,56 +126,18 @@ function Historico() {
           />
         </div>
       </div>
-      <div className="hideHorizontalScroll">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Código</th>
-              <th>Descripción</th>
-              <th>Importe</th>
-              <th>Facturas</th>
-              <th>Fecha </th>
-              <th className="actionCell">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ORDENES.filter((row) => !filter || row.department === filter).map(
-              (row) => (
-                <tr key={row.id}>
-                  <td>tipo</td>
-                  <td>{row.generated_order_code}</td>
-                  <td>{row.description}</td>
-                  <td>{EUR.format(row.order_amount)}</td>
-                  <td>
-                    <button
-                      className={
-                        row.facturas.length === 0 ? "addInvoice" : "viewInvoice"
-                      }
-                      onClick={() => {
-                        setSelectedOrden(row);
-                        setAddInvoiceShow(true);
-                      }}
-                    >
-                      {`${row.facturas.length} facturas`}
-                    </button>
-                  </td>
-                  <td>{row.order_date}</td>
-                  <td className="actionCell">
-                    <RiInfoI
-                      onClick={() => {
-                        setShowDetails(true);
-                        setSelectedOrden(row);
-                      }}
-                      className="tableActionIcon"
-                    />
-                  </td>
-                </tr>
-              ),
-            )}
-          </tbody>
-        </table>
-      </div>
+
+      <OrdenesTable
+        ordenes={filteredOrdenes}
+        onInvoices={(row) => {
+          setSelectedOrden(row);
+          setAddInvoiceShow(true);
+        }}
+        onViewDetails={(row) => {
+          setSelectedOrden(row);
+          setShowDetails(true);
+        }}
+      />
     </div>
   );
 }

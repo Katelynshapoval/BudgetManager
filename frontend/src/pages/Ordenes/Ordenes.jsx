@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
-import { RiEditLine } from "react-icons/ri";
-import { EUR } from "../../utils/currency";
 import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/NuevoOrdenCompra";
-import { RiInfoI } from "react-icons/ri";
 import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactura";
 import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
+import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
 
 const ORDENES = [
   {
@@ -73,41 +71,57 @@ const ORDENES = [
 
 function Ordenes() {
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("");
+
   const [addOrdenShow, setAddOrdenShow] = useState(false);
   const [addInvoiceShow, setAddInvoiceShow] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+
   const [selectedOrden, setSelectedOrden] = useState(null);
-  const [filter, setFilter] = useState("");
+
+  const filteredOrdenes = ORDENES.filter((row) => {
+    const matchesSearch =
+      row.description.toLowerCase().includes(search.toLowerCase()) ||
+      row.generated_order_code.toLowerCase().includes(search.toLowerCase());
+
+    const matchesDepartment = !filter || row.department === filter;
+
+    return matchesSearch && matchesDepartment;
+  });
 
   return (
     <div className="page">
       <h1>Panel de Órdenes de Compra</h1>
+
       {addOrdenShow && (
         <NuevoOrdenDeCompra
           hidePopup={() => setAddOrdenShow(false)}
           isOpen={addOrdenShow}
         />
       )}
-      {addInvoiceShow && (
+
+      {addInvoiceShow && selectedOrden && (
         <AgregarFactura
           hidePopup={() => setAddInvoiceShow(false)}
           isOpen={addInvoiceShow}
           data={selectedOrden.facturas}
         />
       )}
-      {showDetails && (
+
+      {showDetails && selectedOrden && (
         <DetallesOrden
           hidePopup={() => setShowDetails(false)}
           isOpen={showDetails}
           data={selectedOrden}
         />
       )}
+
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
         <div className="order-2 md:order-1 md:max-w-full lg:max-w-100 searchBar">
           <CiSearch className="search-icon iconProveedores" />
           <input
             type="text"
-            placeholder="Buscar por nombre"
+            placeholder="Buscar por nombre o código"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -119,70 +133,28 @@ function Ordenes() {
             value={filter}
             onChange={setFilter}
           />
+
           <button
             className="addNewButton"
-            onClick={() => {
-              setAddOrdenShow(true);
-              setSelectedOrden(row);
-            }}
+            onClick={() => setAddOrdenShow(true)}
           >
             Crear orden de compra
           </button>
         </div>
       </div>
-      <div className="hideHorizontalScroll">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Tipo</th>
-              <th>Código</th>
-              <th>Descripción</th>
-              <th>Importe</th>
-              <th>Facturas</th>
-              <th>Fecha </th>
-              <th className="actionCell">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ORDENES.filter((row) => !filter || row.department === filter).map(
-              (row) => (
-                <tr key={row.purchase_order_id}>
-                  <td>tipo</td>
-                  <td>{row.generated_order_code}</td>
-                  <td>{row.description}</td>
-                  <td>{EUR.format(row.order_amount)}</td>
-                  <td>
-                    <button
-                      className={
-                        row.facturas.length === 0 ? "addInvoice" : "viewInvoice"
-                      }
-                      onClick={() => {
-                        setSelectedOrden(row);
-                        setAddInvoiceShow(true);
-                      }}
-                    >
-                      {row.facturas.length === 0
-                        ? "Agregar factura"
-                        : `${row.facturas.length} facturas`}
-                    </button>
-                  </td>
-                  <td>{row.order_date}</td>
-                  <td className="actionCell">
-                    <RiEditLine className="tableActionIcon" />
-                    <RiInfoI
-                      onClick={() => {
-                        setShowDetails(true);
-                        setSelectedOrden(row);
-                      }}
-                      className="tableActionIcon"
-                    />
-                  </td>
-                </tr>
-              ),
-            )}
-          </tbody>
-        </table>
-      </div>
+
+      <OrdenesTable
+        ordenes={filteredOrdenes}
+        showEdit={true}
+        onInvoices={(row) => {
+          setSelectedOrden(row);
+          setAddInvoiceShow(true);
+        }}
+        onViewDetails={(row) => {
+          setSelectedOrden(row);
+          setShowDetails(true);
+        }}
+      />
     </div>
   );
 }
