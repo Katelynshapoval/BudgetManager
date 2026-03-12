@@ -19,7 +19,7 @@ function Modal({
       <form
         ref={ref}
         onSubmit={onSubmit}
-        className="bg-background p-8 rounded-lg flex flex-col gap-4 md:w-110 lg:w-140"
+        className="bg-background p-8 rounded-lg flex flex-col gap-4 w-90 md:w-110 lg:w-140"
       >
         <div className="flex justify-between items-center mb-2">
           <h2 className="mb-0">{title}</h2>

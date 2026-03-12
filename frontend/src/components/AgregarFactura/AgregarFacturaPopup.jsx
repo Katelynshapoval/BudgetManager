@@ -3,6 +3,7 @@ import { IoMdClose } from "react-icons/io";
 import { FaRegFileAlt } from "react-icons/fa";
 import { RiEditLine } from "react-icons/ri";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
+import { useLocation } from "react-router-dom";
 
 // Sub-components
 
@@ -105,9 +106,10 @@ function useClickOutside(ref, isActive, onClose) {
 
 // Main component
 
-function AgregarFacturaPopup({ hidePopup, popupStatus, data }) {
+function AgregarFacturaPopup({ hidePopup, popupStatus, data, hide }) {
   const popupRef = useRef(null);
   const [showAddFile, setShowAddFile] = useState(false);
+  const isHistorico = hide ? true : false;
 
   useClickOutside(popupRef, popupStatus, hidePopup);
 
@@ -130,17 +132,21 @@ function AgregarFacturaPopup({ hidePopup, popupStatus, data }) {
         <InvoiceList invoices={data} />
 
         {/* Upload button / Add form */}
-        {showAddFile ? (
-          <AddInvoiceForm onCancel={() => setShowAddFile(false)} />
-        ) : (
-          <button
-            type="button"
-            className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-primary bg-secondary p-3 text-sm transition-all duration-150 hover:bg-accent"
-            onClick={() => setShowAddFile(true)}
-          >
-            <MdOutlineFileUpload className="text-xl" />
-            Subir nueva factura
-          </button>
+        {!isHistorico && (
+          <>
+            {showAddFile ? (
+              <AddInvoiceForm onCancel={() => setShowAddFile(false)} />
+            ) : (
+              <button
+                type="button"
+                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-primary bg-secondary p-3 text-sm transition-all duration-150 hover:bg-accent"
+                onClick={() => setShowAddFile(true)}
+              >
+                <MdOutlineFileUpload className="text-xl" />
+                Subir nueva factura
+              </button>
+            )}
+          </>
         )}
       </form>
     </div>

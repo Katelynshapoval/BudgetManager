@@ -1,9 +1,9 @@
 import { useState } from "react";
-// import "./App.css";
 import Login from "./pages/Login/Login";
 import Proveedores from "./pages/Proveedores/Proveedores";
 import Presupuesto from "./pages/Presupuesto/Presupuesto";
 import Ordenes from "./pages/Ordenes/Ordenes";
+import Historico from "./pages/Historico/Historico";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
 
@@ -16,6 +16,7 @@ function App() {
           <Route index element={<Presupuesto />} />
           <Route path="/dashboard/proveedores" element={<Proveedores />} />
           <Route path="/dashboard/ordenes" element={<Ordenes />} />
+          <Route path="/dashboard/historico" element={<Historico />} />
         </Route>
       </Routes>
     </Router>
