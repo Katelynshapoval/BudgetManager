@@ -1,6 +1,6 @@
 import "./Presupuesto.css";
 import Accordion from "../../components/Accordion/Accordion";
-import DepartmentFilter from "../../components/DepartmentFilter";
+import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import { useState } from "react";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";

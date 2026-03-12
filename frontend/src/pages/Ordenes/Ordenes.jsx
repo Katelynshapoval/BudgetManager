@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import DepartmentFilter from "../../components/DepartmentFilter";
+import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
 import NuevoOrdenDeCompra from "../../components/NuevoOrdenDeCompra/NuevoOrdenCompra";
@@ -83,7 +83,7 @@ function Ordenes() {
       {addOrdenShow && (
         <NuevoOrdenDeCompra
           hidePopup={() => setAddOrdenShow(false)}
-          popupStatus={addOrdenShow}
+          isOpen={addOrdenShow}
         />
       )}
       {addInvoiceShow && (

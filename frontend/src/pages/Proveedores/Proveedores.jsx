@@ -120,7 +120,7 @@ function Proveedor() {
       {addProveedorShow && (
         <NuevoProveedor
           hidePopup={() => setAddProveedorShow(false)}
-          popupStatus={addProveedorShow}
+          isOpen={addProveedorShow}
         />
       )}
 
