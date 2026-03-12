@@ -1,9 +1,8 @@
 import { useRef, useEffect, useState } from "react";
-import { IoMdClose } from "react-icons/io";
 import { FaRegFileAlt } from "react-icons/fa";
 import { RiEditLine } from "react-icons/ri";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
-import { useLocation } from "react-router-dom";
+import Modal from "../../Modal/Modal";
 
 // Sub-components
 
@@ -90,67 +89,40 @@ function AddInvoiceForm({ onCancel }) {
   );
 }
 
-// Hooks
-function useClickOutside(ref, isActive, onClose) {
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (isActive && ref.current && !ref.current.contains(event.target)) {
-        onClose();
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [ref, isActive, onClose]);
-}
-
 // Main component
-
-function AgregarFacturaPopup({ hidePopup, popupStatus, data, hide }) {
-  const popupRef = useRef(null);
+function AgregarFactura({ hidePopup, isOpen, data, hide }) {
   const [showAddFile, setShowAddFile] = useState(false);
   const isHistorico = hide ? true : false;
 
-  useClickOutside(popupRef, popupStatus, hidePopup);
-
   return (
-    <div className="modalOverlay">
-      <form
-        ref={popupRef}
-        className="flex w-85 flex-col gap-6 rounded-lg bg-background p-8 shadow-lg md:w-110 lg:w-140"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Facturas</h2>
-          <IoMdClose
-            className="cursor-pointer text-2xl text-light transition hover:text-text md:text-3xl"
-            onClick={hidePopup}
-          />
-        </div>
+    <Modal
+      title="Facturas"
+      onClose={hidePopup}
+      isOpen={isOpen}
+      footer={null} // removes default footer
+    >
+      {/* Invoice list */}
+      <InvoiceList invoices={data} />
 
-        {/* Invoice list */}
-        <InvoiceList invoices={data} />
-
-        {/* Upload button / Add form */}
-        {!isHistorico && (
-          <>
-            {showAddFile ? (
-              <AddInvoiceForm onCancel={() => setShowAddFile(false)} />
-            ) : (
-              <button
-                type="button"
-                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-primary bg-secondary p-3 text-sm transition-all duration-150 hover:bg-accent"
-                onClick={() => setShowAddFile(true)}
-              >
-                <MdOutlineFileUpload className="text-xl" />
-                Subir nueva factura
-              </button>
-            )}
-          </>
-        )}
-      </form>
-    </div>
+      {/* Upload button / Add form */}
+      {!isHistorico && (
+        <>
+          {showAddFile ? (
+            <AddInvoiceForm onCancel={() => setShowAddFile(false)} />
+          ) : (
+            <button
+              type="button"
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-primary bg-secondary p-3 text-sm transition-all duration-150 hover:bg-accent"
+              onClick={() => setShowAddFile(true)}
+            >
+              <MdOutlineFileUpload className="text-xl" />
+              Subir nueva factura
+            </button>
+          )}
+        </>
+      )}
+    </Modal>
   );
 }
 
-export default AgregarFacturaPopup;
+export default AgregarFactura;

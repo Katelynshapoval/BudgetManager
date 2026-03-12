@@ -3,9 +3,10 @@ import { CiSearch } from "react-icons/ci";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
-import NuevoOrdenDeCompra from "../../components/NuevoOrdenDeCompra/NuevoOrdenCompra";
+import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/NuevoOrdenCompra";
 import { RiInfoI } from "react-icons/ri";
-import AgregarFacturaPopup from "../../components/AgregarFactura/AgregarFacturaPopup";
+import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactura";
+import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
 
 const ORDENES = [
   {
@@ -74,6 +75,7 @@ function Ordenes() {
   const [search, setSearch] = useState("");
   const [addOrdenShow, setAddOrdenShow] = useState(false);
   const [addInvoiceShow, setAddInvoiceShow] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [selectedOrden, setSelectedOrden] = useState(null);
   const [filter, setFilter] = useState("");
 
@@ -87,10 +89,17 @@ function Ordenes() {
         />
       )}
       {addInvoiceShow && (
-        <AgregarFacturaPopup
+        <AgregarFactura
           hidePopup={() => setAddInvoiceShow(false)}
-          popupStatus={addInvoiceShow}
+          isOpen={addInvoiceShow}
           data={selectedOrden.facturas}
+        />
+      )}
+      {showDetails && (
+        <DetallesOrden
+          hidePopup={() => setShowDetails(false)}
+          popupStatus={showDetails}
+          data={selectedOrden}
         />
       )}
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
@@ -160,7 +169,13 @@ function Ordenes() {
                   <td>{row.order_date}</td>
                   <td className="actionCell">
                     <RiEditLine className="tableActionIcon" />
-                    <RiInfoI className="tableActionIcon" />
+                    <RiInfoI
+                      onClick={() => {
+                        showDetails(true);
+                        setSelectedOrden(row);
+                      }}
+                      className="tableActionIcon"
+                    />
                   </td>
                 </tr>
               ),

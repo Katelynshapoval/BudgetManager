@@ -3,9 +3,9 @@ import { CiSearch } from "react-icons/ci";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
-import NuevoOrdenDeCompra from "../../components/NuevoOrdenDeCompra/NuevoOrdenCompra";
+import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/NuevoOrdenCompra";
 import { RiInfoI } from "react-icons/ri";
-import AgregarFacturaPopup from "../../components/AgregarFactura/AgregarFacturaPopup";
+import AgregarFacturaPopup from "../../components/Popups/AgregarFactura/AgregarFactura";
 
 const ORDENES = [
   {

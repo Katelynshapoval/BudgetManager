@@ -4,7 +4,7 @@ import { IoAddOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
 import { RiEditLine } from "react-icons/ri";
 
-import NuevoProveedor from "../../components/NuevoProveedor/NuevoProveedor";
+import NuevoProveedor from "../../components/Popups/NuevoProveedor/NuevoProveedor";
 
 const PROVEEDORES = [
   {

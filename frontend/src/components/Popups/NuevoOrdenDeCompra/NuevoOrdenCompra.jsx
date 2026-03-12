@@ -1,4 +1,4 @@
-import Modal from "../Modal/Modal";
+import Modal from "../../Modal/Modal";
 
 function NuevoOrdenDeCompra({ hidePopup, isOpen }) {
   return (
