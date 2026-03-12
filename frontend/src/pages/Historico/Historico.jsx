@@ -6,6 +6,7 @@ import { EUR } from "../../utils/currency";
 import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/NuevoOrdenCompra";
 import { RiInfoI } from "react-icons/ri";
 import AgregarFacturaPopup from "../../components/Popups/AgregarFactura/AgregarFactura";
+import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
 
 const ORDENES = [
   {
@@ -72,7 +73,7 @@ const ORDENES = [
 
 function Historico() {
   const [search, setSearch] = useState("");
-  const [addOrdenShow, setAddOrdenShow] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [addInvoiceShow, setAddInvoiceShow] = useState(false);
   const [selectedOrden, setSelectedOrden] = useState(null);
   const [filter, setFilter] = useState("");
@@ -86,6 +87,13 @@ function Historico() {
           popupStatus={addInvoiceShow}
           data={selectedOrden.facturas}
           hide={true}
+        />
+      )}
+      {showDetails && (
+        <DetallesOrden
+          hidePopup={() => setShowDetails(false)}
+          isOpen={showDetails}
+          data={selectedOrden}
         />
       )}
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
@@ -143,7 +151,13 @@ function Historico() {
                   </td>
                   <td>{row.order_date}</td>
                   <td className="actionCell">
-                    <RiInfoI className="tableActionIcon" />
+                    <RiInfoI
+                      onClick={() => {
+                        setShowDetails(true);
+                        setSelectedOrden(row);
+                      }}
+                      className="tableActionIcon"
+                    />
                   </td>
                 </tr>
               ),
