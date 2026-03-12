@@ -37,7 +37,7 @@ function OrdenesTable({
                   }
                   onClick={() => onInvoices(row)}
                 >
-                  {row.facturas.length === 0
+                  {row.facturas.length === 0 && showEdit
                     ? "Agregar factura"
                     : `${row.facturas.length} facturas`}
                 </button>
