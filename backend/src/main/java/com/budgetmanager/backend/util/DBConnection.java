@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+// Utility class for creating DB connections
 public class DBConnection {
 
     private static final String URL =
@@ -12,16 +13,17 @@ public class DBConnection {
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
+    // Returns a connection to the database
     public static Connection getConnection() {
-        Connection conn = null;
-
         try {
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Database connected successfully!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            // Load MySQL driver (required for Tomcat)
+            Class.forName("com.mysql.cj.jdbc.Driver");
 
-        return conn;
+            // Create and return connection
+            return DriverManager.getConnection(URL, USER, PASSWORD);
+
+        } catch (Exception e) {
+            throw new RuntimeException("DB connection failed", e);
+        }
     }
 }
