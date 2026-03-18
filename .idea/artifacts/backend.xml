@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="backend">
+    <output-path>$PROJECT_DIR$/out/artifacts/backend</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="BudgetManager" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$PROJECT_DIR$/backend/lib/mysql-connector-j-8.2.0.jar" />
+        </element>
+      </element>
+      <element id="dir-copy" path="$PROJECT_DIR$/backend/src/main/webapp" />
+    </root>
+  </artifact>
+</component>
