@@ -25,6 +25,7 @@ public class SupplierServlet extends HttpServlet {
 
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
+        resp.setHeader("Access-Control-Allow-Origin", "*");
         String json = gson.toJson(suppliers);
 
         // Send response

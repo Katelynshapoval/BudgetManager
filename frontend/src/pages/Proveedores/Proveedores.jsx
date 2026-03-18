@@ -1,69 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { IoAddOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
 import { RiEditLine } from "react-icons/ri";
 
 import NuevoProveedor from "../../components/Popups/NuevoProveedor/NuevoProveedor";
-
-const PROVEEDORES = [
-  {
-    name: "Sistemas Corporativos S.A.",
-    email: "contacto@sistemascorp.com",
-    phone: "+52 55 1234 5678",
-    taxId: "RFC: SCO010203AB1",
-    notes: "Proveedor de soluciones ERP y soporte técnico empresarial.",
-  },
-  {
-    name: "Tech Solutions México",
-    email: "ventas@techsolutions.mx",
-    phone: "+52 55 8765 4321",
-    taxId: "TSM040506CD2",
-    notes: "Especialistas en infraestructura tecnológica y redes.",
-  },
-  {
-    name: "Oficina Global",
-    email: "info@oficinaglobal.com",
-    phone: "+52 55 2468 1357",
-    taxId: "OGL070809EF3",
-    notes: "Distribuidor de material de oficina y mobiliario corporativo.",
-  },
-  {
-    name: "Servicios Integrales Pro",
-    email: "servicios@integralespro.mx",
-    phone: "+52 55 9876 5432",
-    taxId: "SIP100112GH4",
-    notes: "Servicios de mantenimiento y soporte administrativo.",
-  },
-  {
-    name: "Distribuidora Nacional",
-    email: "admin@distribuidoranacional.com",
-    phone: "+52 55 3691 2580",
-    taxId: "DNA130415IJ5",
-    notes: "Proveedor mayorista de suministros industriales.",
-  },
-  {
-    name: "Consultoría Empresarial",
-    email: "contacto@consultoriaempresarial.mx",
-    phone: "+52 55 7531 9514",
-    taxId: "CEM160718KL6",
-    notes: "Consultoría en estrategia empresarial y gestión financiera.",
-  },
-  {
-    name: "Suministros Industriales",
-    email: "ventas@suministrosindustriales.com",
-    phone: "+52 55 1592 7538",
-    taxId: "SIN190921MN7",
-    notes: "Venta de herramientas y equipo industrial.",
-  },
-  {
-    name: "Tecnología Avanzada",
-    email: "info@tecavanzada.mx",
-    phone: "+52 55 9517 5362",
-    taxId: "TAV220324OP8",
-    notes: "Proveedor de hardware, software y soluciones en la nube.",
-  },
-];
 
 const COLUMN_HEADERS = [
   "Nombre",
@@ -107,11 +48,19 @@ function EmptyRow() {
 
 function Proveedor() {
   const [addProveedorShow, setAddProveedorShow] = useState(false);
+  const [proveedores, setProveedores] = useState([]);
   const [search, setSearch] = useState("");
 
-  const filteredProveedores = PROVEEDORES.filter((p) =>
+  const filteredProveedores = proveedores.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()),
   );
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/suppliers")
+      .then((res) => res.json())
+      .then((data) => setProveedores(data))
+      .catch((err) => console.error("Error fetching suppliers:", err));
+  }, []);
 
   return (
     <div className="page proveedores">
@@ -158,7 +107,7 @@ function Proveedor() {
           <tbody>
             {filteredProveedores.length > 0 ? (
               filteredProveedores.map((p) => (
-                <ProveedorRow key={p.email} proveedor={p} />
+                <ProveedorRow key={p.supplierId} proveedor={p} />
               ))
             ) : (
               <EmptyRow />
