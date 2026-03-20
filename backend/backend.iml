@@ -11,5 +11,6 @@
     <orderEntry type="library" name="gson-2.13.2" level="project" />
     <orderEntry type="library" name="mysql-connector-j-8.2.0" level="project" />
     <orderEntry type="library" name="jakarta.servlet-api-6.0.0" level="project" />
+    <orderEntry type="library" name="bcrypt-0.10.2" level="project" />
   </component>
 </module>
