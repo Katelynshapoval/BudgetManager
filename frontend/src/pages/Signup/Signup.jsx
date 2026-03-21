@@ -15,6 +15,12 @@ function Signup() {
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
 
+  const roleLabels = {
+    admin: "Admin",
+    jefe_departamento: "Jefe de departamento",
+    contable: "Contable",
+  };
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,7 +72,9 @@ function Signup() {
       formData.append("username", form.username);
       formData.append("password", form.password);
       formData.append("passwordConf", form.passwordConf);
-      formData.append("departmentId", form.department);
+      if (form.department) {
+        formData.append("departmentId", form.department);
+      }
       formData.append("roleId", form.role);
 
       const response = await fetch("http://localhost:8080/api/signup", {
@@ -125,7 +133,6 @@ function Signup() {
               value={form.department}
               onChange={handleChange}
               className="w-full text-sm md:text-base font-normal rounded-lg border border-primary bg-secondary px-3 py-2 md:py-3.5"
-              required
             >
               <option value="">Selecciona un departamento</option>
               {departments.map((d) => (
@@ -150,7 +157,7 @@ function Signup() {
               <option value="">Selecciona un rol</option>
               {roles.map((r) => (
                 <option key={r.roleId} value={r.roleId}>
-                  {r.name}
+                  {roleLabels[r.name]}
                 </option>
               ))}
             </select>

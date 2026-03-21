@@ -52,9 +52,13 @@ public class UserDAO {
 
             // Prepare and execute query
             stmt.setString(1, user.getName());
-            stmt.setString(1, user.getPasswordHash());
-            stmt.setInt(1, user.getRoleId());
-            stmt.setInt(1, user.getDepartmentId());
+            stmt.setString(2, user.getPasswordHash());
+            stmt.setInt(3, user.getRoleId());
+            if (user.getDepartmentId() != null) {
+                stmt.setInt(4, user.getDepartmentId());
+            } else {
+                stmt.setNull(4, java.sql.Types.INTEGER);
+            }
 
             int rowsAffected = stmt.executeUpdate();
 

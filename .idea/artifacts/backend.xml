@@ -11,6 +11,7 @@
           <element id="library" level="project" name="gson-2.13.2" />
           <element id="library" level="project" name="mysql-connector-j-8.2.0" />
           <element id="library" level="project" name="bcrypt-0.10.2" />
+          <element id="library" level="project" name="bytes-1.6.1" />
         </element>
       </element>
     </root>

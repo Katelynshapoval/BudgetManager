@@ -33,7 +33,7 @@ public class SignupServlet extends HttpServlet {
         String roleIdStr = req.getParameter("roleId");
 
         // Validate
-        if (username == null || password == null || passwordConf == null || departmentIdStr == null) {
+        if (username == null || password == null || passwordConf == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseMap.put("error", "Missing required fields");
             resp.getWriter().write(gson.toJson(responseMap));
@@ -46,8 +46,11 @@ public class SignupServlet extends HttpServlet {
             resp.getWriter().write(gson.toJson(responseMap));
             return;
         }
+        Integer departmentId = null;
+        if (departmentIdStr != null && !departmentIdStr.isEmpty()) {
+            departmentId = Integer.parseInt(departmentIdStr);
+        }
 
-        int departmentId = Integer.parseInt(departmentIdStr);
         int roleId = Integer.parseInt(roleIdStr);
 
         // Hash password
