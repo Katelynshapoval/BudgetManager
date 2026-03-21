@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
+import { LuLock, LuUser } from "react-icons/lu";
 
 function Login() {
   const navigate = useNavigate();
@@ -63,31 +64,37 @@ function Login() {
           {/* Username */}
           <div className="inputContainer">
             <label htmlFor="username">Usuario</label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              placeholder="Ingresa tu usuario"
-              className="text-sm md:text-base"
-              value={form.username}
-              onChange={handleChange}
-              required
-            />
+            <div className="inputWithIcon">
+              <LuUser className="inputIcon" />
+              <input
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Ingresa tu usuario"
+                className="inputField"
+                value={form.username}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
           {/* Password */}
           <div className="inputContainer">
             <label htmlFor="password">Contraseña</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Ingresa tu contraseña"
-              className="text-sm md:text-base"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="inputWithIcon">
+              <LuLock className="inputIcon" />
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Ingresa tu contraseña"
+                className="inputField"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
           {/* Buttons */}

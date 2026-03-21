@@ -1,0 +1,15 @@
+@reference "../../index.css";
+
+.inputWithIcon {
+  @apply relative w-full;
+}
+
+.inputIcon {
+  @apply absolute left-3 top-1/2 -translate-y-1/2 text-light text-lg pointer-events-none;
+}
+
+.inputField {
+  @apply w-full rounded-lg border border-primary bg-secondary 
+         pl-10 pr-3 py-2 md:py-3.5 
+         text-sm md:text-base;
+}

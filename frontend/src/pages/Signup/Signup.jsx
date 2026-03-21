@@ -1,5 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { CiUser } from "react-icons/ci";
+import { BsBuildings } from "react-icons/bs";
+import { BsPersonVcard } from "react-icons/bs";
+import { IoShieldCheckmarkOutline } from "react-icons/io5";
+import { MdOutlineLock } from "react-icons/md";
+
+import { LuUser } from "react-icons/lu";
+import { LuBuilding2 } from "react-icons/lu";
+import { LuIdCard } from "react-icons/lu";
+import { LuShieldCheck } from "react-icons/lu";
+import { LuLock } from "react-icons/lu";
+
+import "./Signup.css";
 
 function Signup() {
   const navigate = useNavigate();
@@ -16,9 +29,9 @@ function Signup() {
   const [roles, setRoles] = useState([]);
 
   const roleLabels = {
-    admin: "Admin",
-    jefe_departamento: "Jefe de departamento",
-    contable: "Contable",
+    1: "Admin",
+    2: "Jefe de departamento",
+    3: "Contable",
   };
 
   // Handle input changes
@@ -98,7 +111,7 @@ function Signup() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-9">
-      <div className="flex flex-col gap-7 text-center bg-background shadow-[0_20px_40px_rgba(37,35,35,0.08)] p-12 rounded-2xl max-w-md w-full">
+      <div className="flex flex-col gap-7 text-center bg-background shadow-[0_20px_40px_rgba(37,35,35,0.08)] p-12 rounded-2xl md:w-120">
         <div>
           <h1 className="font-medium text-text text-2xl mb-2 lg:text-3xl">
             Crear la cuenta
@@ -112,85 +125,104 @@ function Signup() {
           {/* Username */}
           <div className="inputContainer">
             <label htmlFor="username">Usuario</label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              placeholder="Ingresa tu usuario"
-              className="text-sm md:text-base"
-              value={form.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
+            <div className="inputWithIcon">
+              <LuUser className="inputIcon" />
 
-          {/* Department */}
-          <div className="inputContainer">
-            <label htmlFor="department">Departamento</label>
-            <select
-              id="department"
-              name="department"
-              value={form.department}
-              onChange={handleChange}
-              className="w-full text-sm md:text-base font-normal rounded-lg border border-primary bg-secondary px-3 py-2 md:py-3.5"
-            >
-              <option value="">Selecciona un departamento</option>
-              {departments.map((d) => (
-                <option key={d.departmentId} value={d.departmentId}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Ingresa tu usuario"
+                className="inputField"
+                value={form.username}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
           {/* Role */}
           <div className="inputContainer">
             <label htmlFor="role">Rol</label>
-            <select
-              id="role"
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              className="w-full text-sm md:text-base font-normal rounded-lg border border-primary bg-secondary px-3 py-2 md:py-3.5"
-              required
-            >
-              <option value="">Selecciona un rol</option>
-              {roles.map((r) => (
-                <option key={r.roleId} value={r.roleId}>
-                  {roleLabels[r.name]}
-                </option>
-              ))}
-            </select>
+            <div className="inputWithIcon">
+              <LuIdCard className="inputIcon" />
+              <select
+                id="role"
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                className="inputField font-light"
+                required
+              >
+                <option value="">Selecciona un rol</option>
+                {roles.map((r) => (
+                  <option key={r.roleId} value={r.roleId}>
+                    {roleLabels[r.roleId]}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+
+          {roleLabels[form.role] == "Jefe de departamento" && (
+            <div className="inputContainer">
+              <label htmlFor="department">Departamento</label>
+              <div className="inputWithIcon">
+                <LuBuilding2 className="inputIcon" />
+                <select
+                  id="department"
+                  name="department"
+                  value={form.department}
+                  onChange={handleChange}
+                  className="font-light inputField"
+                  required
+                >
+                  <option value="">Selecciona un departamento</option>
+                  {departments.map((d) => (
+                    <option key={d.departmentId} value={d.departmentId}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
 
           {/* Password */}
           <div className="inputContainer">
             <label htmlFor="password">Contraseña</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Ingresa tu contraseña"
-              className="text-sm md:text-base"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="inputWithIcon">
+              <LuLock className="inputIcon" />
+
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Ingresa tu contraseña"
+                className="inputField"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
           {/* Confirm Password */}
           <div className="inputContainer">
             <label htmlFor="passwordConf">Confirmar contraseña</label>
-            <input
-              id="passwordConf"
-              name="passwordConf"
-              type="password"
-              placeholder="Confirma tu contraseña"
-              className="text-sm md:text-base"
-              value={form.passwordConf}
-              onChange={handleChange}
-              required
-            />
+            <div className="inputWithIcon">
+              <LuShieldCheck className="inputIcon" />
+              <input
+                id="passwordConf"
+                name="passwordConf"
+                type="password"
+                placeholder="Confirma tu contraseña"
+                className="inputField"
+                value={form.passwordConf}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
           {/* Submit */}
