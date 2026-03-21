@@ -7,8 +7,17 @@ public class User {
     private int roleId;
     private int departmentId;
 
+    // Full constructor (used when reading from DB)
     public User(int userId, String name, String passwordHash, int roleId, int departmentId) {
         this.userId = userId;
+        this.name = name;
+        this.passwordHash = passwordHash;
+        this.roleId = roleId;
+        this.departmentId = departmentId;
+    }
+
+    // Constructor for creating new users (no ID yet)
+    public User(String name, String passwordHash, int roleId, int departmentId) {
         this.name = name;
         this.passwordHash = passwordHash;
         this.roleId = roleId;

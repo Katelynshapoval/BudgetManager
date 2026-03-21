@@ -7,11 +7,13 @@ function Signup() {
   const [form, setForm] = useState({
     username: "",
     department: "",
+    role: "",
     password: "",
     passwordConf: "",
   });
 
   const [departments, setDepartments] = useState([]);
+  const [roles, setRoles] = useState([]);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -34,8 +36,23 @@ function Signup() {
     fetchDepartments();
   }, []);
 
+  // Fetch roles
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/roles");
+        const data = await res.json();
+        setRoles(data);
+      } catch (err) {
+        console.error("Error fetching roles:", err);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
   // Submit handler
-  const handleCreateAccount = (e) => {
+  const handleCreateAccount = async (e) => {
     e.preventDefault();
 
     if (form.password !== form.passwordConf) {
@@ -43,9 +60,32 @@ function Signup() {
       return;
     }
 
-    // fetch("/api/signup", {...})
+    try {
+      // Prepare data for backend
+      const formData = new URLSearchParams();
+      formData.append("username", form.username);
+      formData.append("password", form.password);
+      formData.append("passwordConf", form.passwordConf);
+      formData.append("departmentId", form.department);
+      formData.append("roleId", form.role);
 
-    navigate("/dashboard");
+      const response = await fetch("http://localhost:8080/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Cuenta creada exitosamente!");
+        navigate("/login");
+      } else {
+        alert(data.error || "Error al crear la cuenta");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Error de conexión con el servidor");
+    }
   };
 
   return (
@@ -89,8 +129,28 @@ function Signup() {
             >
               <option value="">Selecciona un departamento</option>
               {departments.map((d) => (
-                <option key={d.departmentId} value={d.name}>
+                <option key={d.departmentId} value={d.departmentId}>
                   {d.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Role */}
+          <div className="inputContainer">
+            <label htmlFor="role">Rol</label>
+            <select
+              id="role"
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              className="w-full text-sm md:text-base font-normal rounded-lg border border-primary bg-secondary px-3 py-2 md:py-3.5"
+              required
+            >
+              <option value="">Selecciona un rol</option>
+              {roles.map((r) => (
+                <option key={r.roleId} value={r.roleId}>
+                  {r.name}
                 </option>
               ))}
             </select>

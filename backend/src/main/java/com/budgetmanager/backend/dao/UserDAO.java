@@ -41,4 +41,28 @@ public class UserDAO {
 
         return user; // not found
     }
+
+    public boolean createUser(User user) {
+        String query = "INSERT INTO users (name, password_hash, role_id, department_id) VALUES (?, ?, ?, ?)";
+
+        try {
+            // Get DB connection
+            Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query);
+
+            // Prepare and execute query
+            stmt.setString(1, user.getName());
+            stmt.setString(1, user.getPasswordHash());
+            stmt.setInt(1, user.getRoleId());
+            stmt.setInt(1, user.getDepartmentId());
+
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
