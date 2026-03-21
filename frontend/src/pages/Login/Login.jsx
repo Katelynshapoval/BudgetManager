@@ -1,37 +1,49 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
       const formData = new URLSearchParams();
-      formData.append("username", username);
-      formData.append("password", password);
+      formData.append("username", form.username);
+      formData.append("password", form.password);
 
       const response = await fetch("http://localhost:8080/api/login", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: formData.toString(),
       });
 
       const data = await response.json();
 
-      if (response.ok) {
-        // Login successful, redirect
-        navigate("/dashboard");
-      } else {
-        // Login failed, show alert
-        alert(data.error);
+      if (!response.ok) {
+        alert(data.error || "Error al iniciar sesión");
+        return;
       }
+
+      // store something (token/session)??
+
+      navigate("/dashboard");
     } catch (error) {
-      console.log(error);
+      console.error("Login error:", error);
+      alert("Error de conexión con el servidor");
     }
   };
 
@@ -46,43 +58,51 @@ function Login() {
             Gestiona tus finanzas con claridad.
           </p>
         </div>
+
         <form className="flex flex-col gap-6" onSubmit={handleLogin}>
+          {/* Username */}
           <div className="inputContainer">
-            <label htmlFor="usuario">Usuario</label>
+            <label htmlFor="username">Usuario</label>
             <input
-              id="usuario"
+              id="username"
+              name="username"
               type="text"
-              className="text-sm md:text-base"
               placeholder="Ingresa tu usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              className="text-sm md:text-base"
+              value={form.username}
+              onChange={handleChange}
               required
             />
           </div>
-          <div className=" inputContainer">
+
+          {/* Password */}
+          <div className="inputContainer">
             <label htmlFor="password">Contraseña</label>
             <input
               id="password"
+              name="password"
               type="password"
               placeholder="Ingresa tu contraseña"
               className="text-sm md:text-base"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={form.password}
+              onChange={handleChange}
               required
             />
           </div>
+
+          {/* Buttons */}
           <div className="mt-2 md:mt-6 flex flex-col gap-4">
             <button
               className="loginPageButton bg-accent hover:bg-[#8f7c66] hover:-translate-y-0.5"
               type="submit"
-              id="signinButton"
             >
               Iniciar Sesión
             </button>
+
             <button
               className="loginPageButton bg-transparent text-primary hover:bg-accent/10 hover:text-accent border border-primary hover:border-accent"
               type="button"
-              id="signupButton"
+              onClick={() => navigate("/signup")}
             >
               Crear Cuenta
             </button>
@@ -92,4 +112,5 @@ function Login() {
     </div>
   );
 }
+
 export default Login;

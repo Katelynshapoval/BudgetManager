@@ -1,17 +1,51 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
-// import "./Login.css";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
-  const [username, setUsername] = useState("");
-  const [departamento, setDepartamento] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConf, setPasswordConf] = useState("");
   const navigate = useNavigate();
-  4;
 
-  const handleCreateAccount = () => {
-    // Login for creating acc
+  const [form, setForm] = useState({
+    username: "",
+    department: "",
+    password: "",
+    passwordConf: "",
+  });
+
+  const [departments, setDepartments] = useState([]);
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Fetch departments
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/departments");
+        const data = await res.json();
+        setDepartments(data);
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
+
+  // Submit handler
+  const handleCreateAccount = (e) => {
+    e.preventDefault();
+
+    if (form.password !== form.passwordConf) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
+
+    // fetch("/api/signup", {...})
+
+    navigate("/dashboard");
   };
 
   return (
@@ -25,75 +59,95 @@ function Signup() {
             Gestiona tus finanzas con claridad.
           </p>
         </div>
+
         <form className="flex flex-col gap-6" onSubmit={handleCreateAccount}>
+          {/* Username */}
           <div className="inputContainer">
-            <label htmlFor="usuario">Usuario</label>
+            <label htmlFor="username">Usuario</label>
             <input
-              id="usuario"
+              id="username"
+              name="username"
               type="text"
-              className="text-sm md:text-base"
               placeholder="Ingresa tu usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              className="text-sm md:text-base"
+              value={form.username}
+              onChange={handleChange}
               required
             />
           </div>
 
+          {/* Department */}
           <div className="inputContainer">
-            <label htmlFor="usuario">Departamento</label>
-            <input
-              id="usuario"
-              type="text"
-              className="text-sm md:text-base"
-              placeholder="Ingresa tu usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+            <label htmlFor="department">Departamento</label>
+            <select
+              id="department"
+              name="department"
+              value={form.department}
+              onChange={handleChange}
+              className="w-full text-sm md:text-base font-normal rounded-lg border border-primary bg-secondary px-3 py-2 md:py-3.5"
               required
-            />
+            >
+              <option value="">Selecciona un departamento</option>
+              {departments.map((d) => (
+                <option key={d.departmentId} value={d.name}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className=" inputContainer">
+
+          {/* Password */}
+          <div className="inputContainer">
             <label htmlFor="password">Contraseña</label>
             <input
               id="password"
+              name="password"
               type="password"
               placeholder="Ingresa tu contraseña"
               className="text-sm md:text-base"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={form.password}
+              onChange={handleChange}
               required
             />
           </div>
-          <div className=" inputContainer">
-            <label htmlFor="password">Confirmar contraseña</label>
+
+          {/* Confirm Password */}
+          <div className="inputContainer">
+            <label htmlFor="passwordConf">Confirmar contraseña</label>
             <input
-              id="password"
+              id="passwordConf"
+              name="passwordConf"
               type="password"
-              placeholder="Ingresa tu contraseña"
+              placeholder="Confirma tu contraseña"
               className="text-sm md:text-base"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={form.passwordConf}
+              onChange={handleChange}
               required
             />
           </div>
-          <div className="mt-2 md:mt-6 flex flex-col gap-4">
+
+          {/* Submit */}
+          <div className="mt-2 md:mt-6">
             <button
-              className="loginPageButton bg-accent hover:bg-[#8f7c66] hover:-translate-y-0.5"
+              className="loginPageButton bg-accent hover:bg-[#8f7c66]"
               type="submit"
-              id="signinButton"
-            >
-              Iniciar Sesión
-            </button>
-            <button
-              className="loginPageButton bg-transparent text-primary hover:bg-accent/10 hover:text-accent border border-primary hover:border-accent"
-              type="button"
-              id="signupButton"
             >
               Crear Cuenta
             </button>
+            <div className="mt-4 text-sm text-primary">
+              ¿Ya tienes cuenta?{" "}
+              <span
+                onClick={() => navigate("/login")}
+                className="text-accent cursor-pointer hover:underline"
+              >
+                Inicia sesión
+              </span>
+            </div>
           </div>
         </form>
       </div>
     </div>
   );
 }
+
 export default Signup;
