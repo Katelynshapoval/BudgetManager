@@ -1,38 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import "./Login.css";
+// import "./Login.css";
 
-function Login() {
+function Signup() {
   const [username, setUsername] = useState("");
+  const [departamento, setDepartamento] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConf, setPasswordConf] = useState("");
   const navigate = useNavigate();
+  4;
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    try {
-      const formData = new URLSearchParams();
-      formData.append("username", username);
-      formData.append("password", password);
-
-      const response = await fetch("http://localhost:8080/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData.toString(),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Login successful, redirect
-        navigate("/dashboard");
-      } else {
-        // Login failed, show alert
-        alert(data.error);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  const handleCreateAccount = () => {
+    // Login for creating acc
   };
 
   return (
@@ -40,13 +19,13 @@ function Login() {
       <div className="flex flex-col gap-7 text-center bg-background shadow-[0_20px_40px_rgba(37,35,35,0.08)] p-12 rounded-2xl max-w-md w-full">
         <div>
           <h1 className="font-medium text-text text-2xl mb-2 lg:text-3xl">
-            Bienvenido
+            Crear la cuenta
           </h1>
           <p className="text-primary text-sm">
             Gestiona tus finanzas con claridad.
           </p>
         </div>
-        <form className="flex flex-col gap-6" onSubmit={handleLogin}>
+        <form className="flex flex-col gap-6" onSubmit={handleCreateAccount}>
           <div className="inputContainer">
             <label htmlFor="usuario">Usuario</label>
             <input
@@ -59,8 +38,33 @@ function Login() {
               required
             />
           </div>
+
+          <div className="inputContainer">
+            <label htmlFor="usuario">Departamento</label>
+            <input
+              id="usuario"
+              type="text"
+              className="text-sm md:text-base"
+              placeholder="Ingresa tu usuario"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
           <div className=" inputContainer">
             <label htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              className="text-sm md:text-base"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className=" inputContainer">
+            <label htmlFor="password">Confirmar contraseña</label>
             <input
               id="password"
               type="password"
@@ -92,4 +96,4 @@ function Login() {
     </div>
   );
 }
-export default Login;
+export default Signup;

@@ -6,12 +6,14 @@ import Ordenes from "./pages/Ordenes/Ordenes";
 import Historico from "./pages/Historico/Historico";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
+import Signup from "./pages/Signup/Signup";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Presupuesto />} />
           <Route path="/dashboard/proveedores" element={<Proveedores />} />

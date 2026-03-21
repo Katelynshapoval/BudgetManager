@@ -13,4 +13,5 @@ public class PasswordUtils {
         BCrypt.Result result = BCrypt.verifyer().verify(plainPassword.toCharArray(), hashedPassword);
         return result.verified;
     }
+
 }
