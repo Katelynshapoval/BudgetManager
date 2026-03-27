@@ -42,4 +42,18 @@ public class SupplierDAO {
 
         return suppliers;
     }
+
+    public static void delete(int id) {
+        String sql = "DELETE FROM suppliers WHERE supplier_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

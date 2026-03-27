@@ -4,6 +4,7 @@ import com.budgetmanager.backend.dao.SupplierDAO;
 import com.budgetmanager.backend.model.Supplier;
 import com.google.gson.Gson;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
@@ -30,5 +31,28 @@ public class SupplierServlet extends HttpServlet {
 
         // Send response
         resp.getWriter().write(json);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Configuración CORS (necesaria para peticiones desde React)
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+
+        String idParam = request.getParameter("id");
+
+        if (idParam != null && !idParam.isEmpty()) {
+            try {
+                int id = Integer.parseInt(idParam);
+                supplierDAO.delete(id); // Quité el 'static' si prefieres usar la instancia
+                response.setStatus(HttpServletResponse.SC_OK);
+            } catch (NumberFormatException e) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 }
