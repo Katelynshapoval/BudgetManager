@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
 import Signup from "./pages/Signup/Signup";
 import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
@@ -16,11 +17,18 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Presupuesto />} />
-            <Route path="/dashboard/proveedores" element={<Proveedores />} />
-            <Route path="/dashboard/ordenes" element={<Ordenes />} />
-            <Route path="/dashboard/historico" element={<Historico />} />
+            <Route path="proveedores" element={<Proveedores />} />
+            <Route path="ordenes" element={<Ordenes />} />
+            <Route path="historico" element={<Historico />} />
           </Route>
         </Routes>
       </Router>

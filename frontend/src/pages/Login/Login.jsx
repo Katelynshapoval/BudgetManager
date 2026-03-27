@@ -44,7 +44,7 @@ function Login() {
 
       login(data);
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       console.error("Login error:", error);
       alert("Error de conexión con el servidor");
