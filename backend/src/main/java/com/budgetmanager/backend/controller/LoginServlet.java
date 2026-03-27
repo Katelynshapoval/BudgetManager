@@ -23,7 +23,8 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        resp.setHeader("Access-Control-Allow-Credentials", "true");
 
         // Get username and password from login form
         String username = req.getParameter("username");
@@ -44,6 +45,7 @@ public class LoginServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             responseMap.put("error", "User not found");
             resp.getWriter().write(gson.toJson(responseMap));
+            return;
         }
 
         // Verify password
@@ -55,10 +57,16 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("username", user.getName());
 
             resp.setStatus(HttpServletResponse.SC_OK);
+
+            // User Data
+            HashMap<String, Object> userMap = new HashMap<>();
+            userMap.put("id", user.getUserId());
+            userMap.put("name", user.getName());
+            userMap.put("roleId", user.getRoleId());
+            userMap.put("departmentId", user.getDepartmentId());
+
             responseMap.put("message", "Login successful");
-            responseMap.put("userId", user.getUserId());
-            responseMap.put("roleId", user.getRoleId());
-            responseMap.put("departmentId", user.getDepartmentId());
+            responseMap.put("user", userMap);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             responseMap.put("error", "Invalid password");
