@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CiUser } from "react-icons/ci";
-import { BsBuildings } from "react-icons/bs";
-import { BsPersonVcard } from "react-icons/bs";
-import { IoShieldCheckmarkOutline } from "react-icons/io5";
-import { MdOutlineLock } from "react-icons/md";
 
 import { LuUser } from "react-icons/lu";
 import { LuBuilding2 } from "react-icons/lu";
@@ -19,6 +14,7 @@ function Signup() {
 
   const [form, setForm] = useState({
     username: "",
+    name: "",
     department: "",
     role: "",
     password: "",
@@ -83,6 +79,7 @@ function Signup() {
       // Prepare data for backend
       const formData = new URLSearchParams();
       formData.append("username", form.username);
+      formData.append("name", form.name);
       formData.append("password", form.password);
       formData.append("passwordConf", form.passwordConf);
       if (form.department) {
@@ -135,6 +132,25 @@ function Signup() {
                 placeholder="Ingresa tu usuario"
                 className="inputField"
                 value={form.username}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Name */}
+          <div className="inputContainer">
+            <label htmlFor="username">Nombre</label>
+            <div className="inputWithIcon">
+              <LuUser className="inputIcon" />
+
+              <input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="Ingresa tu nombre"
+                className="inputField"
+                value={form.name}
                 onChange={handleChange}
                 required
               />
@@ -234,7 +250,7 @@ function Signup() {
               Crear Cuenta
             </button>
             <div className="mt-4 text-sm text-primary">
-              ¿Ya tienes cuenta?{" "}
+              ¿Ya tienes cuenta?
               <span
                 onClick={() => navigate("/login")}
                 className="text-accent cursor-pointer hover:underline"

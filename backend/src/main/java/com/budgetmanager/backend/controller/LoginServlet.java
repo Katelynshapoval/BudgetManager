@@ -39,7 +39,7 @@ public class LoginServlet extends HttpServlet {
         }
 
         // Fetch user from DB
-        User user = userDAO.getUserByName(username);
+        User user = userDAO.getUserByUsername(username);
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             responseMap.put("error", "User not found");

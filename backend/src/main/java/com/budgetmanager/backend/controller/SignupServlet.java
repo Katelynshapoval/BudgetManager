@@ -27,13 +27,14 @@ public class SignupServlet extends HttpServlet {
         HashMap<String, Object> responseMap = new HashMap<>();
         // Read parameters
         String username = req.getParameter("username");
+        String name = req.getParameter("name");
         String password = req.getParameter("password");
         String passwordConf = req.getParameter("passwordConf");
         String departmentIdStr = req.getParameter("departmentId");
         String roleIdStr = req.getParameter("roleId");
 
         // Validate
-        if (username == null || password == null || passwordConf == null) {
+        if (username == null || name == null || password == null || passwordConf == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseMap.put("error", "Missing required fields");
             resp.getWriter().write(gson.toJson(responseMap));
@@ -57,7 +58,7 @@ public class SignupServlet extends HttpServlet {
         String hashedPassword = PasswordUtils.hashPassword(password);
 
         // Create User object
-        User newUser = new User(username, hashedPassword, roleId, departmentId);
+        User newUser = new User(username, name, hashedPassword, roleId, departmentId);
 
         // Insert into DB
         boolean created = userDAO.createUser(newUser);

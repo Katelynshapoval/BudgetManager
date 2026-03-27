@@ -12,9 +12,9 @@ import java.sql.SQLException;
 public class UserDAO {
 
     // Fetch a user by name (for login)
-    public User getUserByName(String name) {
+    public User getUserByUsername(String name) {
         User user = null;
-        String query = "SELECT * FROM users WHERE name = ?";
+        String query = "SELECT * FROM users WHERE username = ?";
 
         try {
             // Get DB connection
@@ -29,6 +29,7 @@ public class UserDAO {
             if (rs.next()) {
                 user = new User(
                         rs.getInt("user_id"),
+                        rs.getString("username"),
                         rs.getString("name"),
                         rs.getString("password_hash"),
                         rs.getInt("role_id"),
@@ -43,7 +44,7 @@ public class UserDAO {
     }
 
     public boolean createUser(User user) {
-        String query = "INSERT INTO users (name, password_hash, role_id, department_id) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO users (username, name, password_hash, role_id, department_id) VALUES (?, ?, ?, ?, ?)";
 
         try {
             // Get DB connection
@@ -51,13 +52,14 @@ public class UserDAO {
             PreparedStatement stmt = conn.prepareStatement(query);
 
             // Prepare and execute query
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getPasswordHash());
-            stmt.setInt(3, user.getRoleId());
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getName());
+            stmt.setString(3, user.getPasswordHash());
+            stmt.setInt(4, user.getRoleId());
             if (user.getDepartmentId() != null) {
-                stmt.setInt(4, user.getDepartmentId());
+                stmt.setInt(5, user.getDepartmentId());
             } else {
-                stmt.setNull(4, java.sql.Types.INTEGER);
+                stmt.setNull(5, java.sql.Types.INTEGER);
             }
 
             int rowsAffected = stmt.executeUpdate();
