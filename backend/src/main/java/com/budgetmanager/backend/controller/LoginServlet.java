@@ -3,6 +3,7 @@ package com.budgetmanager.backend.controller;
 import com.budgetmanager.backend.dao.UserDAO;
 import com.budgetmanager.backend.model.User;
 import com.budgetmanager.backend.util.PasswordUtils;
+import com.budgetmanager.backend.util.ResponseUtil;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,10 +22,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        resp.setHeader("Access-Control-Allow-Credentials", "true");
+        ResponseUtil.setupJsonResponse(resp);
 
         // Get username and password from login form
         String username = req.getParameter("username");
@@ -54,7 +52,7 @@ public class LoginServlet extends HttpServlet {
         if (passwordValid) {
             HttpSession session = req.getSession(true);
             session.setAttribute("userId", user.getUserId());
-            session.setAttribute("username", user.getName());
+            session.setAttribute("username", user.getUsername());
 
             resp.setStatus(HttpServletResponse.SC_OK);
 
@@ -71,6 +69,6 @@ public class LoginServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             responseMap.put("error", "Invalid password");
         }
-        resp.getWriter().write(gson.toJson(responseMap));
+        ResponseUtil.sendJson(resp, responseMap);
     }
 }
