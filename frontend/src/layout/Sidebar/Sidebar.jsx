@@ -10,18 +10,18 @@ import "./Sidebar.css";
 
 const NAV_ITEMS = [
   {
-    to: "/dashboard",
+    to: "/",
     label: "Presupuestos",
     icon: IoDocumentTextOutline,
     end: true,
   },
-  { to: "/dashboard/proveedores", label: "Proveedores", icon: GoPeople },
+  { to: "/proveedores", label: "Proveedores", icon: GoPeople },
   {
-    to: "/dashboard/ordenes",
+    to: "/ordenes",
     label: "Órdenes de compra",
     icon: FiShoppingCart,
   },
-  { to: "/dashboard/historico", label: "Histórico", icon: MdHistory },
+  { to: "/historico", label: "Histórico", icon: MdHistory },
 ];
 
 function Sidebar() {

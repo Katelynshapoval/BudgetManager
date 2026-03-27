@@ -3,6 +3,7 @@ package com.budgetmanager.backend.controller;
 import com.budgetmanager.backend.dao.UserDAO;
 import com.budgetmanager.backend.model.User;
 import com.budgetmanager.backend.util.PasswordUtils;
+import com.budgetmanager.backend.util.ResponseUtil;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,9 +21,7 @@ public class SignupServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
+        ResponseUtil.setupJsonResponse(resp);
 
         HashMap<String, Object> responseMap = new HashMap<>();
         // Read parameters
@@ -71,7 +70,6 @@ public class SignupServlet extends HttpServlet {
             responseMap.put("error", "Failed to create user");
         }
 
-        resp.getWriter().write(gson.toJson(responseMap));
-
+        ResponseUtil.sendJson(resp, responseMap);
     }
 }

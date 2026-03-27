@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { LuLock, LuUser } from "react-icons/lu";
+import { AuthContext } from "../../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     username: "",
@@ -30,6 +32,7 @@ function Login() {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: formData.toString(),
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -39,9 +42,9 @@ function Login() {
         return;
       }
 
-      // store something (token/session)??
+      login(data);
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       console.error("Login error:", error);
       alert("Error de conexión con el servidor");

@@ -2,6 +2,7 @@ package com.budgetmanager.backend.controller;
 
 import com.budgetmanager.backend.dao.DepartmentDAO;
 import com.budgetmanager.backend.model.Department;
+import com.budgetmanager.backend.util.ResponseUtil;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -30,6 +31,6 @@ public class DepartmentServlet extends HttpServlet {
         String json = gson.toJson(departments);
 
         // Send response
-        resp.getWriter().write(json);
+        ResponseUtil.sendJson(resp, json);
     }
 }

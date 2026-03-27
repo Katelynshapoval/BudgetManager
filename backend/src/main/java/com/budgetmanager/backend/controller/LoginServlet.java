@@ -3,6 +3,7 @@ package com.budgetmanager.backend.controller;
 import com.budgetmanager.backend.dao.UserDAO;
 import com.budgetmanager.backend.model.User;
 import com.budgetmanager.backend.util.PasswordUtils;
+import com.budgetmanager.backend.util.ResponseUtil;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,9 +22,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
+        ResponseUtil.setupJsonResponse(resp);
 
         // Get username and password from login form
         String username = req.getParameter("username");
@@ -44,6 +43,7 @@ public class LoginServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             responseMap.put("error", "User not found");
             resp.getWriter().write(gson.toJson(responseMap));
+            return;
         }
 
         // Verify password
@@ -52,17 +52,23 @@ public class LoginServlet extends HttpServlet {
         if (passwordValid) {
             HttpSession session = req.getSession(true);
             session.setAttribute("userId", user.getUserId());
-            session.setAttribute("username", user.getName());
+            session.setAttribute("username", user.getUsername());
 
             resp.setStatus(HttpServletResponse.SC_OK);
+
+            // User Data
+            HashMap<String, Object> userMap = new HashMap<>();
+            userMap.put("id", user.getUserId());
+            userMap.put("name", user.getName());
+            userMap.put("roleId", user.getRoleId());
+            userMap.put("departmentId", user.getDepartmentId());
+
             responseMap.put("message", "Login successful");
-            responseMap.put("userId", user.getUserId());
-            responseMap.put("roleId", user.getRoleId());
-            responseMap.put("departmentId", user.getDepartmentId());
+            responseMap.put("user", userMap);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             responseMap.put("error", "Invalid password");
         }
-        resp.getWriter().write(gson.toJson(responseMap));
+        ResponseUtil.sendJson(resp, responseMap);
     }
 }
