@@ -68,15 +68,15 @@ function Sidebar() {
       <aside
         ref={sidebarRef}
         className={`
-          flex flex-col justify-between gap-4
-          p-4 min-h-screen
-          bg-text text-background
-          overflow-hidden transition-all duration-300 ease-in-out
-          z-[999]
-          fixed top-0 left-0
-          md:relative md:translate-x-0
-          ${isOpen ? "w-2xs translate-x-0" : "w-20 -translate-x-full md:translate-x-0"}
-        `}
+    flex flex-col justify-between gap-4
+    p-4 h-screen
+    bg-text text-background
+    overflow-hidden transition-all duration-300 ease-in-out
+    z-[999]
+    fixed top-0 left-0
+    md:relative md:translate-x-0
+    ${isOpen ? "w-2xs translate-x-0" : "w-20 -translate-x-full md:translate-x-0"}
+  `}
       >
         {/* Header */}
         <div className="flex items-center gap-4 text-xl mx-1 my-7">
