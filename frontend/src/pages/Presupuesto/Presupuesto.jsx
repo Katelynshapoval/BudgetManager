@@ -6,6 +6,14 @@ import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
 
 function BudgetTable({ data }) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="p-6 text-center text-primary text-base font-normal">
+        No hay presupuestos disponibles para este filtro.
+      </div>
+    );
+  }
+
   return (
     <div className="hideHorizontalScroll">
       <table className="table">
@@ -20,7 +28,7 @@ function BudgetTable({ data }) {
         </thead>
         <tbody>
           {data.map((row) => (
-            <tr key={row.department}>
+            <tr key={row.budgetId}>
               <td>{row.department}</td>
               <td>{EUR.format(row.allocated)}</td>
               <td>{EUR.format(row.spent)}</td>
@@ -40,7 +48,7 @@ function BudgetSection({ id, title, data }) {
   const [filter, setFilter] = useState("");
 
   const filteredData = filter
-    ? data.filter((row) => row.department === filter)
+    ? data.filter((row) => row.departmentId === Number(filter))
     : data;
 
   return (
