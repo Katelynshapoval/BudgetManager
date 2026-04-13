@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useContext } from "react";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { GoPeople } from "react-icons/go";
 import { FiShoppingCart } from "react-icons/fi";
 import { MdHistory, MdLogout } from "react-icons/md";
 import { IoMdMenu } from "react-icons/io";
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 import "./Sidebar.css";
 
@@ -27,6 +29,8 @@ const NAV_ITEMS = [
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef(null);
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const closeSidebar = useCallback(() => setIsOpen(false), []);
 
@@ -116,7 +120,13 @@ function Sidebar() {
         <div>
           <hr className="border-background/20 mb-3" />
           <button className="navItem" type="button">
-            <MdLogout className="optionIcon" />
+            <MdLogout
+              className="optionIcon"
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
+            />
             <span className={labelClass}>Salir</span>
           </button>
         </div>
