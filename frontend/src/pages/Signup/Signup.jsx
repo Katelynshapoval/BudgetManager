@@ -57,9 +57,10 @@ function Signup() {
       try {
         const res = await fetch("http://localhost:8080/api/roles");
         const data = await res.json();
-        setRoles(data);
+        setRoles(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error fetching roles:", err);
+        setRoles([]);
       }
     };
 
