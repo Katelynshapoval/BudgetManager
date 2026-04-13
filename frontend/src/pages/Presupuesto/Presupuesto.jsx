@@ -1,22 +1,9 @@
 import "./Presupuesto.css";
 import Accordion from "../../components/Accordion/Accordion";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
-
-const BUDGET_DATA = [
-  { department: "Recursos Humanos", assigned: 2500000, spent: 1875000 },
-  { department: "Tecnología", assigned: 2300000, spent: 2200000 },
-  { department: "Operaciones", assigned: 2100000, spent: 2100000 },
-  { department: "Marketing", assigned: 1950000, spent: 1950000 },
-];
-
-const INVESTMENT_DATA = [
-  { department: "Tecnología", assigned: 300000, spent: 200000 },
-  { department: "Operaciones", assigned: 2100000, spent: 2100000 },
-  { department: "Marketing", assigned: 1950000, spent: 1950000 },
-];
 
 function BudgetTable({ data }) {
   return (
@@ -35,9 +22,9 @@ function BudgetTable({ data }) {
           {data.map((row) => (
             <tr key={row.department}>
               <td>{row.department}</td>
-              <td>{EUR.format(row.assigned)}</td>
+              <td>{EUR.format(row.allocated)}</td>
               <td>{EUR.format(row.spent)}</td>
-              <td>{EUR.format(row.assigned - row.spent)}</td>
+              <td>{EUR.format(row.allocated - row.spent)}</td>
               <td className="actionCell">
                 <RiEditLine className="tableActionIcon" />
               </td>
@@ -67,20 +54,45 @@ function BudgetSection({ id, title, data }) {
 }
 
 function Presupuesto() {
+  const [budgetData, setBudgetData] = useState([]);
+  const [investmentData, setInvestmentData] = useState([]);
+
+  const year = new Date().getFullYear(); // current year
+
+  useEffect(() => {
+    // Fetch yearly budget
+    fetch(`http://localhost:8080/api/budgets?year=${year}&type=presupuesto`)
+      .then((res) => res.json())
+      .then((data) => {
+        setBudgetData(data);
+      });
+
+    // Fetch investment plan data
+    fetch(
+      `http://localhost:8080/api/budgets?year=${year}&type=plan de inversiones`,
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setInvestmentData(data);
+      });
+  }, [year]);
+
   return (
     <div className="page">
       <div>
         <h1 className="text-2xl md:text-3xl">Panel de Presupuestos</h1>
+
         <div className="flex flex-col gap-12">
           <BudgetSection
             id="filter-presupuestos"
             title="Presupuestos"
-            data={BUDGET_DATA}
+            data={budgetData}
           />
+
           <BudgetSection
             id="filter-inversion"
             title="Plan de Inversión"
-            data={INVESTMENT_DATA}
+            data={investmentData}
           />
         </div>
       </div>
