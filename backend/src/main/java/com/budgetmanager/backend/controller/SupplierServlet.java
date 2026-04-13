@@ -2,6 +2,7 @@ package com.budgetmanager.backend.controller;
 
 import com.budgetmanager.backend.dao.SupplierDAO;
 import com.budgetmanager.backend.model.Supplier;
+import com.budgetmanager.backend.util.ResponseUtil;
 import com.google.gson.Gson;
 
 import jakarta.servlet.ServletException;
@@ -38,8 +39,7 @@ public class SupplierServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Configuración CORS (necesaria para peticiones desde React)
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+        ResponseUtil.setupJsonResponse(response);
 
         String idParam = request.getParameter("id");
 

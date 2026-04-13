@@ -16,22 +16,46 @@ const COLUMN_HEADERS = [
 
 const TOTAL_COLUMNS = COLUMN_HEADERS.length + 1; // +1 for "Acciones"
 
-// Sub-components
 
-function ProveedorRow({ proveedor }) {
-  return (
-    <tr>
-      <td>{proveedor.name}</td>
-      <td>{proveedor.email}</td>
-      <td>{proveedor.phone}</td>
-      <td>{proveedor.taxId}</td>
-      <td>{proveedor.notes}</td>
-      <td className="actionCell">
-        <RiEditLine className="tableActionIcon" />
-        <MdDeleteOutline className="tableActionIcon" />
-      </td>
-    </tr>
-  );
+// Delete Supplier
+const deleteSupplier = async (id, setProveedores) => {
+    if (!window.confirm("¿Estás seguro de borrar este proveedor?")) return;
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/suppliers?id=${id}`, {
+            method: "DELETE"
+        });
+
+        if (response.ok) {
+            // Filtramos por el ID correcto
+            setProveedores(prev => prev.filter(p => p.supplierId !== id));
+        } else {
+            alert("Error al eliminar en el servidor");
+        }
+    } catch (error) {
+        console.error("Error de red:", error);
+    }
+};
+
+function ProveedorRow({ proveedor, setProveedores }) {
+    return (
+        <tr>
+            <td>{proveedor.name}</td>
+            <td>{proveedor.email}</td>
+            <td>{proveedor.phone}</td>
+            <td>{proveedor.taxId}</td>
+            <td>{proveedor.notes}</td>
+            <td className="actionCell">
+                <RiEditLine className="tableActionIcon" />
+                <MdDeleteOutline
+                    className="tableActionIcon"
+                    style={{ cursor: 'pointer', color: 'red' }}
+                    // Usamos supplierId (minúscula la 'd')
+                    onClick={() => deleteSupplier(proveedor.supplierId, setProveedores)}
+                />
+            </td>
+        </tr>
+    );
 }
 
 function EmptyRow() {
@@ -58,7 +82,7 @@ function Proveedor() {
   useEffect(() => {
     fetch("http://localhost:8080/api/suppliers")
       .then((res) => res.json())
-      .then((data) => setProveedores(data))
+      .then((data) => {setProveedores(data)})
       .catch((err) => console.error("Error fetching suppliers:", err));
   }, []);
 
@@ -107,7 +131,10 @@ function Proveedor() {
           <tbody>
             {filteredProveedores.length > 0 ? (
               filteredProveedores.map((p) => (
-                <ProveedorRow key={p.supplierId} proveedor={p} />
+                <ProveedorRow
+                    key={p.supplierId}
+                    proveedor={p}
+                />
               ))
             ) : (
               <EmptyRow />
