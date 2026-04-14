@@ -6,13 +6,22 @@ import Modal from "../../Modal/Modal";
 
 // Sub-components
 
-function InvoiceItem({ file, amount }) {
+function InvoiceItem({ id, amount }) {
+  const handleOpen = () => {
+    window.open(`http://localhost:8080/api/invoices/file?id=${id}`, "_blank");
+  };
+
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-primary bg-secondary/60 px-5 py-3 text-sm text-primary">
       <FaRegFileAlt className="text-lg" />
 
       <div className="flex-1">
-        <p className="text-text">{file}</p>
+        <button
+          onClick={handleOpen}
+          className="text-text hover:text-[#252323] text-left cursor-pointer"
+        >
+          Ver factura #{id}
+        </button>
         <p className="font-light">Importe: {amount}</p>
       </div>
 
@@ -36,7 +45,11 @@ function InvoiceList({ invoices }) {
   return (
     <div className="flex max-h-50 flex-col gap-2 overflow-y-auto">
       {invoices.map((invoice, index) => (
-        <InvoiceItem key={index} file={invoice.file} amount={invoice.amount} />
+        <InvoiceItem
+          key={invoice.invoiceId}
+          id={invoice.invoiceId}
+          amount={invoice.amount}
+        />
       ))}
     </div>
   );

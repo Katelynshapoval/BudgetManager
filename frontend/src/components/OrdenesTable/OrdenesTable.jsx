@@ -42,7 +42,7 @@ function OrdenesTable({
                 >
                   {row.invoices.length === 0 && showEdit
                     ? "Agregar factura"
-                    : `${row.invoices.length} facturas`}
+                    : `${row.invoices.length} ${row.invoices.length === 1 ? "factura" : "facturas"}`}
                 </button>
               </td>
 

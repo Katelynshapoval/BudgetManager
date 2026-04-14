@@ -53,7 +53,7 @@ function Ordenes() {
         <AgregarFactura
           hidePopup={() => setAddInvoiceShow(false)}
           isOpen={addInvoiceShow}
-          data={selectedOrden.facturas}
+          data={selectedOrden.invoices}
         />
       )}
 

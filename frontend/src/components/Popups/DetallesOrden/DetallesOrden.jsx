@@ -1,22 +1,23 @@
 import Modal from "../../Modal/Modal";
 import "./DetallesOrden.css";
 function DetallesOrden({ hidePopup, isOpen, data }) {
+  console.log(data);
   return (
     <Modal title="Info" onClose={hidePopup} isOpen={isOpen} footer={null}>
       <div className="grid grid-cols-2 gap-6 bg-secondary/60 p-5 rounded-lg text-sm">
         <div className="detailsPopupField">
           <p>ID de Orden</p>
-          <span>{data.generated_order_code}</span>
+          <span>{data.generatedOrderCode || data.investmentPlanCode}</span>
         </div>
 
         <div className="detailsPopupField">
           <p>Cantidad Total</p>
-          <span>${data.order_amount}</span>
+          <span>{data.orderAmount}</span>
         </div>
 
         <div className="detailsPopupField">
           <p>Fecha de Orden</p>
-          <span>{data.order_date}</span>
+          <span>{data.orderDate}</span>
         </div>
 
         <div className="detailsPopupField">
@@ -41,7 +42,7 @@ function DetallesOrden({ hidePopup, isOpen, data }) {
 
         <div className="detailsPopupField">
           <p>Origen de Fondos</p>
-          <span>{data.investment_plan_code}</span>
+          <span>{data.generatedOrderCode ? "Presupuesto" : "Inversión"}</span>
         </div>
       </div>
 
