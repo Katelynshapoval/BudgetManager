@@ -17,17 +17,16 @@ function Ordenes() {
 
   const [selectedOrden, setSelectedOrden] = useState(null);
 
-  // const filteredOrdenes = orders.filter((row) => {
-  //   const matchesSearch =
-  //     row.notes.toLowerCase().includes(search.toLowerCase()) ||
-  //     row.generatedOrderCode.toLowerCase().includes(search.toLowerCase());
+  const filteredOrdenes = orders.filter((row) => {
+    const matchesSearch =
+      row.notes?.toLowerCase().includes(search.toLowerCase()) ||
+      row.generatedOrderCode?.toLowerCase().includes(search.toLowerCase()) ||
+      row.investmentPlanCode?.toLowerCase().includes(search.toLowerCase());
 
-  //   const matchesDepartment = !filter || row.department === filter;
+    const matchesDepartment = !filter || row.departmentId === Number(filter);
 
-  //   return matchesSearch && matchesDepartment;
-  // });
-
-  const filteredOrdenes = orders;
+    return matchesSearch && matchesDepartment;
+  });
 
   useEffect(() => {
     fetch("http://localhost:8080/api/purchase-orders")
@@ -70,7 +69,7 @@ function Ordenes() {
           <CiSearch className="search-icon iconProveedores" />
           <input
             type="text"
-            placeholder="Buscar por nombre o código"
+            placeholder="Buscar por código o descripción"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -92,18 +91,24 @@ function Ordenes() {
         </div>
       </div>
 
-      <OrdenesTable
-        ordenes={filteredOrdenes}
-        showEdit={true}
-        onInvoices={(row) => {
-          setSelectedOrden(row);
-          setAddInvoiceShow(true);
-        }}
-        onViewDetails={(row) => {
-          setSelectedOrden(row);
-          setShowDetails(true);
-        }}
-      />
+      {filteredOrdenes.length === 0 ? (
+        <div className="mt-6 rounded-lg bg-secondary/60 p-6 text-center text-sm text-primary">
+          No se encontraron órdenes de compra
+        </div>
+      ) : (
+        <OrdenesTable
+          ordenes={filteredOrdenes}
+          showEdit={true}
+          onInvoices={(row) => {
+            setSelectedOrden(row);
+            setAddInvoiceShow(true);
+          }}
+          onViewDetails={(row) => {
+            setSelectedOrden(row);
+            setShowDetails(true);
+          }}
+        />
+      )}
     </div>
   );
 }

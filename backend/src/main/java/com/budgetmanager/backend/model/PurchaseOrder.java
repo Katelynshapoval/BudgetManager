@@ -10,6 +10,7 @@ public class PurchaseOrder {
     private int purchaseOrderId;
     private int supplierId;
     private int budgetId;
+    private int departmentId;
     private int createdBy;
 
     // Core data
@@ -156,6 +157,10 @@ public class PurchaseOrder {
     public ArrayList<Invoice> getInvoices() {
         return invoices;
     }
+    
+    public int getDepartmentId() {
+        return departmentId;
+    }
 
     // Setters
 
@@ -173,6 +178,10 @@ public class PurchaseOrder {
 
     public void setDepartmentName(String departmentName) {
         this.departmentName = departmentName;
+    }
+
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
     }
 
     // Helper methods

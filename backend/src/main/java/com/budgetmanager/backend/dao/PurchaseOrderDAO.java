@@ -35,7 +35,8 @@ public class PurchaseOrderDAO {
                 
                     u.name AS created_by_name,
                     s.name AS supplier_name,
-                    d.name AS department_name
+                    d.name AS department_name,
+                    d.department_id
                 
                 FROM purchase_orders po
                 
@@ -75,6 +76,7 @@ public class PurchaseOrderDAO {
                 po.setCreatedByName(rs.getString("created_by_name"));
                 po.setSupplierName(rs.getString("supplier_name"));
                 po.setDepartmentName(rs.getString("department_name"));
+                po.setDepartmentId(rs.getInt("department_id"));
 
                 purchaseOrders.add(po);
             }
