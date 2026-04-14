@@ -14,18 +14,38 @@ public class PurchaseOrderDAO {
     public ArrayList<PurchaseOrder> getAllPurchaseOrders() {
         ArrayList<PurchaseOrder> purchaseOrders = new ArrayList<>();
         String query = """
-                    SELECT 
-                        po.purchase_order_id,
-                        po.order_amount,
-                        po.notes,
+                SELECT
+                    po.purchase_order_id,
+                    po.order_amount,
+                    po.notes,
                 
-                        po.generated_order_code,
-                        po.investment_plan_code,
+                    po.generated_order_code,
+                    po.investment_plan_code,
                 
-                        po.order_date
-                    FROM purchase_orders po
-                    WHERE po.deleted_at IS NULL
-                    ORDER BY po.order_date DESC
+                    po.is_fungible,
+                    po.order_sequence,
+                
+                    po.order_date,
+                    po.created_at,
+                    po.locked_at,
+                
+                    po.supplier_id,
+                    po.budget_id,
+                    po.created_by,
+                
+                    u.name AS created_by_name,
+                    s.name AS supplier_name,
+                    d.name AS department_name
+                
+                FROM purchase_orders po
+                
+                LEFT JOIN users u ON po.created_by = u.user_id
+                LEFT JOIN suppliers s ON po.supplier_id = s.supplier_id
+                LEFT JOIN budgets b ON po.budget_id = b.budget_id
+                LEFT JOIN departments d ON b.department_id = d.department_id
+                
+                WHERE po.deleted_at IS NULL
+                ORDER BY po.order_date DESC;
                 """;
 
         try (Connection conn = DBConnection.getConnection();
@@ -39,17 +59,23 @@ public class PurchaseOrderDAO {
                         rs.getString("notes"),
                         rs.getString("generated_order_code"),
                         rs.getString("investment_plan_code"),
-                        false,
-                        null,
+                        rs.getBoolean("is_fungible"),
+                        rs.getObject("order_sequence") != null ? rs.getInt("order_sequence") : null,
                         rs.getDate("order_date").toLocalDate(),
-                        null,
-                        0,
-                        0,
-                        0,
-                        null,
-                        null,
-                        null
+                        rs.getTimestamp("locked_at") != null
+                                ? rs.getTimestamp("locked_at").toLocalDateTime()
+                                : null,
+                        rs.getInt("supplier_id"),
+                        rs.getInt("budget_id"),
+                        rs.getInt("created_by"),
+                        rs.getTimestamp("created_at") != null
+                                ? rs.getTimestamp("created_at").toLocalDateTime()
+                                : null
                 );
+                po.setCreatedByName(rs.getString("created_by_name"));
+                po.setSupplierName(rs.getString("supplier_name"));
+                po.setDepartmentName(rs.getString("department_name"));
+
                 purchaseOrders.add(po);
             }
         } catch (SQLException e) {

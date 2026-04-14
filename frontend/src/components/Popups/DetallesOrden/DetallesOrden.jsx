@@ -1,5 +1,7 @@
 import Modal from "../../Modal/Modal";
 import "./DetallesOrden.css";
+import { formatDateTime } from "../../../utils/date";
+import { EUR } from "../../../utils/currency";
 function DetallesOrden({ hidePopup, isOpen, data }) {
   console.log(data);
   return (
@@ -12,7 +14,7 @@ function DetallesOrden({ hidePopup, isOpen, data }) {
 
         <div className="detailsPopupField">
           <p>Cantidad Total</p>
-          <span>{data.orderAmount}</span>
+          <span>{EUR.format(data.orderAmount)}</span>
         </div>
 
         <div className="detailsPopupField">
@@ -22,22 +24,22 @@ function DetallesOrden({ hidePopup, isOpen, data }) {
 
         <div className="detailsPopupField">
           <p>Proveedor</p>
-          <span>{data.supplier_name}</span>
+          <span>{data.supplierName}</span>
         </div>
 
         <div className="detailsPopupField">
           <p>Creado por</p>
-          <span>{data.created_by_name}</span>
+          <span>{data.createdByName}</span>
         </div>
 
         <div className="detailsPopupField">
           <p>Fecha de Creación</p>
-          <span>{data.created_at}</span>
+          <span>{formatDateTime(data.createdAt)}</span>
         </div>
 
         <div className="detailsPopupField">
           <p>Departamento</p>
-          <span>{data.department}</span>
+          <span>{data.departmentName}</span>
         </div>
 
         <div className="detailsPopupField">

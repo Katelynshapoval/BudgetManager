@@ -6,36 +6,47 @@ import java.util.ArrayList;
 
 public class PurchaseOrder {
 
+    // IDs
     private int purchaseOrderId;
-    private double orderAmount;
-    private String notes;
-
-    private String generatedOrderCode;
-    private String investmentPlanCode;
-
-    private boolean isFungible;
-    private Integer orderSequence;
-
-    private LocalDate orderDate;
-    private LocalDateTime lockedAt;
-
     private int supplierId;
     private int budgetId;
     private int createdBy;
 
+    // Core data
+    private double orderAmount;
+    private String notes;
+    private String generatedOrderCode;
+    private String investmentPlanCode;
+    private boolean isFungible;
+    private Integer orderSequence;
+
+    // Dates
+    private LocalDate orderDate;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
+    private LocalDateTime lockedAt;
 
-    private ArrayList<Invoice> invoices;
+    // Display
+    private String supplierName;
+    private String createdByName;
+    private String departmentName;
 
-    // Full constructor (used when reading from DB)
-    public PurchaseOrder(int purchaseOrderId, double orderAmount, String notes,
-                         String generatedOrderCode, String investmentPlanCode,
-                         boolean isFungible, Integer orderSequence,
-                         LocalDate orderDate, LocalDateTime lockedAt,
-                         int supplierId, int budgetId, int createdBy,
-                         LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    // Relations
+    private ArrayList<Invoice> invoices = new ArrayList<>();
+
+    // Full constructor (DB)
+    public PurchaseOrder(int purchaseOrderId,
+                         double orderAmount,
+                         String notes,
+                         String generatedOrderCode,
+                         String investmentPlanCode,
+                         boolean isFungible,
+                         Integer orderSequence,
+                         LocalDate orderDate,
+                         LocalDateTime lockedAt,
+                         int supplierId,
+                         int budgetId,
+                         int createdBy,
+                         LocalDateTime createdAt) {
 
         this.purchaseOrderId = purchaseOrderId;
         this.orderAmount = orderAmount;
@@ -50,16 +61,19 @@ public class PurchaseOrder {
         this.budgetId = budgetId;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
     }
 
-    // Constructor for creating new orders (no ID yet)
-    public PurchaseOrder(double orderAmount, String notes,
-                         String generatedOrderCode, String investmentPlanCode,
-                         boolean isFungible, Integer orderSequence,
+    // Constructor for creating new orders
+    public PurchaseOrder(double orderAmount,
+                         String notes,
+                         String generatedOrderCode,
+                         String investmentPlanCode,
+                         boolean isFungible,
+                         Integer orderSequence,
                          LocalDate orderDate,
-                         int supplierId, int budgetId, int createdBy) {
+                         int supplierId,
+                         int budgetId,
+                         int createdBy) {
 
         this.orderAmount = orderAmount;
         this.notes = notes;
@@ -107,6 +121,10 @@ public class PurchaseOrder {
         return orderDate;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public LocalDateTime getLockedAt() {
         return lockedAt;
     }
@@ -123,16 +141,38 @@ public class PurchaseOrder {
         return createdBy;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public String getSupplierName() {
+        return supplierName;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public String getCreatedByName() {
+        return createdByName;
     }
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public ArrayList<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    // Setters
+
+    public void setInvoices(ArrayList<Invoice> invoices) {
+        this.invoices = invoices;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        this.createdByName = createdByName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
     }
 
     // Helper methods
@@ -145,11 +185,7 @@ public class PurchaseOrder {
         return generatedOrderCode != null ? "Presupuesto" : "Inversión";
     }
 
-    public ArrayList<Invoice> getInvoices() {
-        return invoices;
-    }
-
-    public void setInvoices(ArrayList<Invoice> invoices) {
-        this.invoices = invoices;
+    public boolean isLocked() {
+        return lockedAt != null;
     }
 }
