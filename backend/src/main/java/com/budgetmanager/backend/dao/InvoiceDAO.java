@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class InvoiceDAO {
 
-    // Fetch all invoices from the database
-    public ArrayList<Invoice> getAllInvoices() {
+    // Get an invoice for a certain purchase order
+    public ArrayList<Invoice> getInvoicesByPurchaseOrderId(int purchaseOrderId) {
         ArrayList<Invoice> invoices = new ArrayList<>();
 
         String query = """
@@ -25,12 +25,14 @@ public class InvoiceDAO {
                     i.deleted_at
                 FROM invoices i
                 WHERE i.deleted_at IS NULL
-                ORDER BY i.uploaded_at DESC
+                  AND i.purchase_order_id = ?
                 """;
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, purchaseOrderId);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Invoice invoice = new Invoice(
@@ -54,5 +56,48 @@ public class InvoiceDAO {
         }
 
         return invoices;
+    }
+
+    // Get one invoice by id, for displaying the files
+    public Invoice getInvoiceById(int invoiceId) {
+        String query = """
+                SELECT 
+                    i.invoice_id,
+                    i.file,
+                    i.amount,
+                    i.purchase_order_id,
+                    i.uploaded_at,
+                    i.deleted_at
+                FROM invoices i
+                WHERE i.invoice_id = ?
+                  AND i.deleted_at IS NULL
+                """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, invoiceId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Invoice(
+                        rs.getInt("invoice_id"),
+                        rs.getBytes("file"),
+                        rs.getDouble("amount"),
+                        rs.getInt("purchase_order_id"),
+                        rs.getTimestamp("uploaded_at") != null
+                                ? rs.getTimestamp("uploaded_at").toLocalDateTime()
+                                : null,
+                        rs.getTimestamp("deleted_at") != null
+                                ? rs.getTimestamp("deleted_at").toLocalDateTime()
+                                : null
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package com.budgetmanager.backend.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class PurchaseOrder {
 
@@ -25,6 +26,8 @@ public class PurchaseOrder {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+
+    private ArrayList<Invoice> invoices;
 
     // Full constructor (used when reading from DB)
     public PurchaseOrder(int purchaseOrderId, double orderAmount, String notes,
@@ -140,5 +143,13 @@ public class PurchaseOrder {
 
     public String getType() {
         return generatedOrderCode != null ? "Presupuesto" : "Inversión";
+    }
+
+    public ArrayList<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(ArrayList<Invoice> invoices) {
+        this.invoices = invoices;
     }
 }
