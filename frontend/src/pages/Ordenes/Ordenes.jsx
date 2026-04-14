@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/NuevoOrdenCompra";
@@ -6,72 +6,10 @@ import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactur
 import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
 import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
 
-const ORDENES = [
-  {
-    purchase_order_id: 1,
-    description:
-      "Adquisición de licencias anuales para herramientas de gestión y colaboración.",
-    order_amount: 125000.0,
-    notes: "Aprobado por dirección de TI.",
-    generated_order_code: "OC-2026-001",
-    investment_plan_code: "INV2026",
-    is_fungible: 0,
-    order_sequence: 1,
-    locked_at: null,
-    order_date: "2026-02-15",
-    supplier_id: 2,
-    budget_id: 5,
-    created_by: 1,
-    created_at: "2026-02-15 10:30:00",
-    updated_at: "2026-02-15 10:30:00",
-    facturas: [],
-  },
-  {
-    purchase_order_id: 2,
-    description:
-      "Contratación de consultoría externa para modernización de infraestructura digital.",
-    order_amount: 89500.0,
-    notes: "Proyecto estratégico de transformación digital.",
-    generated_order_code: "OC-2026-002",
-    investment_plan_code: "INV2026",
-    is_fungible: 0,
-    order_sequence: 2,
-    locked_at: null,
-    order_date: "2026-02-20",
-    supplier_id: 4,
-    budget_id: 3,
-    created_by: 1,
-    created_at: "2026-02-20 09:15:00",
-    updated_at: "2026-02-20 09:15:00",
-    facturas: [{ file: "lol", amount: 1000 }],
-  },
-  {
-    purchase_order_id: 3,
-    description:
-      "Compra de mobiliario y equipo para nuevas estaciones de trabajo.",
-    order_amount: 45000.0,
-    notes: "Incluye escritorios ergonómicos y sillas.",
-    generated_order_code: "OC-2026-003",
-    investment_plan_code: "INV2026",
-    is_fungible: 1,
-    order_sequence: 3,
-    locked_at: null,
-    order_date: "2026-02-28",
-    supplier_id: 3,
-    budget_id: 2,
-    created_by: 1,
-    created_at: "2026-02-28 14:45:00",
-    updated_at: "2026-02-28 14:45:00",
-    facturas: [
-      { file: "lol", amount: 1000 },
-      { file: "ll", amount: 222 },
-    ],
-  },
-];
-
 function Ordenes() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
+  const [orders, setOrders] = useState([]);
 
   const [addOrdenShow, setAddOrdenShow] = useState(false);
   const [addInvoiceShow, setAddInvoiceShow] = useState(false);
@@ -79,15 +17,26 @@ function Ordenes() {
 
   const [selectedOrden, setSelectedOrden] = useState(null);
 
-  const filteredOrdenes = ORDENES.filter((row) => {
-    const matchesSearch =
-      row.description.toLowerCase().includes(search.toLowerCase()) ||
-      row.generated_order_code.toLowerCase().includes(search.toLowerCase());
+  // const filteredOrdenes = orders.filter((row) => {
+  //   const matchesSearch =
+  //     row.notes.toLowerCase().includes(search.toLowerCase()) ||
+  //     row.generatedOrderCode.toLowerCase().includes(search.toLowerCase());
 
-    const matchesDepartment = !filter || row.department === filter;
+  //   const matchesDepartment = !filter || row.department === filter;
 
-    return matchesSearch && matchesDepartment;
-  });
+  //   return matchesSearch && matchesDepartment;
+  // });
+
+  const filteredOrdenes = orders;
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/purchase-orders")
+      .then((res) => res.json())
+      .then((data) => {
+        setOrders(data);
+      })
+      .catch((err) => console.error("Error fetching purchase orders:", err));
+  }, []);
 
   return (
     <div className="page">

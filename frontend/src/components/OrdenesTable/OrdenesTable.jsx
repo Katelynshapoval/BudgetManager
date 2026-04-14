@@ -24,26 +24,29 @@ function OrdenesTable({
 
         <tbody>
           {ordenes.map((row) => (
-            <tr key={row.purchase_order_id}>
-              <td>tipo</td>
-              <td>{row.generated_order_code}</td>
-              <td>{row.description}</td>
-              <td>{EUR.format(row.order_amount)}</td>
+            <tr key={row.purchaseOrderId}>
+              <td>{row.generatedOrderCode ? "Presupuesto" : "Inversión"}</td>
+
+              <td>{row.generatedOrderCode || row.investmentPlanCode}</td>
+
+              <td>{row.notes}</td>
+
+              <td>{EUR.format(row.orderAmount)}</td>
 
               <td>
                 <button
                   className={
-                    row.facturas.length === 0 ? "addInvoice" : "viewInvoice"
+                    row.invoices.length === 0 ? "addInvoice" : "viewInvoice"
                   }
                   onClick={() => onInvoices(row)}
                 >
-                  {row.facturas.length === 0 && showEdit
+                  {row.invoices.length === 0 && showEdit
                     ? "Agregar factura"
-                    : `${row.facturas.length} facturas`}
+                    : `${row.invoices.length} facturas`}
                 </button>
               </td>
 
-              <td>{row.order_date}</td>
+              <td>{row.orderDate}</td>
 
               <td className="actionCell">
                 {showEdit && <RiEditLine className="tableActionIcon" />}

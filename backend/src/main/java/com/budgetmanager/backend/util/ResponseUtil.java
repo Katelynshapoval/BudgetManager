@@ -1,9 +1,14 @@
 package com.budgetmanager.backend.util;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ResponseUtil {
     protected static final String FRONTEND_ORIGIN = "http://localhost:5173";
@@ -16,6 +21,13 @@ public class ResponseUtil {
     }
 
     public static void sendJson(HttpServletResponse resp, Object data) throws IOException {
-        resp.getWriter().write(new Gson().toJson(data));
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>)
+                        (src, typeOfSrc, context) -> new JsonPrimitive(src.toString()))
+                .registerTypeAdapter(LocalDateTime.class, (JsonSerializer<LocalDateTime>)
+                        (src, typeOfSrc, context) -> new JsonPrimitive(src.toString()))
+                .create();
+
+        resp.getWriter().write(gson.toJson(data));
     }
 }
