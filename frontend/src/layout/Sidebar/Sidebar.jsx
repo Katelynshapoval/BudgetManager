@@ -29,7 +29,7 @@ const NAV_ITEMS = [
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef(null);
-  const { user, logout } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const closeSidebar = useCallback(() => setIsOpen(false), []);
