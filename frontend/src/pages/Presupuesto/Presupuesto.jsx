@@ -6,7 +6,7 @@ import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
 import { AuthContext } from "../../context/AuthContext";
 
-function BudgetTable({ data }) {
+function BudgetTable({ data, user }) {
   if (!data || data.length === 0) {
     return (
       <div className="p-6 text-center text-primary text-base font-normal">
@@ -24,7 +24,9 @@ function BudgetTable({ data }) {
             <th>Asignado</th>
             <th>Gastado</th>
             <th>Disponible</th>
-            <th className="actionCell">Acciones</th>
+            {user.roleName != "contable" && (
+              <th className="actionCell">Acciones</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -45,10 +47,9 @@ function BudgetTable({ data }) {
   );
 }
 
-function BudgetSection({ id, title, data }) {
-  const { user } = useContext(AuthContext);
-  const [filter, setFilter] = useState("");
+function BudgetSection({ id, title, data, user }) {
   const isAdmin = user.roleName == "admin";
+  const [filter, setFilter] = useState(!isAdmin ? user.departmentId : "");
 
   const filteredData = filter
     ? data.filter((row) => row.departmentId === Number(filter))
@@ -60,7 +61,7 @@ function BudgetSection({ id, title, data }) {
         {isAdmin && (
           <DepartmentFilter id={id} value={filter} onChange={setFilter} />
         )}
-        <BudgetTable data={filteredData} />
+        <BudgetTable data={filteredData} user={user} />
       </div>
     </Accordion>
   );
@@ -69,6 +70,7 @@ function BudgetSection({ id, title, data }) {
 function Presupuesto() {
   const [budgetData, setBudgetData] = useState([]);
   const [investmentData, setInvestmentData] = useState([]);
+  const { user } = useContext(AuthContext);
 
   const year = new Date().getFullYear(); // current year
 
@@ -100,12 +102,14 @@ function Presupuesto() {
             id="filter-presupuestos"
             title="Presupuestos"
             data={budgetData}
+            user={user}
           />
 
           <BudgetSection
             id="filter-inversion"
             title="Plan de Inversión"
             data={investmentData}
+            user={user}
           />
         </div>
       </div>
