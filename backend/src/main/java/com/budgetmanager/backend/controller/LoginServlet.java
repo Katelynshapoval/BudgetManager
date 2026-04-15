@@ -62,6 +62,7 @@ public class LoginServlet extends HttpServlet {
             userMap.put("name", user.getName());
             userMap.put("roleId", user.getRoleId());
             userMap.put("departmentId", user.getDepartmentId());
+            userMap.put("roleName", user.getRoleName());
 
             responseMap.put("message", "Login successful");
             responseMap.put("user", userMap);

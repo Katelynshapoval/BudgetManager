@@ -14,7 +14,10 @@ public class UserDAO {
     // Fetch a user by name (for login)
     public User getUserByUsername(String name) {
         User user = null;
-        String query = "SELECT * FROM users WHERE username = ?";
+        String query = "SELECT u.*, r.name AS role_name " +
+                "FROM users u " +
+                "JOIN roles r ON u.role_id = r.role_id " +
+                "WHERE u.username = ?";
 
         try {
             // Get DB connection
@@ -33,7 +36,8 @@ public class UserDAO {
                         rs.getString("name"),
                         rs.getString("password_hash"),
                         rs.getInt("role_id"),
-                        rs.getInt("department_id")
+                        rs.getInt("department_id"),
+                        rs.getString("role_name")
                 );
             }
         } catch (SQLException e) {

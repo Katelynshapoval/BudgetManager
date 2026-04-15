@@ -1,9 +1,10 @@
 import "./Presupuesto.css";
 import Accordion from "../../components/Accordion/Accordion";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
+import { AuthContext } from "../../context/AuthContext";
 
 function BudgetTable({ data }) {
   if (!data || data.length === 0) {
@@ -45,16 +46,20 @@ function BudgetTable({ data }) {
 }
 
 function BudgetSection({ id, title, data }) {
+  const { user } = useContext(AuthContext);
   const [filter, setFilter] = useState("");
+  const isAdmin = user.roleName == "admin";
 
   const filteredData = filter
     ? data.filter((row) => row.departmentId === Number(filter))
     : data;
 
   return (
-    <Accordion title={title}>
+    <Accordion title={title} defaultOpen={!isAdmin}>
       <div className="p-6">
-        <DepartmentFilter id={id} value={filter} onChange={setFilter} />
+        {isAdmin && (
+          <DepartmentFilter id={id} value={filter} onChange={setFilter} />
+        )}
         <BudgetTable data={filteredData} />
       </div>
     </Accordion>
