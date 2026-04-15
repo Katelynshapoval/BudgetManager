@@ -5,6 +5,7 @@ import { useEffect, useState, useContext } from "react";
 import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
 import { AuthContext } from "../../context/AuthContext";
+import EditableCell from "../../components/EditableCell/EditableCell";
 
 function BudgetTable({ data, user, onUpdateAllocated }) {
   const [editingId, setEditingId] = useState(null);
@@ -80,27 +81,15 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
               <tr key={row.budgetId}>
                 <td>{row.department}</td>
 
-                <td className="relative">
-                  <div className="relative">
-                    <div
-                      className={`tabular-nums ${isEditing ? "opacity-0" : ""}`}
-                    >
-                      {EUR.format(row.allocated)}
-                    </div>
-
-                    {isEditing && (
-                      <input
-                        type="number"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onKeyDown={(e) => handleKeyDown(e, row.budgetId)}
-                        onBlur={() => saveEditing(row.budgetId)}
-                        autoFocus
-                        className="absolute inset-0 w-full inlineEditInput reset-input"
-                      />
-                    )}
-                  </div>
-                </td>
+                <EditableCell
+                  value={EUR.format(row.allocated)}
+                  isEditing={isEditing}
+                  editValue={editValue}
+                  setEditValue={setEditValue}
+                  onKeyDown={(e) => handleKeyDown(e, row.budgetId)}
+                  onSave={() => saveEditing(row.budgetId)}
+                  onCancel={cancelEditing}
+                />
 
                 <td>{EUR.format(row.spent)}</td>
                 <td>{EUR.format(row.remaining)}</td>
