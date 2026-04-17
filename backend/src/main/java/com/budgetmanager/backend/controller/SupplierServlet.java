@@ -45,7 +45,7 @@ public class SupplierServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Configuración CORS (necesaria para peticiones desde React)
+        // Se actualiza el front automaticamente (lo he puesto yo, Marian)
         ResponseUtil.setupJsonResponse(response);
 
         String idParam = request.getParameter("id");
