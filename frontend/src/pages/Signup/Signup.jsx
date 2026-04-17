@@ -9,6 +9,8 @@ import { LuLock } from "react-icons/lu";
 
 import { toast } from "sonner";
 
+import { signupRequest } from "../../services/authService";
+
 import "./Signup.css";
 
 function Signup() {
@@ -70,7 +72,7 @@ function Signup() {
   }, []);
 
   // Submit handler
-  const handleCreateAccount = async (e) => {
+  const handleCreateAccount = (e) => {
     e.preventDefault();
 
     if (form.password !== form.passwordConf) {
@@ -78,33 +80,12 @@ function Signup() {
       return;
     }
 
-    // Prepare data for the backend
-    const formData = new URLSearchParams();
-    formData.append("username", form.username);
-    formData.append("name", form.name);
-    formData.append("password", form.password);
-    formData.append("passwordConf", form.passwordConf);
-
-    if (form.department) {
-      formData.append("departmentId", form.department);
-    }
-
-    formData.append("roleId", form.role);
-
-    const request = fetch("http://localhost:8080/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formData.toString(),
-    }).then(async (res) => {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error");
-      return data;
-    });
+    const request = signupRequest(form);
 
     toast.promise(request, {
       loading: "Creando cuenta...",
       success: () => {
-        setTimeout(() => navigate("/login"), 1000);
+        navigate("/login");
         return "Cuenta creada!";
       },
       error: (err) => err.message || "Error al crear la cuenta",

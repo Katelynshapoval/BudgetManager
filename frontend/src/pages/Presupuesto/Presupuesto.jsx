@@ -6,6 +6,7 @@ import { RiEditLine } from "react-icons/ri";
 import { EUR } from "../../utils/currency";
 import { AuthContext } from "../../context/AuthContext";
 import EditableCell from "../../components/EditableCell/EditableCell";
+import { updateBudget, fetchBudgets } from "../../services/budgetService";
 
 function BudgetTable({ data, user, onUpdateAllocated }) {
   const [editingId, setEditingId] = useState(null);
@@ -140,19 +141,7 @@ function Presupuesto() {
   const year = new Date().getFullYear(); // current year
 
   const updateAllocated = async (budgetId, allocated) => {
-    const res = await fetch(`http://localhost:8080/api/budgets/${budgetId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ allocated }),
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to update budget");
-    }
-
-    const updatedBudget = await res.json();
+    const updatedBudget = await updateBudget(budgetId, allocated);
 
     setBudgetData((prev) =>
       prev.map((item) =>
@@ -168,21 +157,19 @@ function Presupuesto() {
   };
 
   useEffect(() => {
-    // Fetch yearly budget
-    fetch(`http://localhost:8080/api/budgets?year=${year}&type=presupuesto`)
-      .then((res) => res.json())
-      .then((data) => {
-        setBudgetData(data);
-      });
+    async function loadData() {
+      try {
+        const budgets = await fetchBudgets(year, "presupuesto");
+        const investments = await fetchBudgets(year, "plan de inversiones");
 
-    // Fetch investment plan data
-    fetch(
-      `http://localhost:8080/api/budgets?year=${year}&type=plan de inversiones`,
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setInvestmentData(data);
-      });
+        setBudgetData(budgets);
+        setInvestmentData(investments);
+      } catch (error) {
+        console.error("Error fetching budgets:", error);
+      }
+    }
+
+    loadData();
   }, [year]);
 
   return (

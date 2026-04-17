@@ -4,6 +4,7 @@ import "./Login.css";
 import { LuLock, LuUser } from "react-icons/lu";
 import { AuthContext } from "../../context/AuthContext";
 import { toast } from "sonner";
+import { loginRequest } from "../../services/authService";
 
 function Login() {
   const navigate = useNavigate();
@@ -23,28 +24,9 @@ function Login() {
     e.preventDefault();
 
     try {
-      const formData = new URLSearchParams();
-      formData.append("username", form.username);
-      formData.append("password", form.password);
-
-      const response = await fetch("http://localhost:8080/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData.toString(),
-        credentials: "include",
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        toast.error(data.error || "Error al iniciar sesión");
-        return;
-      }
+      const data = await loginRequest(form.username, form.password);
 
       login(data);
-
       toast.success("Bienvenido!");
 
       setTimeout(() => {
@@ -52,7 +34,7 @@ function Login() {
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Error de conexión con el servidor");
+      toast.error(error.message || "Error de conexión con el servidor");
     }
   };
 

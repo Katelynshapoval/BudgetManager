@@ -33,4 +33,10 @@ public class PurchaseOrderServlet extends HttpServlet {
         ResponseUtil.setupJsonResponse(resp);
         ResponseUtil.sendJson(resp, purchaseOrders);
     }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Extract ID from URL
+        
+    }
 }
