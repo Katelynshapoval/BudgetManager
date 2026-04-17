@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { LuLock, LuUser } from "react-icons/lu";
 import { AuthContext } from "../../context/AuthContext";
+import { toast } from "sonner";
 
 function Login() {
   const navigate = useNavigate();
@@ -38,16 +39,20 @@ function Login() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.error || "Error al iniciar sesión");
+        toast.error(data.error || "Error al iniciar sesión");
         return;
       }
 
       login(data);
 
-      navigate("/");
+      toast.success("Bienvenido!");
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     } catch (error) {
       console.error("Login error:", error);
-      alert("Error de conexión con el servidor");
+      toast.error("Error de conexión con el servidor");
     }
   };
 

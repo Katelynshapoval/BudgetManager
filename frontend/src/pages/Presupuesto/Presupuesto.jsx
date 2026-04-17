@@ -14,12 +14,12 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
   if (!data || data.length === 0) {
     return (
       <div className="p-6 text-center text-primary text-base font-normal">
-        No hay presupuestos disponibles para este filtro.
+        No hay presupuestos disponibles.
       </div>
     );
   }
 
-  const canEdit = user.roleName != "contable";
+  const canEdit = user.roleName !== "contable";
 
   const startEditing = (row) => {
     setEditingId(row.budgetId);
@@ -73,9 +73,6 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
         <tbody>
           {data.map((row) => {
             const isEditing = editingId === row.budgetId;
-            const currentAllocated = isEditing
-              ? Number(editValue || 0)
-              : row.allocated;
 
             return (
               <tr key={row.budgetId}>
@@ -112,7 +109,7 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
 }
 
 function BudgetSection({ id, title, data, user, onUpdateAllocated }) {
-  const isAdmin = user.roleName == "admin";
+  const isAdmin = user.roleName === "admin";
   const [filter, setFilter] = useState(!isAdmin ? user.departmentId : "");
 
   const filteredData = filter

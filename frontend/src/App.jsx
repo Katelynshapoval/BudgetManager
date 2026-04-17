@@ -9,11 +9,13 @@ import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
 import Signup from "./pages/Signup/Signup";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import { Toaster } from "sonner";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <Toaster position="top-center" />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
