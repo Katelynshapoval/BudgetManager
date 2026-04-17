@@ -57,9 +57,21 @@ public class SupplierServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_OK);
             } catch (NumberFormatException e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\": \"ID inválido\"}");
+            } catch (Exception e) {
+                // Capturar errores de integridad referencial
+                if (e.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException ||
+                    e.getMessage().contains("foreign key constraint")) {
+                    response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    response.getWriter().write("{\"error\": \"No se puede eliminar el proveedor porque tiene órdenes de compra asociadas\"}");
+                } else {
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.getWriter().write("{\"error\": \"Error interno del servidor\"}");
+                }
             }
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\": \"ID requerido\"}");
         }
     }
 }

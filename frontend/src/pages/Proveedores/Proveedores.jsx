@@ -21,21 +21,37 @@ const deleteSupplier = async (id, setProveedores) => {
 	if (!window.confirm("¿Estás seguro de borrar este proveedor?")) return;
 
 	try {
+		console.log("Enviando DELETE para ID:", id);
 		const response = await fetch(
 			`http://localhost:8080/api/suppliers?id=${id}`,
 			{
 				method: "DELETE",
 			},
 		);
+		console.log(
+			"Respuesta del servidor:",
+			response.status,
+			response.statusText,
+		);
 
 		if (response.ok) {
+			console.log("Eliminación exitosa en backend, actualizando frontend");
 			// Filtramos por el ID correcto
 			setProveedores((prev) => prev.filter((p) => p.supplierId !== id));
 		} else {
-			alert("Error al eliminar en el servidor");
+			let errorMsg = "Error al eliminar en el servidor";
+			try {
+				const errorData = await response.json();
+				errorMsg = errorData.error || errorMsg;
+			} catch (e) {
+				console.error("Error parseando respuesta:", e);
+			}
+			console.error("Error en backend:", response.status, errorMsg);
+			alert(errorMsg);
 		}
 	} catch (error) {
 		console.error("Error de red:", error);
+		alert("Error de conexión al servidor");
 	}
 };
 
