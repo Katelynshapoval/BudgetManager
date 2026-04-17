@@ -35,6 +35,13 @@ public class SupplierServlet extends HttpServlet {
     }
 
     @Override
+    protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        ResponseUtil.setupJsonResponse(response);
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
