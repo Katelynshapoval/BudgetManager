@@ -35,7 +35,6 @@ public class SupplierServlet extends HttpServlet {
     }
 
     @Override
-<<<<<<< HEAD
     protected void doOptions(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ResponseUtil.setupJsonResponse(response);

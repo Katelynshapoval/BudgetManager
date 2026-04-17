@@ -43,7 +43,6 @@ public class SupplierDAO {
         return suppliers;
     }
 
-<<<<<<< HEAD
     public void delete(int id) {
         String sql = "UPDATE suppliers SET deleted_at = NOW() WHERE supplier_id = ?";
 
