@@ -10,6 +10,7 @@ import { LuLock } from "react-icons/lu";
 import { toast } from "sonner";
 
 import { signupRequest } from "../../services/authService";
+import { fetchDepartments, fetchRoles } from "../../services/metaService";
 
 import "./Signup.css";
 
@@ -42,33 +43,31 @@ function Signup() {
 
   // Fetch departments
   useEffect(() => {
-    const fetchDepartments = async () => {
+    async function loadDepartments() {
       try {
-        const res = await fetch("http://localhost:8080/api/departments");
-        const data = await res.json();
+        const data = await fetchDepartments();
         setDepartments(data);
       } catch (err) {
-        console.error("Error fetching departments:", err);
+        console.error(err);
       }
-    };
+    }
 
-    fetchDepartments();
+    loadDepartments();
   }, []);
 
   // Fetch roles
   useEffect(() => {
-    const fetchRoles = async () => {
+    async function loadRoles() {
       try {
-        const res = await fetch("http://localhost:8080/api/roles");
-        const data = await res.json();
-        setRoles(Array.isArray(data) ? data : []);
+        const data = await fetchRoles();
+        setRoles(data);
       } catch (err) {
-        console.error("Error fetching roles:", err);
+        console.error(err);
         setRoles([]);
       }
-    };
+    }
 
-    fetchRoles();
+    loadRoles();
   }, []);
 
   // Submit handler
