@@ -48,22 +48,28 @@ public class SupplierServlet extends HttpServlet {
         ResponseUtil.setupJsonResponse(response);
 
         String idParam = request.getParameter("id");
+        System.out.println("DELETE request recibido, ID: " + idParam);
 
         if (idParam != null && !idParam.isEmpty()) {
             try {
                 int id = Integer.parseInt(idParam);
+                System.out.println("Llamando a supplierDAO.delete con ID: " + id);
                 supplierDAO.delete(id);
+                System.out.println("DELETE completado exitosamente");
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write("{\"success\": true}");
             } catch (NumberFormatException e) {
+                System.out.println("Error: ID inválido - " + idParam);
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write("{\"error\": \"ID inválido\"}");
             } catch (Exception e) {
+                System.out.println("Error interno en DELETE: " + e.getMessage());
+                e.printStackTrace();
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.getWriter().write("{\"error\": \"Error al eliminar el proveedor\"}");
-                e.printStackTrace();
             }
         } else {
+            System.out.println("Error: ID requerido faltante");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("{\"error\": \"ID requerido\"}");
         }

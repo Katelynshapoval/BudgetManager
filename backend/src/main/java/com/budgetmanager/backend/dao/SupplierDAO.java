@@ -44,7 +44,7 @@ public class SupplierDAO {
     }
 
     public void delete(int id) {
-        String sql = "UPDATE suppliers SET deleted_at = NOW() WHERE supplier_id = ? AND deleted_at IS NULL";
+        String sql = "UPDATE suppliers SET deleted_at = NOW() WHERE supplier_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -52,8 +52,10 @@ public class SupplierDAO {
             stmt.setInt(1, id);
             int rowsAffected = stmt.executeUpdate();
             System.out.println("Proveedores marcados como eliminados: " + rowsAffected);
+            System.out.println("ID eliminado: " + id);
 
         } catch (SQLException e) {
+            System.out.println("Error en delete: " + e.getMessage());
             e.printStackTrace();
         }
     }
