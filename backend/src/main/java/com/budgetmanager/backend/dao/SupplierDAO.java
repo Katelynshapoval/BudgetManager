@@ -12,7 +12,7 @@ public class SupplierDAO {
     public ArrayList<Supplier> getAllSuppliers() {
         ArrayList<Supplier> suppliers = new ArrayList<>();
 
-        String query = "SELECT * FROM suppliers";
+        String query = "SELECT * FROM suppliers WHERE deleted_at IS NULL";
 
         try {
             // Get DB connection
@@ -44,14 +44,14 @@ public class SupplierDAO {
     }
 
     public void delete(int id) {
-        String sql = "DELETE FROM suppliers WHERE supplier_id = ?";
+        String sql = "UPDATE suppliers SET deleted_at = NOW() WHERE supplier_id = ? AND deleted_at IS NULL";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             int rowsAffected = stmt.executeUpdate();
-            System.out.println("Filas eliminadas: " + rowsAffected);
+            System.out.println("Proveedores marcados como eliminados: " + rowsAffected);
 
         } catch (SQLException e) {
             e.printStackTrace();

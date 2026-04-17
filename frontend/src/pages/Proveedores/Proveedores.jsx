@@ -39,15 +39,8 @@ const deleteSupplier = async (id, setProveedores) => {
 			// Filtramos por el ID correcto
 			setProveedores((prev) => prev.filter((p) => p.supplierId !== id));
 		} else {
-			let errorMsg = "Error al eliminar en el servidor";
-			try {
-				const errorData = await response.json();
-				errorMsg = errorData.error || errorMsg;
-			} catch (e) {
-				console.error("Error parseando respuesta:", e);
-			}
-			console.error("Error en backend:", response.status, errorMsg);
-			alert(errorMsg);
+			console.error("Error en backend:", response.status);
+			alert("Error al eliminar el proveedor");
 		}
 	} catch (error) {
 		console.error("Error de red:", error);
