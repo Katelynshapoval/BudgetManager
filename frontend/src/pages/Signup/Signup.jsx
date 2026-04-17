@@ -14,6 +14,19 @@ import { fetchDepartments, fetchRoles } from "../../services/metaService";
 
 import "./Signup.css";
 
+// Constants
+const ROLES = {
+  ADMIN: 1,
+  DEPARTMENT_HEAD: 2,
+  ACCOUNTANT: 3,
+};
+
+const ROLE_LABELS = {
+  1: "Admin",
+  2: "Jefe de departamento",
+  3: "Contable",
+};
+
 function Signup() {
   const navigate = useNavigate();
 
@@ -29,48 +42,33 @@ function Signup() {
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
 
-  const roleLabels = {
-    1: "Admin",
-    2: "Jefe de departamento",
-    3: "Contable",
-  };
-
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Fetch departments
+  // Fetch roles, departments
   useEffect(() => {
-    async function loadDepartments() {
+    async function loadData() {
       try {
-        const data = await fetchDepartments();
-        setDepartments(data);
+        const [deps, rolesData] = await Promise.all([
+          fetchDepartments(),
+          fetchRoles(),
+        ]);
+
+        setDepartments(deps);
+        setRoles(rolesData);
       } catch (err) {
         console.error(err);
+        toast.error("Error cargando datos");
       }
     }
 
-    loadDepartments();
+    loadData();
   }, []);
 
-  // Fetch roles
-  useEffect(() => {
-    async function loadRoles() {
-      try {
-        const data = await fetchRoles();
-        setRoles(data);
-      } catch (err) {
-        console.error(err);
-        setRoles([]);
-      }
-    }
-
-    loadRoles();
-  }, []);
-
-  // Submit handler
+  // Submit
   const handleCreateAccount = (e) => {
     e.preventDefault();
 
@@ -125,7 +123,7 @@ function Signup() {
 
           {/* Name */}
           <div className="inputContainer">
-            <label htmlFor="username">Nombre</label>
+            <label htmlFor="name">Nombre</label>
             <div className="inputWithIcon">
               <LuUser className="inputIcon" />
 
@@ -158,14 +156,15 @@ function Signup() {
                 <option value="">Selecciona un rol</option>
                 {roles.map((r) => (
                   <option key={r.roleId} value={r.roleId}>
-                    {roleLabels[r.roleId]}
+                    {ROLE_LABELS[r.roleId]}
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
-          {roleLabels[form.role] == "Jefe de departamento" && (
+          {/* Department */}
+          {Number(form.role) === ROLES.DEPARTMENT_HEAD && (
             <div className="inputContainer">
               <label htmlFor="department">Departamento</label>
               <div className="inputWithIcon">
@@ -234,7 +233,7 @@ function Signup() {
             >
               Crear Cuenta
             </button>
-            <div className="mt-4 text-sm text-primary">
+            <div className="flex gap-1 justify-center mt-4 text-sm text-primary">
               ¿Ya tienes cuenta?
               <span
                 onClick={() => navigate("/login")}
