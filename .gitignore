@@ -25,3 +25,5 @@ dist-ssr
 
 # Backend db
 config.properties
+
+./out
