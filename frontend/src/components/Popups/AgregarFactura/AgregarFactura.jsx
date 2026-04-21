@@ -4,6 +4,7 @@ import { RiEditLine } from "react-icons/ri";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
 import Modal from "../../Modal/Modal";
 import { uploadInvoice } from "../../../services/invoiceService";
+import { toast } from "sonner";
 
 // Sub-components
 
@@ -62,32 +63,33 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
 
   const handleSubmit = async () => {
     if (!file) {
-      alert("Selecciona un PDF");
+      toast.error("Selecciona un PDF");
       return;
     }
 
     if (!amount) {
-      alert("Introduce un importe");
+      toast.error("Introduce un importe");
       return;
     }
 
-    console.log("UPLOAD DATA:", {
-      file,
-      amount,
-      purchaseOrderId,
-    });
-
     try {
-      await uploadInvoice({
+      const promise = uploadInvoice({
         file,
         amount,
         purchaseOrderId,
       });
 
+      toast.promise(promise, {
+        loading: "Subiendo factura...",
+        success: "Factura subida correctamente",
+        error: "Error subiendo factura",
+      });
+
+      await promise;
+
       onSuccess();
     } catch (err) {
       console.error(err);
-      alert("Error subiendo factura");
     }
   };
 
