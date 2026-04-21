@@ -3,6 +3,7 @@ import { FaRegFileAlt } from "react-icons/fa";
 import { RiEditLine } from "react-icons/ri";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
 import Modal from "../../Modal/Modal";
+import { uploadInvoice } from "../../../services/invoiceService";
 
 // Sub-components
 
@@ -55,45 +56,93 @@ function InvoiceList({ invoices }) {
   );
 }
 
-function AddInvoiceForm({ onCancel }) {
+function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
+  const [file, setFile] = useState(null);
+  const [amount, setAmount] = useState("");
+
+  const handleSubmit = async () => {
+    if (!file) {
+      alert("Selecciona un PDF");
+      return;
+    }
+
+    if (!amount) {
+      alert("Introduce un importe");
+      return;
+    }
+
+    console.log("UPLOAD DATA:", {
+      file,
+      amount,
+      purchaseOrderId,
+    });
+
+    try {
+      await uploadInvoice({
+        file,
+        amount,
+        purchaseOrderId,
+      });
+
+      onSuccess();
+    } catch (err) {
+      console.error(err);
+      alert("Error subiendo factura");
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center gap-4 rounded-xl bg-secondary/60 p-5 md:justify-end">
+      {/* File */}
       <div className="w-full">
         <label
           htmlFor="factura"
           className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-full border-2 border-dashed border-accent bg-secondary px-6 py-4 text-text transition hover:border-accent hover:bg-accent/10"
         >
           <MdOutlineFileUpload className="text-xl text-accent" />
-          <span className="text-sm font-medium">Seleccionar archivo...</span>
+          <span className="text-sm font-medium">
+            {file ? file.name : "Seleccionar archivo..."}
+          </span>
         </label>
 
-        <input id="factura" type="file" accept=".pdf" className="hidden" />
-      </div>
-
-      <div className="inputContainer">
-        <label htmlFor="amount" className="font-normal text-primary">
-          Importe de la factura
-        </label>
         <input
-          id="amount"
-          type="text"
-          required
-          className="bg-background p-2 text-sm"
-          placeholder="0.00€"
+          id="factura"
+          type="file"
+          accept="application/pdf"
+          className="hidden"
+          onChange={(e) => setFile(e.target.files[0])}
         />
       </div>
 
+      {/* Amount */}
+      <div className="inputContainer">
+        <label className="font-normal text-primary">
+          Importe de la factura
+        </label>
+        <input
+          type="number"
+          step="0.01"
+          required
+          className="bg-background p-2 text-sm"
+          placeholder="0.00€"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+      </div>
+
+      {/* Buttons */}
       <div className="flex gap-3">
         <button
           type="button"
-          className="popupButton flex-1 border-primary text-sm text-primary outline-none hover:border-accent hover:text-accent"
+          className="popupButton flex-1 border-primary text-sm text-primary hover:border-accent hover:text-accent"
           onClick={onCancel}
         >
           Cancelar
         </button>
         <button
-          type="submit"
-          className="popupButton flex-1 border-none bg-accent text-sm text-text outline-none hover:bg-primary hover:text-background"
+          type="button"
+          onClick={handleSubmit}
+          className="popupButton flex-1 border-none bg-accent text-sm text-text hover:bg-primary hover:text-background"
         >
           Crear
         </button>
@@ -103,7 +152,14 @@ function AddInvoiceForm({ onCancel }) {
 }
 
 // Main component
-function AgregarFactura({ hidePopup, isOpen, data, hide }) {
+function AgregarFactura({
+  hidePopup,
+  isOpen,
+  data,
+  purchaseOrderId,
+  hide,
+  onUploadSuccess,
+}) {
   const [showAddFile, setShowAddFile] = useState(false);
   const isHistorico = hide ? true : false;
 
@@ -121,7 +177,15 @@ function AgregarFactura({ hidePopup, isOpen, data, hide }) {
       {!isHistorico && (
         <>
           {showAddFile ? (
-            <AddInvoiceForm onCancel={() => setShowAddFile(false)} />
+            <AddInvoiceForm
+              onCancel={() => setShowAddFile(false)}
+              purchaseOrderId={purchaseOrderId}
+              onSuccess={() => {
+                setShowAddFile(false);
+                hidePopup();
+                onUploadSuccess();
+              }}
+            />
           ) : (
             <button
               type="button"

@@ -2,7 +2,9 @@ package com.budgetmanager.backend.controller;
 
 import com.budgetmanager.backend.dao.InvoiceDAO;
 import com.budgetmanager.backend.model.Invoice;
+import com.budgetmanager.backend.util.ResponseUtil;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +12,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,     // 1MB in memory, rest on disk
+        maxFileSize = 10 * 1024 * 1024,      // max size per file (10MB)
+        maxRequestSize = 20 * 1024 * 1024    // total request size (20MB)
+)
 @WebServlet("/api/invoices/file")
 public class InvoiceServlet extends HttpServlet {
     private InvoiceDAO invoiceDAO = new InvoiceDAO();
@@ -19,7 +26,51 @@ public class InvoiceServlet extends HttpServlet {
         int invoiceId = Integer.parseInt(req.getParameter("id"));
 
         Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
+
+        ResponseUtil.setupJsonResponse(resp);
         resp.setContentType("application/pdf");
         resp.getOutputStream().write(invoice.getFile());
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        try {
+            // Get form fields
+            double amount = Double.parseDouble(req.getParameter("amount"));
+            int purchaseOrderId = Integer.parseInt(req.getParameter("purchase_order_id"));
+
+            // Get uploaded file
+            var filePart = req.getPart("file"); // name="file" in form
+            byte[] fileBytes = filePart.getInputStream().readAllBytes();
+
+            // Create Invoice object (id = 0 because DB generates it)
+            Invoice invoice = new Invoice(
+                    0,
+                    fileBytes,
+                    amount,
+                    purchaseOrderId,
+                    null,   // uploaded_at (DB or DAO can handle)
+                    null    // deleted_at
+            );
+
+            boolean success = invoiceDAO.addInvoice(invoice);
+
+            if (success) {
+                resp.setStatus(HttpServletResponse.SC_CREATED);
+                resp.getWriter().write("Invoice uploaded successfully");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write("Failed to upload invoice");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write("Invalid request");
+        }
+
+        ResponseUtil.setupJsonResponse(resp);
+    }
+
 }

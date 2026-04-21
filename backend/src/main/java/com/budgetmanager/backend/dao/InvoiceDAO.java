@@ -100,4 +100,38 @@ public class InvoiceDAO {
 
         return null;
     }
+
+    // Upload an invoice (PDF)
+    public boolean addInvoice(Invoice invoice) {
+        String query = """
+                INSERT INTO invoices (file, amount, purchase_order_id, uploaded_at, deleted_at)
+                VALUES (?, ?, ?, ?, ?)
+                """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setBytes(1, invoice.getFile());
+            stmt.setDouble(2, invoice.getAmount());
+            stmt.setInt(3, invoice.getPurchaseOrderId());
+
+
+            if (invoice.getUploadedAt() != null) {
+                stmt.setTimestamp(4, java.sql.Timestamp.valueOf(invoice.getUploadedAt()));
+            } else {
+                stmt.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
+            }
+
+            if (invoice.getDeletedAt() != null) {
+                stmt.setTimestamp(5, java.sql.Timestamp.valueOf(invoice.getDeletedAt()));
+            } else {
+                stmt.setNull(5, java.sql.Types.TIMESTAMP);
+            }
+
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

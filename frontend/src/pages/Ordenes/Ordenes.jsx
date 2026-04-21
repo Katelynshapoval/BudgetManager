@@ -5,6 +5,7 @@ import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/Nuevo
 import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactura";
 import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
 import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
+import { getOrders } from "../../services/orderService";
 
 function Ordenes() {
   const [search, setSearch] = useState("");
@@ -28,14 +29,17 @@ function Ordenes() {
     return matchesSearch && matchesDepartment;
   });
 
+  const fetchOrders = () => {
+    getOrders()
+      .then(setOrders)
+      .catch((err) => console.error(err));
+  };
+
   useEffect(() => {
-    fetch("http://localhost:8080/api/purchase-orders")
-      .then((res) => res.json())
-      .then((data) => {
-        setOrders(data);
-      })
-      .catch((err) => console.error("Error fetching purchase orders:", err));
+    fetchOrders();
   }, []);
+
+  console.log("SELECTED ORDEN:", selectedOrden);
 
   return (
     <div className="page">
@@ -53,6 +57,9 @@ function Ordenes() {
           hidePopup={() => setAddInvoiceShow(false)}
           isOpen={addInvoiceShow}
           data={selectedOrden.invoices}
+          purchaseOrderId={selectedOrden.purchaseOrderId}
+          hide={false}
+          onUploadSuccess={fetchOrders}
         />
       )}
 
