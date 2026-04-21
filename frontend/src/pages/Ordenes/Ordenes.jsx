@@ -6,6 +6,7 @@ import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactur
 import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
 import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
 import { getOrders } from "../../services/orderService";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 function Ordenes() {
   // Search + filter state
@@ -14,6 +15,7 @@ function Ordenes() {
 
   // Orders data
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Popup states
   const [addOrdenShow, setAddOrdenShow] = useState(false);
@@ -41,11 +43,14 @@ function Ordenes() {
 
   const fetchOrders = async () => {
     try {
+      setLoading(true);
       const data = await getOrders();
       setOrders(data);
       return data;
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,7 +120,9 @@ function Ordenes() {
       </div>
 
       {/* Table or empty state */}
-      {filteredOrdenes.length === 0 ? (
+      {loading ? (
+        <LoadingSpinner />
+      ) : filteredOrdenes.length === 0 ? (
         <div className="mt-6 rounded-lg bg-secondary/60 p-6 text-center text-sm text-primary">
           No se encontraron órdenes de compra
         </div>
