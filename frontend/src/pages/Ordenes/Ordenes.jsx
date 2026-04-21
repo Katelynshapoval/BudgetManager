@@ -8,43 +8,57 @@ import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
 import { getOrders } from "../../services/orderService";
 
 function Ordenes() {
+  // Search + filter state
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
+
+  // Orders data
   const [orders, setOrders] = useState([]);
 
+  // Popup states
   const [addOrdenShow, setAddOrdenShow] = useState(false);
   const [addInvoiceShow, setAddInvoiceShow] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
+  // Currently selected order
   const [selectedOrden, setSelectedOrden] = useState(null);
 
+  // Normalize search once (avoid repeating toLowerCase)
+  const searchLower = search.toLowerCase();
+
+  // Filter logic (search + department)
   const filteredOrdenes = orders.filter((row) => {
     const matchesSearch =
-      row.notes?.toLowerCase().includes(search.toLowerCase()) ||
-      row.generatedOrderCode?.toLowerCase().includes(search.toLowerCase()) ||
-      row.investmentPlanCode?.toLowerCase().includes(search.toLowerCase());
+      !searchLower ||
+      row.notes?.toLowerCase().includes(searchLower) ||
+      row.generatedOrderCode?.toLowerCase().includes(searchLower) ||
+      row.investmentPlanCode?.toLowerCase().includes(searchLower);
 
-    const matchesDepartment = !filter || row.departmentId === Number(filter);
+    const matchesDepartment = !filter || row.departmentId == Number(filter);
 
     return matchesSearch && matchesDepartment;
   });
 
-  const fetchOrders = () => {
-    getOrders()
-      .then(setOrders)
-      .catch((err) => console.error(err));
+  // Fetch orders from API
+  const fetchOrders = async () => {
+    try {
+      const data = await getOrders();
+      setOrders(data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  // Initial load
   useEffect(() => {
     fetchOrders();
   }, []);
-
-  console.log("SELECTED ORDEN:", selectedOrden);
 
   return (
     <div className="page">
       <h1>Panel de Órdenes de Compra</h1>
 
+      {/* Create order popup */}
       {addOrdenShow && (
         <NuevoOrdenDeCompra
           hidePopup={() => setAddOrdenShow(false)}
@@ -52,6 +66,7 @@ function Ordenes() {
         />
       )}
 
+      {/* Add invoice popup */}
       {addInvoiceShow && selectedOrden && (
         <AgregarFactura
           hidePopup={() => setAddInvoiceShow(false)}
@@ -63,6 +78,7 @@ function Ordenes() {
         />
       )}
 
+      {/* Order details popup */}
       {showDetails && selectedOrden && (
         <DetallesOrden
           hidePopup={() => setShowDetails(false)}
@@ -71,6 +87,7 @@ function Ordenes() {
         />
       )}
 
+      {/* Top controls: search + filters */}
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
         <div className="order-2 md:order-1 md:max-w-full lg:max-w-100 searchBar">
           <CiSearch className="search-icon iconProveedores" />
@@ -98,6 +115,7 @@ function Ordenes() {
         </div>
       </div>
 
+      {/* Table or empty state */}
       {filteredOrdenes.length === 0 ? (
         <div className="mt-6 rounded-lg bg-secondary/60 p-6 text-center text-sm text-primary">
           No se encontraron órdenes de compra
@@ -105,7 +123,7 @@ function Ordenes() {
       ) : (
         <OrdenesTable
           ordenes={filteredOrdenes}
-          showEdit={true}
+          showEdit
           onInvoices={(row) => {
             setSelectedOrden(row);
             setAddInvoiceShow(true);

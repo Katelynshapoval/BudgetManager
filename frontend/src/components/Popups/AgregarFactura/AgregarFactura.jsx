@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useState } from "react";
 import { FaRegFileAlt } from "react-icons/fa";
 import { RiEditLine } from "react-icons/ri";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
@@ -6,8 +6,7 @@ import Modal from "../../Modal/Modal";
 import { uploadInvoice } from "../../../services/invoiceService";
 import { toast } from "sonner";
 
-// Sub-components
-
+// Single invoice item
 function InvoiceItem({ id, amount }) {
   const handleOpen = () => {
     window.open(`http://localhost:8080/api/invoices/file?id=${id}`, "_blank");
@@ -35,28 +34,7 @@ function InvoiceItem({ id, amount }) {
   );
 }
 
-function InvoiceList({ invoices }) {
-  if (invoices.length === 0) {
-    return (
-      <div className="rounded-lg bg-secondary/60 p-5 text-center text-sm font-normal">
-        No hay facturas adjuntas
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex max-h-50 flex-col gap-2 overflow-y-auto">
-      {invoices.map((invoice, index) => (
-        <InvoiceItem
-          key={invoice.invoiceId}
-          id={invoice.invoiceId}
-          amount={invoice.amount}
-        />
-      ))}
-    </div>
-  );
-}
-
+// Form to upload invoice
 function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
   const [file, setFile] = useState(null);
   const [amount, setAmount] = useState("");
@@ -75,7 +53,7 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
     try {
       const promise = uploadInvoice({
         file,
-        amount,
+        amount: parseFloat(amount),
         purchaseOrderId,
       });
 
@@ -86,7 +64,6 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
       });
 
       await promise;
-
       onSuccess();
     } catch (err) {
       console.error(err);
@@ -95,7 +72,6 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
 
   return (
     <div className="flex flex-col justify-center gap-4 rounded-xl bg-secondary/60 p-5 md:justify-end">
-      {/* File */}
       <div className="w-full">
         <label
           htmlFor="factura"
@@ -112,11 +88,24 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
           type="file"
           accept="application/pdf"
           className="hidden"
-          onChange={(e) => setFile(e.target.files[0])}
+          // Make sure it's pdf
+          onChange={(e) => {
+            const selectedFile = e.target.files?.[0];
+
+            if (!selectedFile) return;
+
+            if (selectedFile.type !== "application/pdf") {
+              toast.error("El archivo debe ser un PDF");
+              e.target.value = null;
+              setFile(null);
+              return;
+            }
+
+            setFile(selectedFile);
+          }}
         />
       </div>
 
-      {/* Amount */}
       <div className="inputContainer">
         <label className="font-normal text-primary">
           Importe de la factura
@@ -132,7 +121,6 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
         />
       </div>
 
-      {/* Buttons */}
       <div className="flex gap-3">
         <button
           type="button"
@@ -163,19 +151,28 @@ function AgregarFactura({
   onUploadSuccess,
 }) {
   const [showAddFile, setShowAddFile] = useState(false);
-  const isHistorico = hide ? true : false;
+  const isHistorico = hide;
 
   return (
-    <Modal
-      title="Facturas"
-      onClose={hidePopup}
-      isOpen={isOpen}
-      footer={null} // removes default footer
-    >
+    <Modal title="Facturas" onClose={hidePopup} isOpen={isOpen} footer={null}>
       {/* Invoice list */}
-      <InvoiceList invoices={data} />
+      {data.length === 0 ? (
+        <div className="rounded-lg bg-secondary/60 p-5 text-center text-sm font-normal">
+          No hay facturas adjuntas
+        </div>
+      ) : (
+        <div className="flex max-h-50 flex-col gap-2 overflow-y-auto">
+          {data.map((invoice) => (
+            <InvoiceItem
+              key={invoice.invoiceId}
+              id={invoice.invoiceId}
+              amount={invoice.amount}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* Upload button / Add form */}
+      {/* Upload section */}
       {!isHistorico && (
         <>
           {showAddFile ? (
