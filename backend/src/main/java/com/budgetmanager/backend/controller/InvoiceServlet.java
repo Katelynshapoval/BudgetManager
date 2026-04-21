@@ -41,17 +41,17 @@ public class InvoiceServlet extends HttpServlet {
             int purchaseOrderId = Integer.parseInt(req.getParameter("purchase_order_id"));
 
             // Get uploaded file
-            var filePart = req.getPart("file"); // name="file" in form
+            var filePart = req.getPart("file");
             byte[] fileBytes = filePart.getInputStream().readAllBytes();
 
-            // Create Invoice object (id = 0 because DB generates it)
+            // Create Invoice object
             Invoice invoice = new Invoice(
                     0,
                     fileBytes,
                     amount,
                     purchaseOrderId,
-                    null,   // uploaded_at (DB or DAO can handle)
-                    null    // deleted_at
+                    null,
+                    null
             );
 
             boolean success = invoiceDAO.addInvoice(invoice);
@@ -62,6 +62,44 @@ public class InvoiceServlet extends HttpServlet {
             } else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 resp.getWriter().write("Failed to upload invoice");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write("Invalid request");
+        }
+
+        ResponseUtil.setupJsonResponse(resp);
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
+        ResponseUtil.setupJsonResponse(resp);
+        resp.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            int invoiceId = Integer.parseInt(req.getParameter("id"));
+
+            Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
+
+            if (invoice == null) {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.getWriter().write("Invoice not found");
+                return;
+            }
+
+            boolean success = invoiceDAO.deleteInvoice(invoice);
+
+            if (success) {
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write("Invoice deleted successfully");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write("Failed to delete invoice");
             }
 
         } catch (Exception e) {

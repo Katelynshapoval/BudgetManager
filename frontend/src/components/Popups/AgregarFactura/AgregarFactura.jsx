@@ -3,12 +3,12 @@ import { FaRegFileAlt } from "react-icons/fa";
 import { RiEditLine } from "react-icons/ri";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
 import Modal from "../../Modal/Modal";
-import { uploadInvoice } from "../../../services/invoiceService";
+import { uploadInvoice, deleteInvoice } from "../../../services/invoiceService";
 import { toast } from "sonner";
 import { EUR } from "../../../utils/currency";
 
 // Single invoice item
-function InvoiceItem({ id, amount }) {
+function InvoiceItem({ id, amount, onDelete }) {
   const handleOpen = () => {
     window.open(`http://localhost:8080/api/invoices/file?id=${id}`, "_blank");
   };
@@ -31,7 +31,10 @@ function InvoiceItem({ id, amount }) {
 
       <div className="flex gap-4 text-lg">
         <RiEditLine className="cursor-pointer" />
-        <MdDeleteOutline className="cursor-pointer" />
+        <MdDeleteOutline
+          className="cursor-pointer hover:text-red-500"
+          onClick={() => onDelete(id)}
+        />
       </div>
     </div>
   );
@@ -163,6 +166,33 @@ function AgregarFactura({
   // total sum of invoices
   const total = invoices.reduce((sum, inv) => sum + (inv.amount || 0), 0);
 
+  const handleDelete = async (id) => {
+    try {
+      const promise = deleteInvoice(id);
+
+      toast.promise(promise, {
+        loading: "Eliminando factura...",
+        success: "Factura eliminada",
+        error: "Error al eliminar factura",
+      });
+
+      await promise;
+
+      const updatedOrders = await onUploadSuccess();
+      if (!updatedOrders) return;
+
+      const updatedOrder = updatedOrders.find(
+        (o) => o.purchaseOrderId == purchaseOrderId,
+      );
+
+      if (updatedOrder) {
+        setInvoices(updatedOrder.invoices);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <Modal title="Facturas" onClose={hidePopup} isOpen={isOpen} footer={null}>
       {/* Invoice list */}
@@ -177,6 +207,7 @@ function AgregarFactura({
               key={invoice.invoiceId}
               id={invoice.invoiceId}
               amount={invoice.amount}
+              onDelete={handleDelete}
             />
           ))}
         </div>

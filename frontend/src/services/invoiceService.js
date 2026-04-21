@@ -14,3 +14,13 @@ export async function uploadInvoice({ file, amount, purchaseOrderId }) {
 
   return res.text();
 }
+
+export async function deleteInvoice(id) {
+  const res = await fetch(`http://localhost:8080/api/invoices/file?id=${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) throw new Error("Failed to delete invoice");
+
+  return res.text();
+}

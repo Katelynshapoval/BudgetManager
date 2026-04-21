@@ -134,4 +134,28 @@ public class InvoiceDAO {
         }
         return false;
     }
+
+    public boolean deleteInvoice(Invoice invoice) {
+        String query = """
+                UPDATE invoices
+                SET deleted_at = ?
+                WHERE invoice_id = ?
+                  AND deleted_at IS NULL
+                """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setTimestamp(1, new java.sql.Timestamp(System.currentTimeMillis()));
+            stmt.setInt(2, invoice.getInvoiceId());
+
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }
