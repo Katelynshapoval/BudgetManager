@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaRegFileAlt } from "react-icons/fa";
 import { RiEditLine } from "react-icons/ri";
 import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
 import Modal from "../../Modal/Modal";
 import { uploadInvoice } from "../../../services/invoiceService";
 import { toast } from "sonner";
+import { EUR } from "../../../utils/currency";
 
 // Single invoice item
 function InvoiceItem({ id, amount }) {
@@ -23,7 +24,9 @@ function InvoiceItem({ id, amount }) {
         >
           Ver factura #{id}
         </button>
-        <p className="font-light">Importe: {amount}</p>
+
+        {/* formatted amount */}
+        <p className="font-light">Importe: {EUR.format(amount)}</p>
       </div>
 
       <div className="flex gap-4 text-lg">
@@ -88,7 +91,6 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
           type="file"
           accept="application/pdf"
           className="hidden"
-          // Make sure it's pdf
           onChange={(e) => {
             const selectedFile = e.target.files?.[0];
 
@@ -151,18 +153,26 @@ function AgregarFactura({
   onUploadSuccess,
 }) {
   const [showAddFile, setShowAddFile] = useState(false);
+  const [invoices, setInvoices] = useState(data);
   const isHistorico = hide;
+
+  useEffect(() => {
+    setInvoices(data);
+  }, [data]);
+
+  // total sum of invoices
+  const total = invoices.reduce((sum, inv) => sum + (inv.amount || 0), 0);
 
   return (
     <Modal title="Facturas" onClose={hidePopup} isOpen={isOpen} footer={null}>
       {/* Invoice list */}
-      {data.length === 0 ? (
+      {invoices.length === 0 ? (
         <div className="rounded-lg bg-secondary/60 p-5 text-center text-sm font-normal">
           No hay facturas adjuntas
         </div>
       ) : (
         <div className="flex max-h-50 flex-col gap-2 overflow-y-auto">
-          {data.map((invoice) => (
+          {invoices.map((invoice) => (
             <InvoiceItem
               key={invoice.invoiceId}
               id={invoice.invoiceId}
@@ -172,6 +182,12 @@ function AgregarFactura({
         </div>
       )}
 
+      {/* total summary */}
+      <div className="mt-4 flex justify-between items-center text-sm text-primary border-t border-primary/20 pt-3">
+        <span>Total facturas</span>
+        <span className="font-medium">{EUR.format(total)}</span>
+      </div>
+
       {/* Upload section */}
       {!isHistorico && (
         <>
@@ -179,10 +195,19 @@ function AgregarFactura({
             <AddInvoiceForm
               onCancel={() => setShowAddFile(false)}
               purchaseOrderId={purchaseOrderId}
-              onSuccess={() => {
+              onSuccess={async () => {
                 setShowAddFile(false);
-                hidePopup();
-                onUploadSuccess();
+
+                const updatedOrders = await onUploadSuccess();
+                if (!updatedOrders) return;
+
+                const updatedOrder = updatedOrders.find(
+                  (o) => o.purchaseOrderId == purchaseOrderId,
+                );
+
+                if (updatedOrder) {
+                  setInvoices(updatedOrder.invoices);
+                }
               }}
             />
           ) : (

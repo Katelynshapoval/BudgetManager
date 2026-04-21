@@ -23,10 +23,10 @@ function Ordenes() {
   // Currently selected order
   const [selectedOrden, setSelectedOrden] = useState(null);
 
-  // Normalize search once (avoid repeating toLowerCase)
+  // Normalize search
   const searchLower = search.toLowerCase();
 
-  // Filter logic (search + department)
+  // Filter logic
   const filteredOrdenes = orders.filter((row) => {
     const matchesSearch =
       !searchLower ||
@@ -39,17 +39,16 @@ function Ordenes() {
     return matchesSearch && matchesDepartment;
   });
 
-  // Fetch orders from API
   const fetchOrders = async () => {
     try {
       const data = await getOrders();
       setOrders(data);
+      return data;
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Initial load
   useEffect(() => {
     fetchOrders();
   }, []);

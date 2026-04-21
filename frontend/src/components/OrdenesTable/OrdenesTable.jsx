@@ -23,41 +23,80 @@ function OrdenesTable({
         </thead>
 
         <tbody>
-          {ordenes.map((row) => (
-            <tr key={row.purchaseOrderId}>
-              <td>{row.generatedOrderCode ? "Presupuesto" : "Inversión"}</td>
+          {ordenes.map((row) => {
+            // total amount from all invoices
+            const totalFacturas = row.invoices.reduce(
+              (sum, inv) => sum + (inv.amount || 0),
+              0,
+            );
 
-              <td>{row.generatedOrderCode || row.investmentPlanCode}</td>
+            const count = row.invoices.length;
+            const hasInvoices = count > 0;
+            const isComplete = totalFacturas >= row.orderAmount;
+            const isPartial = hasInvoices && !isComplete;
 
-              <td>{row.notes}</td>
+            // default = red (no invoices or incomplete)
+            let buttonClass =
+              "viewInvoice bg-red-100 text-red-700 border-red-300";
 
-              <td>{EUR.format(row.orderAmount)}</td>
+            if (hasInvoices) {
+              if (isComplete) {
+                // fully covered
+                buttonClass =
+                  "viewInvoice bg-green-100 text-green-700 border-green-300";
+              } else if (isPartial) {
+                // partially covered
+                buttonClass =
+                  "viewInvoice bg-yellow-100 text-yellow-700 border-yellow-300";
+              }
+            }
 
-              <td>
-                <button
-                  className={
-                    row.invoices.length === 0 ? "addInvoice" : "viewInvoice"
-                  }
-                  onClick={() => onInvoices(row)}
-                >
-                  {row.invoices.length === 0 && showEdit
-                    ? "Agregar factura"
-                    : `${row.invoices.length} ${row.invoices.length === 1 ? "factura" : "facturas"}`}
-                </button>
-              </td>
+            // handle singular/plural
+            const facturaText = count === 1 ? "factura" : "facturas";
 
-              <td>{row.orderDate}</td>
+            let label = "";
+            if (!hasInvoices) {
+              label = "0 facturas";
+            } else if (isComplete) {
+              label = `${count} ${facturaText} (completo)`;
+            } else if (isPartial) {
+              label = `${count} ${facturaText} (${EUR.format(totalFacturas)})`;
+            } else {
+              label = `${count} ${facturaText}`;
+            }
 
-              <td className="actionCell">
-                {showEdit && <RiEditLine className="tableActionIcon" />}
+            return (
+              <tr key={row.purchaseOrderId}>
+                <td>{row.generatedOrderCode ? "Presupuesto" : "Inversión"}</td>
 
-                <RiInfoI
-                  className="tableActionIcon"
-                  onClick={() => onViewDetails(row)}
-                />
-              </td>
-            </tr>
-          ))}
+                <td>{row.generatedOrderCode || row.investmentPlanCode}</td>
+
+                <td>{row.notes}</td>
+
+                <td>{EUR.format(row.orderAmount)}</td>
+
+                <td>
+                  <button
+                    className={buttonClass}
+                    onClick={() => onInvoices(row)}
+                  >
+                    {label}
+                  </button>
+                </td>
+
+                <td>{row.orderDate}</td>
+
+                <td className="actionCell">
+                  {showEdit && <RiEditLine className="tableActionIcon" />}
+
+                  <RiInfoI
+                    className="tableActionIcon"
+                    onClick={() => onViewDetails(row)}
+                  />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
