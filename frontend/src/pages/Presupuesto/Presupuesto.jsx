@@ -111,6 +111,8 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
 
 function BudgetSection({ id, title, data, user, onUpdateAllocated }) {
   const isAdmin = user.roleName === "admin";
+  const isContable = user.roleName === "contable";
+
   const [filter, setFilter] = useState(!isAdmin ? user.departmentId : "");
 
   const filteredData = filter
@@ -118,9 +120,9 @@ function BudgetSection({ id, title, data, user, onUpdateAllocated }) {
     : data;
 
   return (
-    <Accordion title={title} defaultOpen={!isAdmin}>
+    <Accordion title={title} defaultOpen={!isAdmin && !isContable}>
       <div className="p-6">
-        {isAdmin && (
+        {(isAdmin || isContable) && (
           <DepartmentFilter id={id} value={filter} onChange={setFilter} />
         )}
         <BudgetTable

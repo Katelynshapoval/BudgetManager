@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { CiSearch } from "react-icons/ci";
 import { IoAddOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
@@ -6,6 +6,8 @@ import { RiEditLine } from "react-icons/ri";
 
 import NuevoProveedor from "../../components/Popups/NuevoProveedor/NuevoProveedor";
 import { getSuppliers } from "../../services/supplierService";
+
+import { AuthContext } from "../../context/AuthContext";
 
 const COLUMN_HEADERS = [
   "Nombre",
@@ -38,7 +40,7 @@ const deleteSupplier = async (id, setProveedores) => {
   }
 };
 
-function ProveedorRow({ proveedor, setProveedores }) {
+function ProveedorRow({ proveedor, setProveedores, canEdit }) {
   return (
     <tr>
       <td>{proveedor.name}</td>
@@ -46,13 +48,15 @@ function ProveedorRow({ proveedor, setProveedores }) {
       <td>{proveedor.phone}</td>
       <td>{proveedor.taxId}</td>
       <td>{proveedor.notes}</td>
-      <td className="actionCell">
-        <RiEditLine className="tableActionIcon" />
-        <MdDeleteOutline
-          className="tableActionIcon"
-          onClick={() => deleteSupplier(proveedor.supplierId, setProveedores)}
-        />
-      </td>
+      {canEdit && (
+        <td className="actionCell">
+          <RiEditLine className="tableActionIcon" />
+          <MdDeleteOutline
+            className="tableActionIcon"
+            onClick={() => deleteSupplier(proveedor.supplierId, setProveedores)}
+          />
+        </td>
+      )}
     </tr>
   );
 }
@@ -72,6 +76,9 @@ function Proveedor() {
   const [proveedores, setProveedores] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const { user } = useContext(AuthContext);
+  const canEdit = user.roleName !== "contable";
 
   const filteredProveedores = proveedores.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()),
@@ -117,13 +124,15 @@ function Proveedor() {
           />
         </div>
 
-        <button
-          className="addNewButton"
-          onClick={() => setAddProveedorShow(true)}
-        >
-          <IoAddOutline className="iconProveedores" />
-          Nuevo proveedor
-        </button>
+        {canEdit && (
+          <button
+            className="addNewButton"
+            onClick={() => setAddProveedorShow(true)}
+          >
+            <IoAddOutline className="iconProveedores" />
+            Nuevo proveedor
+          </button>
+        )}
       </div>
 
       <div className="hideHorizontalScroll">
@@ -133,7 +142,7 @@ function Proveedor() {
               {COLUMN_HEADERS.map((header) => (
                 <th key={header}>{header}</th>
               ))}
-              <th className="actionCell">Acciones</th>
+              {canEdit && <th className="actionCell">Acciones</th>}
             </tr>
           </thead>
 
@@ -148,6 +157,7 @@ function Proveedor() {
                   key={p.supplierId}
                   proveedor={p}
                   setProveedores={setProveedores}
+                  canEdit={canEdit}
                 />
               ))
             ) : (
