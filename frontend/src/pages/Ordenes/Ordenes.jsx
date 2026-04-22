@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { CiSearch } from "react-icons/ci";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/NuevoOrdenCompra";
@@ -7,8 +7,13 @@ import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
 import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
 import { getOrders } from "../../services/orderService";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { AuthContext } from "../../context/AuthContext";
 
 function Ordenes() {
+  // User
+  const { user } = useContext(AuthContext);
+  const isAdmin = user.roleName === "admin";
+
   // Search + filter state
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
@@ -104,11 +109,13 @@ function Ordenes() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto md:ml-auto order-1 md:order-2">
-          <DepartmentFilter
-            id="ordenFilter"
-            value={filter}
-            onChange={setFilter}
-          />
+          {isAdmin && (
+            <DepartmentFilter
+              id="ordenFilter"
+              value={filter}
+              onChange={setFilter}
+            />
+          )}
 
           <button
             className="addNewButton"
