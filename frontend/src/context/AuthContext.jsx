@@ -8,11 +8,24 @@ export const AuthProvider = ({ children }) => {
 
   // If user has logged in before
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    fetch("/api/me", {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data) => {
+        setUser(data);
+        localStorage.setItem("user", JSON.stringify(data));
+      })
+      .catch(() => {
+        setUser(null);
+        localStorage.removeItem("user");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   // Login
