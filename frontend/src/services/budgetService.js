@@ -1,5 +1,5 @@
 export async function updateBudget(budgetId, allocated) {
-  const res = await fetch(`http://localhost:8080/api/budgets/${budgetId}`, {
+  const res = await fetch(`/api/budgets/${budgetId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ allocated }),
@@ -11,8 +11,6 @@ export async function updateBudget(budgetId, allocated) {
 }
 
 export async function fetchBudgets(year, type) {
-  const res = await fetch(
-    `http://localhost:8080/api/budgets?year=${year}&type=${type}`,
-  );
+  const res = await fetch(`/api/budgets?year=${year}&type=${type}`);
   return res.json();
 }

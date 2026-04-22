@@ -1,5 +1,5 @@
 export async function fetchDepartments() {
-  const res = await fetch("http://localhost:8080/api/departments");
+  const res = await fetch("/api/departments");
 
   if (!res.ok) throw new Error("Error fetching departments");
 
@@ -7,7 +7,7 @@ export async function fetchDepartments() {
 }
 
 export async function fetchRoles() {
-  const res = await fetch("http://localhost:8080/api/roles");
+  const res = await fetch("/api/roles");
 
   if (!res.ok) throw new Error("Error fetching roles");
 
