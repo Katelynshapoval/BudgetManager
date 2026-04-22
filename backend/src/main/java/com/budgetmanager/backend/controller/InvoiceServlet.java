@@ -13,9 +13,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @MultipartConfig(
-        fileSizeThreshold = 1024 * 1024,     // 1MB in memory, rest on disk
-        maxFileSize = 10 * 1024 * 1024,      // max size per file (10MB)
-        maxRequestSize = 20 * 1024 * 1024    // total request size (20MB)
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 10 * 1024 * 1024,
+        maxRequestSize = 20 * 1024 * 1024
 )
 @WebServlet("/api/invoices/file")
 public class InvoiceServlet extends HttpServlet {
@@ -23,28 +23,33 @@ public class InvoiceServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int invoiceId = Integer.parseInt(req.getParameter("id"));
 
+        ResponseUtil.setupFileResponse(resp, "application/pdf");
+
+        int invoiceId = Integer.parseInt(req.getParameter("id"));
         Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
 
-        ResponseUtil.setupJsonResponse(resp);
-        resp.setContentType("application/pdf");
+        if (invoice == null) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            resp.getWriter().write("Invoice not found");
+            return;
+        }
+
         resp.getOutputStream().write(invoice.getFile());
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        ResponseUtil.setupJsonResponse(resp);
+
         try {
-            // Get form fields
             double amount = Double.parseDouble(req.getParameter("amount"));
             int purchaseOrderId = Integer.parseInt(req.getParameter("purchase_order_id"));
 
-            // Get uploaded file
             var filePart = req.getPart("file");
             byte[] fileBytes = filePart.getInputStream().readAllBytes();
 
-            // Create Invoice object
             Invoice invoice = new Invoice(
                     0,
                     fileBytes,
@@ -69,18 +74,20 @@ public class InvoiceServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write("Invalid request");
         }
-
-        ResponseUtil.setupJsonResponse(resp);
     }
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
+        // handles preflight requests
         ResponseUtil.setupJsonResponse(resp);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        ResponseUtil.setupJsonResponse(resp);
+
         try {
             int invoiceId = Integer.parseInt(req.getParameter("id"));
 
@@ -107,8 +114,5 @@ public class InvoiceServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write("Invalid request");
         }
-
-        ResponseUtil.setupJsonResponse(resp);
     }
-
 }

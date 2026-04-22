@@ -22,6 +22,17 @@ public class ResponseUtil {
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
 
+    public static void setupFileResponse(HttpServletResponse resp, String contentType) {
+        resp.setContentType(contentType);
+        resp.setCharacterEncoding("UTF-8");
+
+        // same CORS headers are still required for downloads
+        resp.setHeader("Access-Control-Allow-Origin", FRONTEND_ORIGIN);
+        resp.setHeader("Access-Control-Allow-Credentials", "true");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    }
+
     public static void sendJson(HttpServletResponse resp, Object data) throws IOException {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>)
