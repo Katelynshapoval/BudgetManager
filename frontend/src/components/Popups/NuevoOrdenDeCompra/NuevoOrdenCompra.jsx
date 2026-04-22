@@ -2,17 +2,30 @@ import Modal from "../../Modal/Modal";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getSuppliers } from "../../../services/supplierService";
+import { getBudgetTypes } from "../../../services/budgetTypesService";
 
 function NuevoOrdenDeCompra({ hidePopup, isOpen }) {
   const [proveedores, setProveedores] = useState([]);
+  const [tiposPresupuesto, setTiposPresupuesto] = useState([]);
   const [selectedDept, setSelectedDept] = useState(null);
 
-  const loadSuppliers = async (departmentId) => {
+  // Load suppliers
+  const loadSuppliers = async () => {
     try {
-      const data = await getSuppliers(departmentId);
+      const data = await getSuppliers({ departmentId: selectedDept });
       setProveedores(data);
-    } catch (err) {
+    } catch {
       toast.error("Error cargando proveedores");
+    }
+  };
+
+  // Load budget types
+  const loadBudgetTypes = async () => {
+    try {
+      const data = await getBudgetTypes();
+      setTiposPresupuesto(data);
+    } catch {
+      toast.error("Error cargando tipos de presupuesto");
     }
   };
 
@@ -20,13 +33,17 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen }) {
     loadSuppliers();
   }, [selectedDept]);
 
+  useEffect(() => {
+    loadBudgetTypes();
+  }, []);
+
   return (
     <Modal title="Crear un Órden de Compra" onClose={hidePopup} isOpen={isOpen}>
+      {/* Proveedor */}
       <div className="popupInputContainer">
-        <label htmlFor="proveedor">Proveedor</label>
-        <select id="proveedor" className="input">
+        <label>Proveedor</label>
+        <select className="input">
           <option value="">Seleccionar proveedor</option>
-
           {proveedores.map((p) => (
             <option key={p.supplierId} value={p.supplierId}>
               {p.name}
@@ -35,34 +52,38 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen }) {
         </select>
       </div>
 
+      {/* Tipo presupuesto */}
       <div className="popupInputContainer">
-        <label htmlFor="cantidadOrden">Cantidad</label>
-        <input id="cantidadOrden" type="number" className="input" />
+        <label>Origen de Fondos</label>
+        <select className="input">
+          <option value="">Seleccionar tipo</option>
+          {tiposPresupuesto.map((t) => (
+            <option key={t.budgetTypeId} value={t.budgetTypeId}>
+              {t.name.charAt(0).toUpperCase() + t.name.slice(1)}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Rest of fields */}
+      <div className="popupInputContainer">
+        <label>Cantidad</label>
+        <input type="number" className="input" />
       </div>
 
       <div className="popupInputContainer">
-        <label htmlFor="descripcionOrden">Descripción</label>
-        <input id="descripcionOrden" type="text" className="input" />
+        <label>Descripción</label>
+        <input type="text" className="input" />
       </div>
 
       <div className="popupInputContainer">
-        <label htmlFor="fechaOrden">Fecha de Orden</label>
-        <input id="fechaOrden" type="date" className="input" />
+        <label>Fecha de Orden</label>
+        <input type="date" className="input" />
       </div>
 
       <div className="popupInputContainer">
-        <label htmlFor="fungibleOrden">Fungible</label>
-        <input id="fungibleOrden" type="checkbox" className="input" />
-      </div>
-
-      <div className="popupInputContainer">
-        <label htmlFor="tipoPresupuesto">Origen de Fondos</label>
-        <input id="tipoPresupuesto" type="checkbox" className="input" />
-      </div>
-
-      <div className="popupInputContainer">
-        <label htmlFor="tipoPresupuesto">Facturas (opcional)</label>
-        <input id="tipoPresupuesto" type="checkbox" className="input" />
+        <label>Fungible</label>
+        <input type="checkbox" />
       </div>
     </Modal>
   );
