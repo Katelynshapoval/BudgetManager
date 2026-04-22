@@ -49,9 +49,17 @@ function Ordenes() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
+
       const data = await getOrders();
-      setOrders(data);
-      return data;
+
+      const currentYear = new Date().getFullYear();
+
+      const currentOrders = data.filter((o) => {
+        const year = new Date(o.orderDate).getFullYear();
+        return year === currentYear;
+      });
+
+      setOrders(currentOrders);
     } catch (err) {
       console.error(err);
     } finally {
