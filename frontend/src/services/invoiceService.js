@@ -5,7 +5,7 @@ export async function uploadInvoice({ file, amount, purchaseOrderId }) {
   formData.append("amount", amount);
   formData.append("purchase_order_id", purchaseOrderId);
 
-  const res = await fetch(`http://localhost:8080/api/invoices/file`, {
+  const res = await fetch(`/api/invoices/file`, {
     method: "POST",
     body: formData,
   });
@@ -16,7 +16,7 @@ export async function uploadInvoice({ file, amount, purchaseOrderId }) {
 }
 
 export async function deleteInvoice(id) {
-  const res = await fetch(`http://localhost:8080/api/invoices/file?id=${id}`, {
+  const res = await fetch(`/api/invoices/file?id=${id}`, {
     method: "DELETE",
   });
 

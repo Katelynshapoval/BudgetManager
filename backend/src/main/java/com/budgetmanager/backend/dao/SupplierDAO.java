@@ -17,7 +17,7 @@ public class SupplierDAO {
         try {
             // Get DB connection
             Connection conn = DBConnection.getConnection();
-            
+
             // Prepare and execute query
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
@@ -36,6 +36,48 @@ public class SupplierDAO {
                 );
                 suppliers.add(supplier);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return suppliers;
+    }
+
+    public ArrayList<Supplier> getSuppliersForUser(int departmentId) {
+        ArrayList<Supplier> suppliers = new ArrayList<>();
+
+        String query = """
+                    SELECT DISTINCT s.*
+                    FROM suppliers s
+                    LEFT JOIN supplier_department sd 
+                        ON s.supplier_id = sd.supplier_id
+                    WHERE s.deleted_at IS NULL
+                      AND (
+                            s.is_shared = 1
+                            OR sd.department_id = ?
+                          )
+                """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, departmentId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Supplier supplier = new Supplier(
+                        rs.getInt("supplier_id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("tax_id"),
+                        rs.getString("notes"),
+                        rs.getString("created_at"),
+                        rs.getString("updated_at")
+                );
+                suppliers.add(supplier);
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
