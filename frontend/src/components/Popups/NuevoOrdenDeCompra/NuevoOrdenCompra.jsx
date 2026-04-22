@@ -9,7 +9,6 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen }) {
   const [tiposPresupuesto, setTiposPresupuesto] = useState([]);
   const [selectedDept, setSelectedDept] = useState(null);
 
-  // Load suppliers
   const loadSuppliers = async () => {
     try {
       const data = await getSuppliers({ departmentId: selectedDept });
@@ -19,7 +18,6 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen }) {
     }
   };
 
-  // Load budget types
   const loadBudgetTypes = async () => {
     try {
       const data = await getBudgetTypes();
@@ -37,53 +35,71 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen }) {
     loadBudgetTypes();
   }, []);
 
+  const capitalize = (str) =>
+    str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
+
   return (
     <Modal title="Crear un Órden de Compra" onClose={hidePopup} isOpen={isOpen}>
-      {/* Proveedor */}
-      <div className="popupInputContainer">
-        <label>Proveedor</label>
-        <select className="input">
-          <option value="">Seleccionar proveedor</option>
-          {proveedores.map((p) => (
-            <option key={p.supplierId} value={p.supplierId}>
-              {p.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="flex flex-col gap-4">
+        {/* Row 1 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Proveedor */}
+          <div className="popupInputContainer">
+            <label htmlFor="proveedor">Proveedor</label>
+            <select
+              id="proveedor"
+              className="input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg"
+            >
+              <option value="">Seleccionar proveedor</option>
+              {proveedores.map((p) => (
+                <option key={p.supplierId} value={p.supplierId}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {/* Tipo presupuesto */}
-      <div className="popupInputContainer">
-        <label>Origen de Fondos</label>
-        <select className="input">
-          <option value="">Seleccionar tipo</option>
-          {tiposPresupuesto.map((t) => (
-            <option key={t.budgetTypeId} value={t.budgetTypeId}>
-              {t.name.charAt(0).toUpperCase() + t.name.slice(1)}
-            </option>
-          ))}
-        </select>
-      </div>
+          {/* Tipo presupuesto */}
+          <div className="popupInputContainer">
+            <label htmlFor="tipoPresupuesto">Origen de Fondos</label>
+            <select
+              id="tipoPresupuesto"
+              className="input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg"
+            >
+              <option value="">Seleccionar tipo</option>
+              {tiposPresupuesto.map((t) => (
+                <option key={t.budgetTypeId} value={t.budgetTypeId}>
+                  {capitalize(t.name)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
-      {/* Rest of fields */}
-      <div className="popupInputContainer">
-        <label>Cantidad</label>
-        <input type="number" className="input" />
-      </div>
+        {/* Row 2 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="popupInputContainer">
+            <label htmlFor="cantidad">Cantidad</label>
+            <input id="cantidad" type="number" className="input" />
+          </div>
 
-      <div className="popupInputContainer">
-        <label>Descripción</label>
-        <input type="text" className="input" />
-      </div>
+          <div className="popupInputContainer">
+            <label htmlFor="fechaOrden">Fecha de Orden</label>
+            <input id="fechaOrden" type="date" className="input" />
+          </div>
+        </div>
 
-      <div className="popupInputContainer">
-        <label>Fecha de Orden</label>
-        <input type="date" className="input" />
-      </div>
+        {/* Row 3 */}
+        <div className="popupInputContainer">
+          <label htmlFor="descripcion">Descripción</label>
+          <input id="descripcion" type="text" className="input" />
+        </div>
 
-      <div className="popupInputContainer">
-        <label>Fungible</label>
-        <input type="checkbox" />
+        {/* Row 4 */}
+        <div className="flex items-center gap-2 text-sm text-primary">
+          <input id="fungible" type="checkbox" className="w-4 h-4" />
+          <label htmlFor="fungible">Fungible</label>
+        </div>
       </div>
     </Modal>
   );
