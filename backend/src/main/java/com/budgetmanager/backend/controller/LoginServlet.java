@@ -50,10 +50,11 @@ public class LoginServlet extends HttpServlet {
         boolean passwordValid = PasswordUtils.verifyPassword(password, user.getPasswordHash());
 
         if (passwordValid) {
-            HttpSession session = req.getSession(true);
-            session.setAttribute("userId", user.getUserId());
-            session.setAttribute("username", user.getUsername());
+            // Remove sensitive data before storing
+            user.setPasswordHash(null);
 
+            HttpSession session = req.getSession(true);
+            session.setAttribute("user", user);
             resp.setStatus(HttpServletResponse.SC_OK);
 
             // User Data

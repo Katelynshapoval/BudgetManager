@@ -1,15 +1,38 @@
 import Modal from "../../Modal/Modal";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { getSuppliers } from "../../../services/supplierService";
 
 function NuevoOrdenDeCompra({ hidePopup, isOpen }) {
   const [proveedores, setProveedores] = useState([]);
+  const [selectedDept, setSelectedDept] = useState(null);
+
+  const loadSuppliers = async (departmentId) => {
+    try {
+      const data = await getSuppliers(departmentId);
+      setProveedores(data);
+    } catch (err) {
+      toast.error("Error cargando proveedores");
+    }
+  };
+
+  useEffect(() => {
+    loadSuppliers();
+  }, [selectedDept]);
 
   return (
     <Modal title="Crear un Órden de Compra" onClose={hidePopup} isOpen={isOpen}>
       <div className="popupInputContainer">
-        <label htmlFor="cantidadOrden">Proveedor</label>
-        <input id="cantidadOrden" type="number" className="input" />
+        <label htmlFor="proveedor">Proveedor</label>
+        <select id="proveedor" className="input">
+          <option value="">Seleccionar proveedor</option>
+
+          {proveedores.map((p) => (
+            <option key={p.supplierId} value={p.supplierId}>
+              {p.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="popupInputContainer">
