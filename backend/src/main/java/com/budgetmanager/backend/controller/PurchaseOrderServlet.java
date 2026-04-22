@@ -16,12 +16,12 @@ import java.util.ArrayList;
 
 @WebServlet("/api/purchase-orders")
 public class PurchaseOrderServlet extends HttpServlet {
-    private PurchaseOrderDAO purchaseOrderDAO = new PurchaseOrderDAO();
-    private InvoiceDAO invoiceDAO = new InvoiceDAO();
+
+    private final PurchaseOrderDAO purchaseOrderDAO = new PurchaseOrderDAO();
+    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         ArrayList<PurchaseOrder> purchaseOrders = purchaseOrderDAO.getAllPurchaseOrders();
 
         // Attach invoices to each purchase order
@@ -32,11 +32,5 @@ public class PurchaseOrderServlet extends HttpServlet {
 
         ResponseUtil.setupJsonResponse(resp);
         ResponseUtil.sendJson(resp, purchaseOrders);
-    }
-
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Extract ID from URL
-        
     }
 }

@@ -29,10 +29,10 @@ function InvoiceItem({ id, amount, onDelete }) {
         <p className="font-light">Importe: {EUR.format(amount)}</p>
       </div>
 
-      <div className="flex gap-4 text-lg">
-        <RiEditLine className="cursor-pointer" />
+      <div className="flex gap-1 text-lg">
+        <RiEditLine className="tableActionIcon" />
         <MdDeleteOutline
-          className="cursor-pointer hover:text-red-500"
+          className="tableActionIcon"
           onClick={() => onDelete(id)}
         />
       </div>

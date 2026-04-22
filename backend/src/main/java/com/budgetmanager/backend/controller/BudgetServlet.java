@@ -16,19 +16,16 @@ import java.util.ArrayList;
 @WebServlet("/api/budgets")
 public class BudgetServlet extends HttpServlet {
 
-    private BudgetDAO budgetDAO = new BudgetDAO();
+    private final BudgetDAO budgetDAO = new BudgetDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // Get query params
         String yearParam = req.getParameter("year");
-        String type = req.getParameter("type"); // "presupuesto" or "plan de inversiones"
+        String type = req.getParameter("type");
 
         int year;
-
-        // Validate the year
         try {
             year = Integer.parseInt(yearParam);
         } catch (Exception e) {
@@ -36,9 +33,7 @@ public class BudgetServlet extends HttpServlet {
             return;
         }
 
-        // Get data from the DB
-        ArrayList<BudgetOverview> data =
-                budgetDAO.getBudgetOverview(year, type);
+        ArrayList<BudgetOverview> data = budgetDAO.getBudgetOverview(year, type);
 
         ResponseUtil.setupJsonResponse(resp);
         ResponseUtil.sendJson(resp, data);

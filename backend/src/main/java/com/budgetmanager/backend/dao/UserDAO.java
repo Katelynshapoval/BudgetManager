@@ -8,29 +8,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-// Handles database operations related to User
 public class UserDAO {
 
-    // Fetch a user by name (for login)
-    public User getUserByUsername(String name) {
-        User user = null;
+    public User getUserByUsername(String username) {
         String query = "SELECT u.*, r.name AS role_name " +
                 "FROM users u " +
                 "JOIN roles r ON u.role_id = r.role_id " +
                 "WHERE u.username = ?";
 
-        try {
-            // Get DB connection
-            Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            // Prepare and execute query
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, name);
+            stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
 
-            // If user exists, create User object
             if (rs.next()) {
-                user = new User(
+                return new User(
                         rs.getInt("user_id"),
                         rs.getString("username"),
                         rs.getString("name"),
@@ -40,35 +33,32 @@ public class UserDAO {
                         rs.getString("role_name")
                 );
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return user; // not found
+        return null;
     }
 
     public boolean createUser(User user) {
         String query = "INSERT INTO users (username, name, password_hash, role_id, department_id) VALUES (?, ?, ?, ?, ?)";
 
-        try {
-            // Get DB connection
-            Connection conn = DBConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query);
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            // Prepare and execute query
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getName());
             stmt.setString(3, user.getPasswordHash());
             stmt.setInt(4, user.getRoleId());
+
             if (user.getDepartmentId() != null) {
                 stmt.setInt(5, user.getDepartmentId());
             } else {
                 stmt.setNull(5, java.sql.Types.INTEGER);
             }
 
-            int rowsAffected = stmt.executeUpdate();
-
-            return rowsAffected > 0;
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();

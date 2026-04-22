@@ -5,7 +5,7 @@ import java.util.Properties;
 
 public class ConfigLoader {
 
-    private static Properties props = new Properties();
+    private static final Properties props = new Properties();
 
     static {
         try {
@@ -20,7 +20,7 @@ public class ConfigLoader {
             props.load(input);
 
         } catch (Exception e) {
-            throw new RuntimeException("Unexpected error", e);
+            throw new RuntimeException("Failed to load configuration", e);
         }
     }
 

@@ -19,11 +19,11 @@ import java.io.IOException;
 )
 @WebServlet("/api/invoices/file")
 public class InvoiceServlet extends HttpServlet {
-    private InvoiceDAO invoiceDAO = new InvoiceDAO();
+
+    private final InvoiceDAO invoiceDAO = new InvoiceDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         ResponseUtil.setupFileResponse(resp, "application/pdf");
 
         int invoiceId = Integer.parseInt(req.getParameter("id"));
@@ -40,7 +40,6 @@ public class InvoiceServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         ResponseUtil.setupJsonResponse(resp);
 
         try {
@@ -50,15 +49,7 @@ public class InvoiceServlet extends HttpServlet {
             var filePart = req.getPart("file");
             byte[] fileBytes = filePart.getInputStream().readAllBytes();
 
-            Invoice invoice = new Invoice(
-                    0,
-                    fileBytes,
-                    amount,
-                    purchaseOrderId,
-                    null,
-                    null
-            );
-
+            Invoice invoice = new Invoice(0, fileBytes, amount, purchaseOrderId, null, null);
             boolean success = invoiceDAO.addInvoice(invoice);
 
             if (success) {
@@ -78,19 +69,16 @@ public class InvoiceServlet extends HttpServlet {
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) {
-        // handles preflight requests
         ResponseUtil.setupJsonResponse(resp);
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         ResponseUtil.setupJsonResponse(resp);
 
         try {
             int invoiceId = Integer.parseInt(req.getParameter("id"));
-
             Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
 
             if (invoice == null) {

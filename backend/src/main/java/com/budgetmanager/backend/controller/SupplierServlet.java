@@ -13,6 +13,7 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 @WebServlet("/api/suppliers")
 public class SupplierServlet extends HttpServlet {
@@ -22,24 +23,21 @@ public class SupplierServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         ResponseUtil.setupJsonResponse(resp);
 
         User user = AuthUtil.getUser(req);
-
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("{\"error\": \"Not authenticated\"}");
+            resp.getWriter().write(gson.toJson(Map.of("error", "Not authenticated")));
             return;
         }
-
-        ArrayList<Supplier> suppliers;
 
         String departmentParam = req.getParameter("departmentId");
         String allParam = req.getParameter("all");
         boolean requestAll = "true".equalsIgnoreCase(allParam);
 
-        // 🔥 PRIORITY: if ?all=true → ALWAYS return all
+        ArrayList<Supplier> suppliers;
+
         if (requestAll) {
             suppliers = supplierDAO.getAllSuppliers();
 
@@ -49,31 +47,27 @@ public class SupplierServlet extends HttpServlet {
                 suppliers = supplierDAO.getSuppliersForUser(departmentId);
             } catch (NumberFormatException e) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("{\"error\": \"Invalid departmentId\"}");
+                resp.getWriter().write(gson.toJson(Map.of("error", "Invalid departmentId")));
                 return;
             }
 
         } else {
-            // default → user department
+            // Fall back to the authenticated user's own department
             Integer departmentId = user.getDepartmentId();
-
             if (departmentId == null) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("{\"error\": \"User has no department\"}");
+                resp.getWriter().write(gson.toJson(Map.of("error", "User has no department")));
                 return;
             }
-
             suppliers = supplierDAO.getSuppliersForUser(departmentId);
         }
 
-        String json = gson.toJson(suppliers);
-        resp.getWriter().write(json);
+        resp.getWriter().write(gson.toJson(suppliers));
     }
 
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         ResponseUtil.setupJsonResponse(response);
         response.setStatus(HttpServletResponse.SC_OK);
     }
@@ -81,40 +75,35 @@ public class SupplierServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         ResponseUtil.setupJsonResponse(response);
 
         User user = AuthUtil.getUser(request);
-
         if (user == null || !"admin".equalsIgnoreCase(user.getRoleName())) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.getWriter().write("{\"error\": \"Not authorized\"}");
+            response.getWriter().write(gson.toJson(Map.of("error", "Not authorized")));
             return;
         }
 
         String idParam = request.getParameter("id");
-
-        if (idParam != null && !idParam.isEmpty()) {
-            try {
-                int id = Integer.parseInt(idParam);
-
-                supplierDAO.delete(id);
-
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write("{\"success\": true}");
-
-            } catch (NumberFormatException e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"Invalid ID\"}");
-
-            } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("{\"error\": \"Error deleting supplier\"}");
-            }
-
-        } else {
+        if (idParam == null || idParam.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"error\": \"ID required\"}");
+            response.getWriter().write(gson.toJson(Map.of("error", "ID required")));
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(idParam);
+            supplierDAO.deleteSupplierById(id);
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write(gson.toJson(Map.of("success", true)));
+
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write(gson.toJson(Map.of("error", "Invalid ID")));
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write(gson.toJson(Map.of("error", "Error deleting supplier")));
         }
     }
 }

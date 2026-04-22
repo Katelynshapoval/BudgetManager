@@ -14,7 +14,8 @@ import java.util.ArrayList;
 
 @WebServlet("/api/roles")
 public class RoleServlet extends HttpServlet {
-    RoleDAO roleDAO = new RoleDAO();
+
+    private final RoleDAO roleDAO = new RoleDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
