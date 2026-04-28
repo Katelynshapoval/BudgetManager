@@ -167,4 +167,42 @@ public class PurchaseOrderDAO {
 
         return purchaseOrders;
     }
+
+    public String getNextOrderCodePreview(int budgetId, boolean isFungible) {
+        String query = """
+                    SELECT 
+                        d.code,
+                        b.fiscal_year,
+                        COALESCE(bs.last_sequence, 0) + 1 AS next_seq
+                    FROM budgets b
+                    JOIN departments d ON b.department_id = d.department_id
+                    LEFT JOIN budget_sequences bs ON bs.budget_id = b.budget_id
+                    WHERE b.budget_id = ?
+                """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, budgetId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String deptCode = rs.getString("code");
+                int year = rs.getInt("fiscal_year");
+                int nextSeq = rs.getInt("next_seq");
+
+                String yearShort = String.valueOf(year).substring(2);
+
+                return deptCode + "/" +
+                        String.format("%04d", nextSeq) + "/" +
+                        yearShort + "/" +
+                        (isFungible ? "1" : "0");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

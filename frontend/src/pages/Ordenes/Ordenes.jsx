@@ -80,6 +80,7 @@ function Ordenes() {
         <NuevoOrdenDeCompra
           hidePopup={() => setAddOrdenShow(false)}
           isOpen={addOrdenShow}
+          user={user}
         />
       )}
 
