@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { fetchDepartments } from "../../services/metaService";
 
 function DepartmentFilter({ id, value, onChange }) {
   const [departments, setDepartments] = useState([]);
@@ -7,10 +8,8 @@ function DepartmentFilter({ id, value, onChange }) {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/departments");
-        const data = await res.json();
+        const data = await fetchDepartments();
         setDepartments(data);
-        console.log(data);
       } catch (err) {
         console.error("Error fetching departments:", err);
       }
