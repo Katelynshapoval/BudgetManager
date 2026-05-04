@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
-import { RiEditLine } from "react-icons/ri";
-import { fetchUsers } from "../../services/usersService";
+import {
+  IoCheckmarkCircleOutline,
+  IoCloseCircleOutline,
+  IoLockClosedOutline,
+} from "react-icons/io5";
+import {
+  fetchUsers,
+  updateUserStatus,
+  updateUserPassword,
+} from "../../services/usersService";
+import { toast } from "sonner";
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -17,12 +26,74 @@ function Users() {
       setUsers(data);
     } catch (err) {
       console.error("Error fetching users:", err);
+      toast.error("Error al cargar usuarios");
     } finally {
       setLoading(false);
     }
   };
 
+  // Action handlers
+
+  const handleApprove = async (userId) => {
+    try {
+      await updateUserStatus({ userId, status: "active" });
+      toast.success("Usuario aprobado");
+      loadUsers();
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al aprobar usuario");
+    }
+  };
+
+  const handleReject = async (userId) => {
+    try {
+      await updateUserStatus({ userId, status: "inactive" });
+      toast.success("Usuario rechazado");
+      loadUsers();
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al rechazar usuario");
+    }
+  };
+
+  const handleDeactivate = async (userId) => {
+    try {
+      await updateUserStatus({ userId, status: "inactive" });
+      toast.success("Usuario desactivado");
+      loadUsers();
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al desactivar usuario");
+    }
+  };
+
+  const handleActivate = async (userId) => {
+    try {
+      await updateUserStatus({ userId, status: "active" });
+      toast.success("Usuario activado");
+      loadUsers();
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al activar usuario");
+    }
+  };
+
+  const handleResetPassword = async (userId) => {
+    const newPassword = prompt("Nueva contraseña:");
+
+    if (!newPassword) return;
+
+    try {
+      await updateUserPassword({ userId, newPassword });
+      toast.success("Contraseña actualizada");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al actualizar contraseña");
+    }
+  };
+
   // Formatters
+
   const formatRole = (role) => {
     const map = {
       admin: "Administrador",
@@ -90,7 +161,43 @@ function Users() {
                     </td>
 
                     <td className="actionCell">
-                      <RiEditLine className="tableActionIcon" />
+                      {u.status === "pending" && (
+                        <>
+                          <IoCheckmarkCircleOutline
+                            className="tableActionIcon text-green-600"
+                            title="Aprobar"
+                            onClick={() => handleApprove(u.userId)}
+                          />
+                          <IoCloseCircleOutline
+                            className="tableActionIcon text-red-600"
+                            title="Rechazar"
+                            onClick={() => handleReject(u.userId)}
+                          />
+                        </>
+                      )}
+
+                      {u.status === "active" && (
+                        <>
+                          <IoCloseCircleOutline
+                            className="tableActionIcon text-red-600"
+                            title="Desactivar"
+                            onClick={() => handleDeactivate(u.userId)}
+                          />
+                          <IoLockClosedOutline
+                            className="tableActionIcon text-gray-600"
+                            title="Resetear contraseña"
+                            onClick={() => handleResetPassword(u.userId)}
+                          />
+                        </>
+                      )}
+
+                      {u.status === "inactive" && (
+                        <IoCheckmarkCircleOutline
+                          className="tableActionIcon text-green-600"
+                          title="Reactivar"
+                          onClick={() => handleActivate(u.userId)}
+                        />
+                      )}
                     </td>
                   </tr>
                 );

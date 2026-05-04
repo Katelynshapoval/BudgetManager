@@ -104,4 +104,38 @@ public class UserDAO {
 
         return users;
     }
+
+    public boolean updateUserStatus(int userId, String status) {
+        String query = "UPDATE users SET status = ? WHERE user_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, status);
+            stmt.setInt(2, userId);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateUserPassword(int userId, String hashedPassword) {
+        String query = "UPDATE users SET password_hash = ? WHERE user_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, hashedPassword);
+            stmt.setInt(2, userId);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
