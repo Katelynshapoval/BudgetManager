@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { LuUser } from "react-icons/lu";
-import { LuBuilding2 } from "react-icons/lu";
-import { LuIdCard } from "react-icons/lu";
-import { LuShieldCheck } from "react-icons/lu";
-import { LuLock } from "react-icons/lu";
+import {
+  IoPersonOutline,
+  IoBusinessOutline,
+  IoCardOutline,
+  IoShieldCheckmarkOutline,
+  IoLockClosedOutline,
+} from "react-icons/io5";
 
 import { toast } from "sonner";
 
@@ -14,13 +15,14 @@ import { fetchDepartments, fetchRoles } from "../../services/metaService";
 
 import "./Signup.css";
 
-// Constants
+// Role constants
 const ROLES = {
   ADMIN: 1,
   DEPARTMENT_HEAD: 2,
   ACCOUNTANT: 3,
 };
 
+// Labels for roles
 const ROLE_LABELS = {
   1: "Admin",
   2: "Jefe de departamento",
@@ -30,6 +32,7 @@ const ROLE_LABELS = {
 function Signup() {
   const navigate = useNavigate();
 
+  // Form state
   const [form, setForm] = useState({
     username: "",
     name: "",
@@ -39,16 +42,17 @@ function Signup() {
     passwordConf: "",
   });
 
+  // Metadata
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
 
-  // Handle input changes
+  // Update form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Fetch roles, departments
+  // Load roles and departments on mount
   useEffect(() => {
     async function loadData() {
       try {
@@ -68,10 +72,11 @@ function Signup() {
     loadData();
   }, []);
 
-  // Submit
+  // Handle form submission
   const handleCreateAccount = (e) => {
     e.preventDefault();
 
+    // Validate passwords
     if (form.password !== form.passwordConf) {
       toast.error("Las contraseñas no coinciden");
       return;
@@ -79,6 +84,7 @@ function Signup() {
 
     const request = signupRequest(form);
 
+    // Show async feedback with toast
     toast.promise(request, {
       loading: "Creando cuenta...",
       success: () => {
@@ -92,6 +98,7 @@ function Signup() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-9">
       <div className="flex flex-col gap-7 text-center bg-background shadow-[0_20px_40px_rgba(37,35,35,0.08)] p-12 rounded-2xl md:w-120">
+        {/* Header */}
         <div>
           <h1 className="font-medium text-text text-2xl mb-2 lg:text-3xl">
             Crear la cuenta
@@ -106,8 +113,7 @@ function Signup() {
           <div className="inputContainer">
             <label htmlFor="username">Usuario</label>
             <div className="inputWithIcon">
-              <LuUser className="inputIcon" />
-
+              <IoPersonOutline className="inputIcon" />
               <input
                 id="username"
                 name="username"
@@ -125,8 +131,7 @@ function Signup() {
           <div className="inputContainer">
             <label htmlFor="name">Nombre</label>
             <div className="inputWithIcon">
-              <LuUser className="inputIcon" />
-
+              <IoPersonOutline className="inputIcon" />
               <input
                 id="name"
                 name="name"
@@ -144,7 +149,7 @@ function Signup() {
           <div className="inputContainer">
             <label htmlFor="role">Rol</label>
             <div className="inputWithIcon">
-              <LuIdCard className="inputIcon" />
+              <IoCardOutline className="inputIcon" />
               <select
                 id="role"
                 name="role"
@@ -163,18 +168,18 @@ function Signup() {
             </div>
           </div>
 
-          {/* Department */}
+          {/* Department (only for department head) */}
           {Number(form.role) === ROLES.DEPARTMENT_HEAD && (
             <div className="inputContainer">
               <label htmlFor="department">Departamento</label>
               <div className="inputWithIcon">
-                <LuBuilding2 className="inputIcon" />
+                <IoBusinessOutline className="inputIcon" />
                 <select
                   id="department"
                   name="department"
                   value={form.department}
                   onChange={handleChange}
-                  className="font-light inputField"
+                  className="inputField font-light"
                   required
                 >
                   <option value="">Selecciona un departamento</option>
@@ -192,8 +197,7 @@ function Signup() {
           <div className="inputContainer">
             <label htmlFor="password">Contraseña</label>
             <div className="inputWithIcon">
-              <LuLock className="inputIcon" />
-
+              <IoLockClosedOutline className="inputIcon" />
               <input
                 id="password"
                 name="password"
@@ -207,11 +211,11 @@ function Signup() {
             </div>
           </div>
 
-          {/* Confirm Password */}
+          {/* Confirm password */}
           <div className="inputContainer">
             <label htmlFor="passwordConf">Confirmar contraseña</label>
             <div className="inputWithIcon">
-              <LuShieldCheck className="inputIcon" />
+              <IoShieldCheckmarkOutline className="inputIcon" />
               <input
                 id="passwordConf"
                 name="passwordConf"
@@ -233,6 +237,7 @@ function Signup() {
             >
               Crear Cuenta
             </button>
+
             <div className="flex gap-1 justify-center mt-4 text-sm text-primary">
               ¿Ya tienes cuenta?
               <span

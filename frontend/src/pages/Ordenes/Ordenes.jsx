@@ -1,28 +1,30 @@
 import { useState, useEffect, useContext } from "react";
-import { CiSearch } from "react-icons/ci";
+import { IoSearchOutline } from "react-icons/io5";
+
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/NuevoOrdenCompra";
 import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactura";
 import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
 import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
-import { getOrders } from "../../services/orderService";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+
+import { getOrders } from "../../services/orderService";
 import { AuthContext } from "../../context/AuthContext";
 
 function Ordenes() {
-  // User
+  // Get current user and determine role
   const { user } = useContext(AuthContext);
   const isAdmin = user.roleName === "admin";
 
-  // Search + filter state
+  // Search and department filter state
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
 
-  // Orders data
+  // Orders data and loading state
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Popup states
+  // Popup state
   const [addOrdenShow, setAddOrdenShow] = useState(false);
   const [addInvoiceShow, setAddInvoiceShow] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -30,43 +32,44 @@ function Ordenes() {
   // Currently selected order
   const [selectedOrden, setSelectedOrden] = useState(null);
 
-  // Normalize search
+  // Normalize search input
   const searchLower = search.toLowerCase();
 
-  // Filter logic
-  const filteredOrdenes = orders.filter((row) => {
+  // Apply search + department filter
+  const filteredOrdenes = orders.filter((order) => {
     const matchesSearch =
       !searchLower ||
-      row.notes?.toLowerCase().includes(searchLower) ||
-      row.generatedOrderCode?.toLowerCase().includes(searchLower) ||
-      row.investmentPlanCode?.toLowerCase().includes(searchLower);
+      order.notes?.toLowerCase().includes(searchLower) ||
+      order.generatedOrderCode?.toLowerCase().includes(searchLower) ||
+      order.investmentPlanCode?.toLowerCase().includes(searchLower);
 
-    const matchesDepartment = !filter || row.departmentId == Number(filter);
+    const matchesDepartment = !filter || order.departmentId === Number(filter);
 
     return matchesSearch && matchesDepartment;
   });
 
+  // Fetch current year orders
   const fetchOrders = async () => {
     try {
       setLoading(true);
 
       const data = await getOrders();
-
       const currentYear = new Date().getFullYear();
 
-      const currentOrders = data.filter((o) => {
-        const year = new Date(o.orderDate).getFullYear();
+      const currentOrders = data.filter((order) => {
+        const year = new Date(order.orderDate).getFullYear();
         return year === currentYear;
       });
 
       setOrders(currentOrders);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching orders:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // Load data on mount
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -91,7 +94,6 @@ function Ordenes() {
           isOpen={addInvoiceShow}
           data={selectedOrden.invoices}
           purchaseOrderId={selectedOrden.purchaseOrderId}
-          hide={false}
           onUploadSuccess={fetchOrders}
         />
       )}
@@ -107,17 +109,20 @@ function Ordenes() {
 
       {/* Top controls: search + filters */}
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
+        {/* Search input */}
         <div className="order-2 md:order-1 md:max-w-full lg:max-w-100 searchBar">
-          <CiSearch className="search-icon iconProveedores" />
+          <IoSearchOutline className="search-icon iconProveedores" />
           <input
             type="text"
             placeholder="Buscar por código o descripción"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
           />
         </div>
 
+        {/* Filters and actions */}
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto md:ml-auto order-1 md:order-2">
+          {/* Department filter (admin only) */}
           {isAdmin && (
             <DepartmentFilter
               id="ordenFilter"
@@ -126,6 +131,7 @@ function Ordenes() {
             />
           )}
 
+          {/* Create order button */}
           <button
             className="addNewButton"
             onClick={() => setAddOrdenShow(true)}
@@ -135,7 +141,7 @@ function Ordenes() {
         </div>
       </div>
 
-      {/* Table or empty state */}
+      {/* Content: loading, empty state, or table */}
       {loading ? (
         <LoadingSpinner />
       ) : filteredOrdenes.length === 0 ? (
@@ -146,12 +152,12 @@ function Ordenes() {
         <OrdenesTable
           ordenes={filteredOrdenes}
           showEdit
-          onInvoices={(row) => {
-            setSelectedOrden(row);
+          onInvoices={(order) => {
+            setSelectedOrden(order);
             setAddInvoiceShow(true);
           }}
-          onViewDetails={(row) => {
-            setSelectedOrden(row);
+          onViewDetails={(order) => {
+            setSelectedOrden(order);
             setShowDetails(true);
           }}
         />

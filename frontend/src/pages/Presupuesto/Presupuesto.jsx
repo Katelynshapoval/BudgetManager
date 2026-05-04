@@ -1,17 +1,24 @@
 import "./Presupuesto.css";
+import { useEffect, useState, useContext } from "react";
+
+import { IoCreateOutline } from "react-icons/io5";
+
 import Accordion from "../../components/Accordion/Accordion";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
-import { useEffect, useState, useContext } from "react";
-import { RiEditLine } from "react-icons/ri";
+import EditableCell from "../../components/EditableCell/EditableCell";
+
 import { EUR } from "../../utils/currency";
 import { AuthContext } from "../../context/AuthContext";
-import EditableCell from "../../components/EditableCell/EditableCell";
 import { updateBudget, fetchBudgets } from "../../services/budgetService";
 
+// TABLE COMPONENT
 function BudgetTable({ data, user, onUpdateAllocated }) {
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
 
+  const canEdit = user.roleName !== "contable";
+
+  // No data state
   if (!data || data.length === 0) {
     return (
       <div className="p-6 text-center text-primary text-base font-normal">
@@ -20,18 +27,19 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
     );
   }
 
-  const canEdit = user.roleName !== "contable";
-
+  // Start editing a row
   const startEditing = (row) => {
     setEditingId(row.budgetId);
     setEditValue(row.allocated);
   };
 
+  // Cancel editing
   const cancelEditing = () => {
     setEditingId(null);
     setEditValue("");
   };
 
+  // Save edited value
   const saveEditing = async (budgetId) => {
     const parsedValue = Number(editValue);
 
@@ -49,12 +57,13 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
     }
   };
 
-  const handleKeyDown = async (e, budgetId) => {
-    if (e.key === "Enter") {
+  // Handle keyboard shortcuts
+  const handleKeyDown = async (event, budgetId) => {
+    if (event.key === "Enter") {
       await saveEditing(budgetId);
     }
 
-    if (e.key === "Escape") {
+    if (event.key === "Escape") {
       cancelEditing();
     }
   };
@@ -71,6 +80,7 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
             {canEdit && <th className="actionCell">Acciones</th>}
           </tr>
         </thead>
+
         <tbody>
           {data.map((row) => {
             const isEditing = editingId === row.budgetId;
@@ -84,7 +94,7 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
                   isEditing={isEditing}
                   editValue={editValue}
                   setEditValue={setEditValue}
-                  onKeyDown={(e) => handleKeyDown(e, row.budgetId)}
+                  onKeyDown={(event) => handleKeyDown(event, row.budgetId)}
                   onSave={() => saveEditing(row.budgetId)}
                   onCancel={cancelEditing}
                 />
@@ -94,9 +104,10 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
 
                 {canEdit && (
                   <td className="actionCell">
-                    <RiEditLine
+                    <IoCreateOutline
                       className="tableActionIcon"
                       onClick={() => startEditing(row)}
+                      title="Editar"
                     />
                   </td>
                 )}
@@ -109,12 +120,15 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
   );
 }
 
+// SECTION COMPONENT
 function BudgetSection({ id, title, data, user, onUpdateAllocated }) {
   const isAdmin = user.roleName === "admin";
   const isContable = user.roleName === "contable";
 
+  // Default filter: non-admin users only see their department
   const [filter, setFilter] = useState(!isAdmin ? user.departmentId : "");
 
+  // Apply department filter
   const filteredData = filter
     ? data.filter((row) => row.departmentId === Number(filter))
     : data;
@@ -122,9 +136,11 @@ function BudgetSection({ id, title, data, user, onUpdateAllocated }) {
   return (
     <Accordion title={title} defaultOpen={!isAdmin && !isContable}>
       <div className="p-6">
+        {/* Department filter for admin and contable */}
         {(isAdmin || isContable) && (
           <DepartmentFilter id={id} value={filter} onChange={setFilter} />
         )}
+
         <BudgetTable
           data={filteredData}
           user={user}
@@ -135,13 +151,16 @@ function BudgetSection({ id, title, data, user, onUpdateAllocated }) {
   );
 }
 
+// MAIN PAGE
 function Presupuesto() {
-  const [budgetData, setBudgetData] = useState([]);
-  const [investmentData, setInvestmentData] = useState([]);
   const { user } = useContext(AuthContext);
 
-  const year = new Date().getFullYear(); // current year
+  const [budgetData, setBudgetData] = useState([]);
+  const [investmentData, setInvestmentData] = useState([]);
 
+  const year = new Date().getFullYear();
+
+  // Update allocated value in both datasets
   const updateAllocated = async (budgetId, allocated) => {
     const updatedBudget = await updateBudget(budgetId, allocated);
 
@@ -158,6 +177,7 @@ function Presupuesto() {
     );
   };
 
+  // Load budgets on mount
   useEffect(() => {
     async function loadData() {
       try {
@@ -176,26 +196,26 @@ function Presupuesto() {
 
   return (
     <div className="page">
-      <div>
-        <h1 className="text-2xl md:text-3xl">Panel de Presupuestos</h1>
+      <h1 className="text-2xl md:text-3xl">Panel de Presupuestos</h1>
 
-        <div className="flex flex-col gap-12">
-          <BudgetSection
-            id="filter-presupuestos"
-            title="Presupuestos"
-            data={budgetData}
-            user={user}
-            onUpdateAllocated={updateAllocated}
-          />
+      <div className="flex flex-col gap-12">
+        {/* Budget section */}
+        <BudgetSection
+          id="filter-presupuestos"
+          title="Presupuestos"
+          data={budgetData}
+          user={user}
+          onUpdateAllocated={updateAllocated}
+        />
 
-          <BudgetSection
-            id="filter-inversion"
-            title="Plan de Inversión"
-            data={investmentData}
-            user={user}
-            onUpdateAllocated={updateAllocated}
-          />
-        </div>
+        {/* Investment section */}
+        <BudgetSection
+          id="filter-inversion"
+          title="Plan de Inversión"
+          data={investmentData}
+          user={user}
+          onUpdateAllocated={updateAllocated}
+        />
       </div>
     </div>
   );

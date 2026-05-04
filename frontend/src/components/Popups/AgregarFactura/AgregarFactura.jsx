@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
-import { FaRegFileAlt } from "react-icons/fa";
-import { RiEditLine } from "react-icons/ri";
-import { MdDeleteOutline, MdOutlineFileUpload } from "react-icons/md";
+import {
+  IoDocumentTextOutline,
+  IoCreateOutline,
+  IoTrashOutline,
+  IoCloudUploadOutline,
+} from "react-icons/io5";
+
 import Modal from "../../Modal/Modal";
 import { uploadInvoice, deleteInvoice } from "../../../services/invoiceService";
 import { toast } from "sonner";
@@ -15,7 +19,7 @@ function InvoiceItem({ id, amount, onDelete }) {
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-primary bg-secondary/60 px-5 py-3 text-sm text-primary">
-      <FaRegFileAlt className="text-lg" />
+      <IoDocumentTextOutline className="text-lg" />
 
       <div className="flex-1">
         <button
@@ -25,15 +29,15 @@ function InvoiceItem({ id, amount, onDelete }) {
           Ver factura #{id}
         </button>
 
-        {/* formatted amount */}
         <p className="font-light">Importe: {EUR.format(amount)}</p>
       </div>
 
       <div className="flex gap-1 text-lg">
-        <RiEditLine className="tableActionIcon" />
-        <MdDeleteOutline
+        <IoCreateOutline className="tableActionIcon" title="Editar" />
+        <IoTrashOutline
           className="tableActionIcon"
           onClick={() => onDelete(id)}
+          title="Eliminar"
         />
       </div>
     </div>
@@ -78,12 +82,13 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
 
   return (
     <div className="flex flex-col justify-center gap-4 rounded-xl bg-secondary/60 p-5 md:justify-end">
+      {/* File upload */}
       <div className="w-full">
         <label
           htmlFor="factura"
           className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-full border-2 border-dashed border-accent bg-secondary px-6 py-4 text-text transition hover:border-accent hover:bg-accent/10"
         >
-          <MdOutlineFileUpload className="text-xl text-accent" />
+          <IoCloudUploadOutline className="text-xl text-accent" />
           <span className="text-sm font-medium">
             {file ? file.name : "Seleccionar archivo..."}
           </span>
@@ -111,6 +116,7 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
         />
       </div>
 
+      {/* Amount */}
       <div className="inputContainer">
         <label className="font-normal text-primary">
           Importe de la factura
@@ -126,6 +132,7 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
         />
       </div>
 
+      {/* Actions */}
       <div className="flex gap-3">
         <button
           type="button"
@@ -134,6 +141,7 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
         >
           Cancelar
         </button>
+
         <button
           type="button"
           onClick={handleSubmit}
@@ -157,13 +165,14 @@ function AgregarFactura({
 }) {
   const [showAddFile, setShowAddFile] = useState(false);
   const [invoices, setInvoices] = useState(data);
+
   const isHistorico = hide;
 
   useEffect(() => {
     setInvoices(data);
   }, [data]);
 
-  // total sum of invoices
+  // Calculate total amount
   const total = invoices.reduce((sum, inv) => sum + (inv.amount || 0), 0);
 
   const handleDelete = async (id) => {
@@ -182,7 +191,7 @@ function AgregarFactura({
       if (!updatedOrders) return;
 
       const updatedOrder = updatedOrders.find(
-        (o) => o.purchaseOrderId == purchaseOrderId,
+        (o) => o.purchaseOrderId === purchaseOrderId,
       );
 
       if (updatedOrder) {
@@ -213,7 +222,7 @@ function AgregarFactura({
         </div>
       )}
 
-      {/* total summary */}
+      {/* Total */}
       <div className="mt-4 flex justify-between items-center text-sm text-primary border-t border-primary/20 pt-3">
         <span>Total facturas</span>
         <span className="font-medium">{EUR.format(total)}</span>
@@ -233,7 +242,7 @@ function AgregarFactura({
                 if (!updatedOrders) return;
 
                 const updatedOrder = updatedOrders.find(
-                  (o) => o.purchaseOrderId == purchaseOrderId,
+                  (o) => o.purchaseOrderId === purchaseOrderId,
                 );
 
                 if (updatedOrder) {
@@ -247,7 +256,7 @@ function AgregarFactura({
               className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-primary bg-secondary p-3 text-sm transition-all duration-150 hover:bg-accent"
               onClick={() => setShowAddFile(true)}
             >
-              <MdOutlineFileUpload className="text-xl" />
+              <IoCloudUploadOutline className="text-xl" />
               Subir nueva factura
             </button>
           )}

@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "../Sidebar/Sidebar";
-import { MdLogout } from "react-icons/md";
+import { IoLogOutOutline } from "react-icons/io5";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -16,7 +16,7 @@ function DashboardLayout() {
         {/* Top bar — desktop only */}
         <div className="hidden md:flex text-sm fixed top-0 right-0 left-20 z-50 justify-end items-center gap-2.5 p-8 pr-10 bg-background text-light">
           <p>Hola, {user ? user.name : "Guest"}</p>
-          <MdLogout
+          <IoLogOutOutline
             onClick={() => {
               logout();
               navigate("/login");

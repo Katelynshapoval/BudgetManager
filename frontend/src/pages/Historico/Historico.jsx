@@ -1,62 +1,73 @@
 import { useState, useEffect, useContext } from "react";
-import { CiSearch } from "react-icons/ci";
+import { IoSearchOutline } from "react-icons/io5";
+
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactura";
 import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
 import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
-import { getOrders } from "../../services/orderService";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+
+import { getOrders } from "../../services/orderService";
 import { AuthContext } from "../../context/AuthContext";
 
 function Historico() {
-  // User
+  // Get current user and determine role
   const { user } = useContext(AuthContext);
   const isAdmin = user.roleName === "admin";
 
+  // Search and department filter state
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
 
+  // Orders data and loading state
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Popup state
   const [addInvoiceShow, setAddInvoiceShow] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [selectedOrden, setSelectedOrden] = useState(null);
 
+  // Current year (used to filter historical data)
   const currentYear = new Date().getFullYear();
 
+  // Fetch orders and keep only historical ones (not current year)
   const fetchOrders = async () => {
     try {
       setLoading(true);
+
       const data = await getOrders();
 
-      const historico = data.filter((o) => {
-        const year = new Date(o.orderDate).getFullYear();
+      const historico = data.filter((order) => {
+        const year = new Date(order.orderDate).getFullYear();
         return year !== currentYear;
       });
 
       setOrders(historico);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching orders:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // Load data on component mount
   useEffect(() => {
     fetchOrders();
   }, []);
 
+  // Normalize search input
   const searchLower = search.toLowerCase();
 
-  const filteredOrdenes = orders.filter((row) => {
+  // Apply search + department filter
+  const filteredOrdenes = orders.filter((order) => {
     const matchesSearch =
       !searchLower ||
-      row.notes?.toLowerCase().includes(searchLower) ||
-      row.generatedOrderCode?.toLowerCase().includes(searchLower) ||
-      row.investmentPlanCode?.toLowerCase().includes(searchLower);
+      order.notes?.toLowerCase().includes(searchLower) ||
+      order.generatedOrderCode?.toLowerCase().includes(searchLower) ||
+      order.investmentPlanCode?.toLowerCase().includes(searchLower);
 
-    const matchesDepartment = !filter || row.departmentId == Number(filter);
+    const matchesDepartment = !filter || order.departmentId === Number(filter);
 
     return matchesSearch && matchesDepartment;
   });
@@ -65,15 +76,17 @@ function Historico() {
     <div className="page">
       <h1>Histórico de Órdenes de Compra</h1>
 
+      {/* Invoice popup (read-only mode) */}
       {addInvoiceShow && selectedOrden && (
         <AgregarFactura
           hidePopup={() => setAddInvoiceShow(false)}
           isOpen={addInvoiceShow}
           data={selectedOrden.invoices}
-          hide={true}
+          hide
         />
       )}
 
+      {/* Order details popup */}
       {showDetails && selectedOrden && (
         <DetallesOrden
           hidePopup={() => setShowDetails(false)}
@@ -82,9 +95,11 @@ function Historico() {
         />
       )}
 
+      {/* Top controls: search + optional department filter */}
       <div className="flex flex-col lg:flex-row gap-4 md:items-center">
+        {/* Search input */}
         <div className="order-2 md:order-1 md:max-w-full lg:max-w-100 searchBar">
-          <CiSearch className="search-icon iconProveedores" />
+          <IoSearchOutline className="search-icon iconProveedores" />
           <input
             type="text"
             placeholder="Buscar por código o descripción"
@@ -93,6 +108,7 @@ function Historico() {
           />
         </div>
 
+        {/* Department filter (only visible for admin) */}
         {isAdmin && (
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto md:ml-auto order-1 md:order-2">
             <DepartmentFilter
@@ -104,6 +120,7 @@ function Historico() {
         )}
       </div>
 
+      {/* Content: loading, empty state, or table */}
       {loading ? (
         <LoadingSpinner />
       ) : filteredOrdenes.length === 0 ? (
@@ -113,12 +130,12 @@ function Historico() {
       ) : (
         <OrdenesTable
           ordenes={filteredOrdenes}
-          onInvoices={(row) => {
-            setSelectedOrden(row);
+          onInvoices={(order) => {
+            setSelectedOrden(order);
             setAddInvoiceShow(true);
           }}
-          onViewDetails={(row) => {
-            setSelectedOrden(row);
+          onViewDetails={(order) => {
+            setSelectedOrden(order);
             setShowDetails(true);
           }}
         />

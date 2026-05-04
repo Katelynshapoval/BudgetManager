@@ -1,46 +1,55 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   IoCheckmarkCircleOutline,
   IoCloseCircleOutline,
   IoLockClosedOutline,
 } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+
 import {
   fetchUsers,
   updateUserStatus,
   updateUserPassword,
 } from "../../services/usersService";
+
 import ChangePassword from "../../components/Popups/ChangePassword/ChangePassword";
-import { toast } from "sonner";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { AuthContext } from "../../context/AuthContext";
+import { toast } from "sonner";
 
 function Users() {
+  // Users data and UI state
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Password popup state
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
+  // Auth + navigation
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  // Check access and load users
   useEffect(() => {
     if (!user) return;
 
-    // not admin - redirect
+    // Redirect if user is not admin
     if (user.roleName !== "admin") {
       navigate("/");
       return;
     }
 
-    // admin - fetch users
+    // Load users if admin
     loadUsers();
   }, [user, navigate]);
 
+  // Fetch users from API
   const loadUsers = async () => {
     try {
       setLoading(true);
+
       const data = await fetchUsers();
       setUsers(data);
     } catch (err) {
@@ -51,7 +60,7 @@ function Users() {
     }
   };
 
-  // Action handlers
+  // User actions
 
   const handleApprove = async (userId) => {
     try {
@@ -97,11 +106,13 @@ function Users() {
     }
   };
 
+  // Open password popup
   const handleResetPassword = (userId) => {
     setSelectedUserId(userId);
     setShowPasswordPopup(true);
   };
 
+  // Submit new password
   const handleSubmitPassword = async (newPassword) => {
     try {
       await updateUserPassword({
@@ -110,6 +121,7 @@ function Users() {
       });
 
       toast.success("Contraseña actualizada");
+
       setShowPasswordPopup(false);
       setSelectedUserId(null);
     } catch (err) {
@@ -118,7 +130,7 @@ function Users() {
     }
   };
 
-  // Formatters
+  // Format helpers
 
   const formatRole = (role) => {
     const map = {
@@ -142,17 +154,19 @@ function Users() {
     <div className="page">
       <h1>Usuarios</h1>
 
+      {/* Password popup */}
       {showPasswordPopup && (
         <ChangePassword
+          isOpen={showPasswordPopup}
           hidePopup={() => {
             setShowPasswordPopup(false);
             setSelectedUserId(null);
           }}
-          isOpen={showPasswordPopup}
           onSubmit={handleSubmitPassword}
         />
       )}
 
+      {/* Loading / empty / table */}
       {loading ? (
         <LoadingSpinner />
       ) : users.length === 0 ? (
@@ -175,6 +189,7 @@ function Users() {
 
             <tbody>
               {users.map((u) => {
+                // Status color styling
                 let statusClass = "bg-gray-100 text-gray-700 border-gray-300";
 
                 if (u.status === "active") {
@@ -200,6 +215,7 @@ function Users() {
                     </td>
 
                     <td className="actionCell">
+                      {/* Pending actions */}
                       {u.status === "pending" && (
                         <>
                           <IoCheckmarkCircleOutline
@@ -215,6 +231,7 @@ function Users() {
                         </>
                       )}
 
+                      {/* Active actions */}
                       {u.status === "active" && (
                         <>
                           <IoCloseCircleOutline
@@ -230,6 +247,7 @@ function Users() {
                         </>
                       )}
 
+                      {/* Inactive actions */}
                       {u.status === "inactive" && (
                         <IoCheckmarkCircleOutline
                           className="tableActionIcon text-green-600"
