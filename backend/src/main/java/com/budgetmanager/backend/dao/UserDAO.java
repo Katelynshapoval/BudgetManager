@@ -14,9 +14,10 @@ import java.util.List;
 public class UserDAO {
 
     public User getUserByUsername(String username) {
-        String query = "SELECT u.*, r.name AS role_name " +
+        String query = "SELECT u.*, r.name AS role_name, d.name AS department_name " +
                 "FROM users u " +
                 "JOIN roles r ON u.role_id = r.role_id " +
+                "LEFT JOIN departments d ON u.department_id = d.department_id " +
                 "WHERE u.username = ?";
 
         try (Connection conn = DBConnection.getConnection();
@@ -34,7 +35,8 @@ public class UserDAO {
                         rs.getInt("role_id"),
                         rs.getInt("department_id"),
                         rs.getString("role_name"),
-                        rs.getString("status")
+                        rs.getString("status"),
+                        rs.getString("department_name")
                 );
             }
 
@@ -73,9 +75,10 @@ public class UserDAO {
     public List<User> getUsers() {
         List<User> users = new ArrayList<>();
 
-        String query = "SELECT u.*, r.name AS role_name " +
+        String query = "SELECT u.*, r.name AS role_name, d.name AS department_name " +
                 "FROM users u " +
-                "JOIN roles r ON u.role_id = r.role_id";
+                "JOIN roles r ON u.role_id = r.role_id " +
+                "LEFT JOIN departments d ON u.department_id = d.department_id";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -90,7 +93,8 @@ public class UserDAO {
                         rs.getInt("role_id"),
                         rs.getInt("department_id"),
                         rs.getString("role_name"),
-                        rs.getString("status")
+                        rs.getString("status"),
+                        rs.getString("department_name")
                 ));
             }
 

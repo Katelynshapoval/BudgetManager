@@ -18,7 +18,6 @@ import java.util.HashMap;
 @WebServlet("/api/login")
 public class LoginServlet extends HttpServlet {
     private final UserDAO userDAO = new UserDAO();
-    private final Gson gson = new Gson();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
