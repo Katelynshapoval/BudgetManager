@@ -11,6 +11,7 @@ import {
 } from "../../services/usersService";
 import ChangePassword from "../../components/Popups/ChangePassword/ChangePassword";
 import { toast } from "sonner";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -137,26 +138,28 @@ function Users() {
         />
       )}
 
-      <div className="hideHorizontalScroll">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Usuario</th>
-              <th>Rol</th>
-              <th>Departamento</th>
-              <th>Estado</th>
-              <th className="actionCell">Acciones</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading ? (
+      {loading ? (
+        <LoadingSpinner />
+      ) : users.length === 0 ? (
+        <div className="mt-6 rounded-lg bg-secondary/60 p-6 text-center text-sm text-primary">
+          No hay usuarios
+        </div>
+      ) : (
+        <div className="hideHorizontalScroll">
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={6}>Cargando...</td>
+                <th>Nombre</th>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Departamento</th>
+                <th>Estado</th>
+                <th className="actionCell">Acciones</th>
               </tr>
-            ) : users.length > 0 ? (
-              users.map((u) => {
+            </thead>
+
+            <tbody>
+              {users.map((u) => {
                 let statusClass = "bg-gray-100 text-gray-700 border-gray-300";
 
                 if (u.status === "active") {
@@ -222,15 +225,11 @@ function Users() {
                     </td>
                   </tr>
                 );
-              })
-            ) : (
-              <tr>
-                <td colSpan={6}>No hay usuarios</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

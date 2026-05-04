@@ -11,6 +11,7 @@ import {
   assignProviderToDepartment,
 } from "../../services/supplierService";
 import { fetchDepartments } from "../../services/metaService";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 import { AuthContext } from "../../context/AuthContext";
 import { toast } from "sonner";
@@ -211,24 +212,26 @@ function Proveedor() {
         )}
       </div>
 
-      <div className="hideHorizontalScroll">
-        <table className="table">
-          <thead>
-            <tr>
-              {COLUMN_HEADERS.map((header) => (
-                <th key={header}>{header}</th>
-              ))}
-              {canEdit && <th className="actionCell">Acciones</th>}
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading ? (
+      {loading ? (
+        <LoadingSpinner />
+      ) : filteredProveedores.length === 0 ? (
+        <div className="mt-6 rounded-lg bg-secondary/60 p-6 text-center text-sm text-primary">
+          No se encontraron proveedores
+        </div>
+      ) : (
+        <div className="hideHorizontalScroll">
+          <table className="table">
+            <thead>
               <tr>
-                <td colSpan={TOTAL_COLUMNS}>Cargando...</td>
+                {COLUMN_HEADERS.map((header) => (
+                  <th key={header}>{header}</th>
+                ))}
+                {canEdit && <th className="actionCell">Acciones</th>}
               </tr>
-            ) : filteredProveedores.length > 0 ? (
-              filteredProveedores.map((p) => (
+            </thead>
+
+            <tbody>
+              {filteredProveedores.map((p) => (
                 <ProveedorRow
                   key={p.supplierId}
                   proveedor={p}
@@ -236,13 +239,11 @@ function Proveedor() {
                   canEdit={canEdit}
                   assignProvider={assignProvider}
                 />
-              ))
-            ) : (
-              <EmptyRow />
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
