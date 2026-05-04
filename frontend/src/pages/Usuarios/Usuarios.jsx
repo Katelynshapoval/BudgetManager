@@ -12,6 +12,9 @@ import {
 import ChangePassword from "../../components/Popups/ChangePassword/ChangePassword";
 import { toast } from "sonner";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -19,9 +22,21 @@ function Users() {
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (!user) return;
+
+    // not admin - redirect
+    if (user.roleName !== "admin") {
+      navigate("/");
+      return;
+    }
+
+    // admin - fetch users
     loadUsers();
-  }, []);
+  }, [user, navigate]);
 
   const loadUsers = async () => {
     try {
