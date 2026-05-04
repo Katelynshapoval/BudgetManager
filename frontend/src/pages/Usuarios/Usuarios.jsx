@@ -9,11 +9,14 @@ import {
   updateUserStatus,
   updateUserPassword,
 } from "../../services/usersService";
+import ChangePassword from "../../components/Popups/ChangePassword/ChangePassword";
 import { toast } from "sonner";
 
 function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   useEffect(() => {
     loadUsers();
@@ -78,14 +81,21 @@ function Users() {
     }
   };
 
-  const handleResetPassword = async (userId) => {
-    const newPassword = prompt("Nueva contraseña:");
+  const handleResetPassword = (userId) => {
+    setSelectedUserId(userId);
+    setShowPasswordPopup(true);
+  };
 
-    if (!newPassword) return;
-
+  const handleSubmitPassword = async (newPassword) => {
     try {
-      await updateUserPassword({ userId, newPassword });
+      await updateUserPassword({
+        userId: selectedUserId,
+        newPassword,
+      });
+
       toast.success("Contraseña actualizada");
+      setShowPasswordPopup(false);
+      setSelectedUserId(null);
     } catch (err) {
       console.error(err);
       toast.error("Error al actualizar contraseña");
@@ -115,6 +125,17 @@ function Users() {
   return (
     <div className="page">
       <h1>Usuarios</h1>
+
+      {showPasswordPopup && (
+        <ChangePassword
+          hidePopup={() => {
+            setShowPasswordPopup(false);
+            setSelectedUserId(null);
+          }}
+          isOpen={showPasswordPopup}
+          onSubmit={handleSubmitPassword}
+        />
+      )}
 
       <div className="hideHorizontalScroll">
         <table className="table">
