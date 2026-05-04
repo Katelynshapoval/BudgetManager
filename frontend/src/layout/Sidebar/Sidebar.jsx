@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useContext } from "react";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { GoPeople } from "react-icons/go";
-import { FiShoppingCart } from "react-icons/fi";
+import { FiShoppingCart, FiTruck } from "react-icons/fi";
 import { MdHistory, MdLogout } from "react-icons/md";
 import { IoMdMenu } from "react-icons/io";
 import { NavLink } from "react-router-dom";
@@ -17,20 +17,23 @@ const NAV_ITEMS = [
     icon: IoDocumentTextOutline,
     end: true,
   },
-  { to: "/proveedores", label: "Proveedores", icon: GoPeople },
+  { to: "/proveedores", label: "Proveedores", icon: FiTruck },
   {
     to: "/ordenes",
     label: "Órdenes de compra",
     icon: FiShoppingCart,
   },
   { to: "/historico", label: "Histórico", icon: MdHistory },
+  { to: "/usuarios", label: "Usuarios", icon: GoPeople },
 ];
 
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef(null);
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const isAdmin = user.roleName === "admin";
 
   const closeSidebar = useCallback(() => setIsOpen(false), []);
 
@@ -98,7 +101,10 @@ function Sidebar() {
         {/* Navigation */}
         <nav className="flex-1">
           <ul className="flex flex-col gap-2 text-lg">
-            {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+            {NAV_ITEMS.filter((item) => {
+              if (item.to === "/usuarios" && !isAdmin) return false;
+              return true;
+            }).map(({ to, label, icon: Icon, end }) => (
               <li key={to}>
                 <NavLink
                   to={to}

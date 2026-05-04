@@ -4,6 +4,7 @@ import Proveedores from "./pages/Proveedores/Proveedores";
 import Presupuesto from "./pages/Presupuesto/Presupuesto";
 import Ordenes from "./pages/Ordenes/Ordenes";
 import Historico from "./pages/Historico/Historico";
+import Usuarios from "./pages/Usuarios/Usuarios";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
 import Signup from "./pages/Signup/Signup";
@@ -31,6 +32,7 @@ function App() {
             <Route path="proveedores" element={<Proveedores />} />
             <Route path="ordenes" element={<Ordenes />} />
             <Route path="historico" element={<Historico />} />
+            <Route path="usuarios" element={<Usuarios />} />
           </Route>
         </Routes>
       </Router>
