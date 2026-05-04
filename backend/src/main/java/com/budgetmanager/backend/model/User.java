@@ -8,10 +8,11 @@ public class User {
     private int roleId;
     private Integer departmentId;
     private String roleName;
+    private String status;
 
     // Full constructor (used when reading from DB)
     public User(int userId, String username, String name, String passwordHash,
-                int roleId, Integer departmentId, String roleName) {
+                int roleId, Integer departmentId, String roleName, String status) {
         this.userId = userId;
         this.username = username;
         this.name = name;
@@ -19,6 +20,7 @@ public class User {
         this.roleId = roleId;
         this.departmentId = departmentId;
         this.roleName = roleName;
+        this.status = status;
     }
 
     // Constructor for creating new users (no ID yet)
@@ -63,6 +65,10 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public int getRoleId() {
         return roleId;
     }
@@ -86,5 +92,9 @@ public class User {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

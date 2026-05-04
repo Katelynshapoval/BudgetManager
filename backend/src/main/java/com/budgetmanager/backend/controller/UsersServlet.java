@@ -1,5 +1,6 @@
 package com.budgetmanager.backend.controller;
 
+import com.budgetmanager.backend.dao.UserDAO;
 import com.budgetmanager.backend.model.User;
 import com.budgetmanager.backend.util.AuthUtil;
 import com.budgetmanager.backend.util.ResponseUtil;
@@ -10,24 +11,35 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.List;
 
-@WebServlet("/api/me")
-public class MeServlet extends HttpServlet {
+@WebServlet("/api/users")
+public class UsersServlet extends HttpServlet {
 
-    private final Gson gson = new Gson();
+    private final UserDAO userDAO = new UserDAO();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
         ResponseUtil.setupJsonResponse(resp);
 
-        User user = AuthUtil.getUser(req);
+        User currentUser = AuthUtil.getUser(req);
 
-        if (user == null) {
+        // Check authentication
+        if (currentUser == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        ResponseUtil.sendJson(resp, user);
+        // Check role (ONLY ADMIN)
+        if (!"admin".equals(currentUser.getRoleName())) {
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        // Fetch users
+        List<User> users = userDAO.getUsers();
+
+        ResponseUtil.sendJson(resp, users);
     }
 }

@@ -6,16 +6,9 @@ function DepartmentFilter({ id, value, onChange }) {
 
   // Fetch departments
   useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const data = await fetchDepartments();
-        setDepartments(data);
-      } catch (err) {
-        console.error("Error fetching departments:", err);
-      }
-    };
-
-    fetchDepartments();
+    fetchDepartments()
+      .then(setDepartments)
+      .catch((err) => console.error("Error fetching departments:", err));
   }, []);
 
   return (

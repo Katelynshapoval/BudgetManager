@@ -8,6 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserDAO {
 
     public User getUserByUsername(String username) {
@@ -30,7 +33,8 @@ public class UserDAO {
                         rs.getString("password_hash"),
                         rs.getInt("role_id"),
                         rs.getInt("department_id"),
-                        rs.getString("role_name")
+                        rs.getString("role_name"),
+                        rs.getString("status")
                 );
             }
 
@@ -64,5 +68,36 @@ public class UserDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<User> getUsers() {
+        List<User> users = new ArrayList<>();
+
+        String query = "SELECT u.*, r.name AS role_name " +
+                "FROM users u " +
+                "JOIN roles r ON u.role_id = r.role_id";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                users.add(new User(
+                        rs.getInt("user_id"),
+                        rs.getString("username"),
+                        rs.getString("name"),
+                        rs.getString("password_hash"),
+                        rs.getInt("role_id"),
+                        rs.getInt("department_id"),
+                        rs.getString("role_name"),
+                        rs.getString("status")
+                ));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
     }
 }

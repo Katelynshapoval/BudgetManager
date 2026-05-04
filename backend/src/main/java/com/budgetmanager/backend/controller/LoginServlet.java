@@ -33,7 +33,7 @@ public class LoginServlet extends HttpServlet {
         if (username == null || password == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseMap.put("error", "Missing username or password");
-            resp.getWriter().write(gson.toJson(responseMap));
+            ResponseUtil.sendJson(resp, responseMap);
             return;
         }
 
@@ -42,7 +42,23 @@ public class LoginServlet extends HttpServlet {
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             responseMap.put("error", "User not found");
-            resp.getWriter().write(gson.toJson(responseMap));
+            ResponseUtil.sendJson(resp, responseMap);
+            return;
+        }
+
+        // Make sure the status is active
+        if (!"active".equals(user.getStatus())) {
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+            if ("pending".equals(user.getStatus())) {
+                responseMap.put("error", "Tu cuenta está pendiente de aprobación");
+            } else if ("inactive".equals(user.getStatus())) {
+                responseMap.put("error", "Tu cuenta está desactivada");
+            } else {
+                responseMap.put("error", "Acceso no permitido");
+            }
+
+            ResponseUtil.sendJson(resp, responseMap);
             return;
         }
 
