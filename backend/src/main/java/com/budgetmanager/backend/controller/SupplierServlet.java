@@ -151,6 +151,55 @@ public class SupplierServlet extends HttpServlet {
     }
 
     @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        ResponseUtil.setupJsonResponse(response);
+
+        User user = AuthUtil.getUser(request);
+        if (user == null || ("contable".equalsIgnoreCase(user.getRoleName()))) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write(gson.toJson(Map.of("error", "Not authorized")));
+            return;
+        }
+
+        String idParam = request.getParameter("id");
+        if (idParam == null || idParam.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write(gson.toJson(Map.of("error", "ID required")));
+            return;
+        }
+
+        Map<String, Object> payload = gson.fromJson(request.getReader(), Map.class);
+        String name = payload.getOrDefault("name", "").toString();
+        String email = payload.getOrDefault("email", "").toString();
+        String phone = payload.getOrDefault("phone", "").toString();
+        String taxId = payload.getOrDefault("taxId", "").toString();
+        String notes = payload.getOrDefault("notes", "").toString();
+
+        try {
+            int id = Integer.parseInt(idParam);
+            Supplier supplier = new Supplier(id, name, email, phone, taxId, notes, false, null, null);
+            Supplier updatedSupplier = supplierDAO.updateSupplier(supplier);
+
+            if (updatedSupplier == null) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write(gson.toJson(Map.of("error", "Failed to update supplier")));
+                return;
+            }
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write(gson.toJson(updatedSupplier));
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write(gson.toJson(Map.of("error", "Invalid ID")));
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write(gson.toJson(Map.of("error", "Error updating supplier")));
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ResponseUtil.setupJsonResponse(response);

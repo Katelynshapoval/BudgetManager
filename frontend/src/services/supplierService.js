@@ -49,6 +49,33 @@ export async function createSupplier({
 	return res.json();
 }
 
+export async function updateSupplier(
+	supplierId,
+	{ name, email, phone, taxId, notes },
+) {
+	const url = `/api/suppliers?id=${supplierId}`;
+	const res = await fetch(url, {
+		method: "PUT",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			name,
+			email,
+			phone,
+			taxId,
+			notes,
+		}),
+	});
+
+	if (!res.ok) {
+		throw new Error("Failed to update supplier");
+	}
+
+	return res.json();
+}
+
 export async function assignProviderToDepartment({ providerId, departmentId }) {
 	const res = await fetch("/api/suppliers/assign", {
 		method: "POST",
