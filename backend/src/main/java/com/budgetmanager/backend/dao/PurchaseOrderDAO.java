@@ -205,4 +205,21 @@ public class PurchaseOrderDAO {
 
         return null;
     }
+
+    public boolean deletePurchaseOrderById(int purchaseOrderId) {
+        String sql = "UPDATE purchase_orders SET deleted_at = NOW() WHERE purchase_order_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, purchaseOrderId);
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }

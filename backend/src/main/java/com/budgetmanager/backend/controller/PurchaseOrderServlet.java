@@ -96,4 +96,50 @@ public class PurchaseOrderServlet extends HttpServlet {
             resp.getWriter().write("{\"error\": \"Invalid parameters\"}");
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        ResponseUtil.setupJsonResponse(response);
+
+        User user = AuthUtil.getUser(request);
+        if (user == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\": \"Not authenticated\"}");
+            return;
+        }
+
+        if (!"admin".equalsIgnoreCase(user.getRoleName())) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("{\"error\": \"Not authorized\"}");
+            return;
+        }
+
+        String idParam = request.getParameter("id");
+        if (idParam == null || idParam.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\": \"ID required\"}");
+            return;
+        }
+
+        try {
+            int orderId = Integer.parseInt(idParam);
+            boolean deleted = purchaseOrderDAO.deletePurchaseOrderById(orderId);
+            if (!deleted) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.getWriter().write("{\"error\": \"Purchase order not found\"}");
+                return;
+            }
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("{\"success\": true}");
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"error\": \"Invalid ID\"}");
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"error\": \"Error deleting purchase order\"}");
+            e.printStackTrace();
+        }
+    }
 }
