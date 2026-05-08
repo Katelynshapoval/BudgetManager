@@ -9,13 +9,14 @@ public class Supplier {
     private String phone;
     private String taxId;
     private String notes;
+    private boolean isShared;
     private String createdAt;
     private String updatedAt;
 
     // Full constructor (used when reading from DB)
     public Supplier(int supplierId, String supplierName, String email,
                     String phone, String taxId, String notes,
-                    String createdAt, String updatedAt) {
+                    boolean isShared, String createdAt, String updatedAt) {
 
         this.supplierId = supplierId;
         this.name = supplierName;
@@ -23,19 +24,22 @@ public class Supplier {
         this.phone = phone;
         this.taxId = taxId;
         this.notes = notes;
+        this.isShared = isShared;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     // Constructor for creating new suppliers (no ID yet)
     public Supplier(String supplierName, String email,
-                    String phone, String taxId, String notes) {
+                    String phone, String taxId, String notes,
+                    boolean isShared) {
 
         this.name = supplierName;
         this.email = email;
         this.phone = phone;
         this.taxId = taxId;
         this.notes = notes;
+        this.isShared = isShared;
     }
 
     // Getters
@@ -62,6 +66,10 @@ public class Supplier {
 
     public String getNotes() {
         return notes;
+    }
+
+    public boolean isShared() {
+        return isShared;
     }
 
     public String getCreatedAt() {
