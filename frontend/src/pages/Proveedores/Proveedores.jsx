@@ -9,12 +9,14 @@ import {
 
 import AssignDepartment from "../../components/Popups/AssignDepartment/AssignDepartment";
 import NuevoProveedor from "../../components/Popups/NuevoProveedor/NuevoProveedor";
+import EditarProveedor from "../../components/Popups/EditarProveedor/EditarProveedor";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 import {
 	getSuppliers,
 	assignProviderToDepartment,
 	createSupplier,
+	updateSupplier,
 } from "../../services/supplierService";
 import { fetchDepartments } from "../../services/metaService";
 
@@ -55,7 +57,13 @@ const deleteSupplier = async (id, setSuppliers) => {
 };
 
 // Single row component
-function ProveedorRow({ proveedor, setProveedores, canEdit, assignProvider }) {
+function ProveedorRow({
+	proveedor,
+	setProveedores,
+	canEdit,
+	assignProvider,
+	onEdit,
+}) {
 	return (
 		<tr>
 			<td>{proveedor.name}</td>
@@ -66,7 +74,11 @@ function ProveedorRow({ proveedor, setProveedores, canEdit, assignProvider }) {
 
 			{canEdit && (
 				<td className="actionCell">
-					<IoCreateOutline className="tableActionIcon" title="Editar" />
+					<IoCreateOutline
+						className="tableActionIcon"
+						onClick={() => onEdit(proveedor)}
+						title="Editar"
+					/>
 
 					<IoTrashOutline
 						className="tableActionIcon"
@@ -96,6 +108,8 @@ function Proveedor() {
 	// UI state
 	const [search, setSearch] = useState("");
 	const [addProveedorShow, setAddProveedorShow] = useState(false);
+	const [editProveedorShow, setEditProveedorShow] = useState(false);
+	const [selectedSupplier, setSelectedSupplier] = useState(null);
 
 	// Assignment popup state
 	const [showDepartmentPopup, setShowDepartmentPopup] = useState(false);
@@ -151,9 +165,30 @@ function Proveedor() {
 
 	// Initial load
 	useEffect(() => {
-		loadSuppliers();
-		loadDepartments();
+		const fetchData = async () => {
+			await loadSuppliers();
+			await loadDepartments();
+		};
+		fetchData();
 	}, []);
+
+	const openEditProveedor = (supplier) => {
+		setSelectedSupplier(supplier);
+		setEditProveedorShow(true);
+	};
+
+	const handleUpdateSupplier = async (updatedSupplier) => {
+		try {
+			await updateSupplier(updatedSupplier.supplierId, updatedSupplier);
+			await loadSuppliers();
+			setEditProveedorShow(false);
+			setSelectedSupplier(null);
+			toast.success("Proveedor actualizado correctamente");
+		} catch (err) {
+			console.error(err);
+			toast.error("Error al actualizar el proveedor");
+		}
+	};
 
 	// Assign provider logic based on role
 	const assignProvider = async (providerId) => {
@@ -220,6 +255,19 @@ function Proveedor() {
 				/>
 			)}
 
+			{/* Edit supplier popup */}
+			{editProveedorShow && selectedSupplier && (
+				<EditarProveedor
+					hidePopup={() => {
+						setEditProveedorShow(false);
+						setSelectedSupplier(null);
+					}}
+					isOpen={editProveedorShow}
+					proveedor={selectedSupplier}
+					onUpdate={handleUpdateSupplier}
+				/>
+			)}
+
 			{/* Create supplier popup */}
 			{addProveedorShow && (
 				<NuevoProveedor
@@ -278,6 +326,7 @@ function Proveedor() {
 									setProveedores={setProveedores}
 									canEdit={canEdit}
 									assignProvider={assignProvider}
+									onEdit={openEditProveedor}
 								/>
 							))}
 						</tbody>

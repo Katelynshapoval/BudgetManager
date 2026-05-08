@@ -100,6 +100,32 @@ public class SupplierDAO {
 		return null;
 	}
 
+    public Supplier updateSupplier(Supplier supplier) {
+        String sql = "UPDATE suppliers SET name = ?, email = ?, phone = ?, tax_id = ?, notes = ?, updated_at = NOW() WHERE supplier_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, supplier.getName());
+            stmt.setString(2, supplier.getEmail());
+            stmt.setString(3, supplier.getPhone());
+            stmt.setString(4, supplier.getTaxId());
+            stmt.setString(5, supplier.getNotes());
+            stmt.setInt(6, supplier.getSupplierId());
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                return null;
+            }
+            return supplier;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public void deleteSupplierById(int id) {
         String sql = "UPDATE suppliers SET deleted_at = NOW() WHERE supplier_id = ?";
 
