@@ -55,4 +55,55 @@ public class BudgetDAO {
 
         return list;
     }
+
+    public BudgetOverview updateBudgetAllocated(int budgetId, double allocated) {
+        String updateSql = "UPDATE budgets SET allocated_amount = ? WHERE budget_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(updateSql)) {
+
+            stmt.setDouble(1, allocated);
+            stmt.setInt(2, budgetId);
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                return null; // Budget not found
+            }
+
+            // Return updated budget overview
+            // We need to get the updated data from the view
+            String selectSql = """
+                        SELECT
+                            dbo.department_id,
+                            dbo.department,
+                            dbo.budget_id,
+                            dbo.allocated,
+                            dbo.spent,
+                            dbo.remaining
+                        FROM department_budget_overview dbo
+                        WHERE dbo.budget_id = ?
+                    """;
+
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                selectStmt.setInt(1, budgetId);
+                ResultSet rs = selectStmt.executeQuery();
+
+                if (rs.next()) {
+                    return new BudgetOverview(
+                            rs.getInt("department_id"),
+                            rs.getString("department"),
+                            rs.getInt("budget_id"),
+                            rs.getDouble("allocated"),
+                            rs.getDouble("spent"),
+                            rs.getDouble("remaining")
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
