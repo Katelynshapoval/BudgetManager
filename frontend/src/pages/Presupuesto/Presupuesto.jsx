@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { IoCreateOutline } from "react-icons/io5";
 
 import Accordion from "../../components/Accordion/Accordion";
+import CreateBudgetPopup from "../../components/Popups/CreateBudgetPopup/CreateBudgetPopup";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import EditableCell from "../../components/EditableCell/EditableCell";
 
@@ -123,7 +124,16 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
 }
 
 // SECTION COMPONENT
-function BudgetSection({ id, title, data, user, onUpdateAllocated }) {
+function BudgetSection({
+	id,
+	title,
+	data,
+	user,
+	onUpdateAllocated,
+	canCreate,
+	createLabel,
+	onCreateClick,
+}) {
 	const isAdmin = user.roleName === "admin";
 	const isContable = user.roleName === "contable";
 
@@ -138,10 +148,20 @@ function BudgetSection({ id, title, data, user, onUpdateAllocated }) {
 	return (
 		<Accordion title={title} defaultOpen={!isAdmin && !isContable}>
 			<div className="p-6">
-				{/* Department filter for admin and contable */}
-				{(isAdmin || isContable) && (
-					<DepartmentFilter id={id} value={filter} onChange={setFilter} />
-				)}
+				<div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+					{(isAdmin || isContable) && (
+						<DepartmentFilter id={id} value={filter} onChange={setFilter} />
+					)}
+
+					{canCreate && (
+						<button
+							className="addNewButton"
+							type="button"
+							onClick={onCreateClick}>
+							{createLabel}
+						</button>
+					)}
+				</div>
 
 				<BudgetTable
 					data={filteredData}
@@ -159,10 +179,13 @@ function Presupuesto() {
 
 	const [budgetData, setBudgetData] = useState([]);
 	const [investmentData, setInvestmentData] = useState([]);
+	const [showBudgetPopup, setShowBudgetPopup] = useState(false);
+	const [showInvestmentPopup, setShowInvestmentPopup] = useState(false);
 
 	const year = new Date().getFullYear();
+	const canCreate =
+		user.roleName === "admin" || user.roleName === "jefe_departamento";
 
-	// Update allocated value in both datasets
 	const updateAllocated = async (budgetId, allocated) => {
 		const updatedBudget = await updateBudget(budgetId, allocated);
 
@@ -179,26 +202,45 @@ function Presupuesto() {
 		);
 	};
 
-	// Load budgets on mount
-	useEffect(() => {
-		async function loadData() {
-			try {
-				const budgets = await fetchBudgets(year, "presupuesto");
-				const investments = await fetchBudgets(year, "plan de inversiones");
+	const loadData = async () => {
+		try {
+			const budgets = await fetchBudgets(year, "presupuesto");
+			const investments = await fetchBudgets(year, "plan de inversiones");
 
-				setBudgetData(budgets);
-				setInvestmentData(investments);
-			} catch (error) {
-				console.error("Error fetching budgets:", error);
-			}
+			setBudgetData(budgets);
+			setInvestmentData(investments);
+		} catch (error) {
+			console.error("Error fetching budgets:", error);
 		}
+	};
 
+	useEffect(() => {
 		loadData();
 	}, [year]);
 
 	return (
 		<div className="page">
 			<h1 className="text-2xl md:text-3xl">Panel de Presupuestos</h1>
+
+			{showBudgetPopup && (
+				<CreateBudgetPopup
+					isOpen={showBudgetPopup}
+					hidePopup={() => setShowBudgetPopup(false)}
+					type="presupuesto"
+					year={year}
+					onCreated={loadData}
+				/>
+			)}
+
+			{showInvestmentPopup && (
+				<CreateBudgetPopup
+					isOpen={showInvestmentPopup}
+					hidePopup={() => setShowInvestmentPopup(false)}
+					type="plan de inversiones"
+					year={year}
+					onCreated={loadData}
+				/>
+			)}
 
 			<div className="flex flex-col gap-12">
 				{/* Budget section */}
@@ -208,6 +250,9 @@ function Presupuesto() {
 					data={budgetData}
 					user={user}
 					onUpdateAllocated={updateAllocated}
+					canCreate={canCreate}
+					createLabel="Crear Presupuesto"
+					onCreateClick={() => setShowBudgetPopup(true)}
 				/>
 
 				{/* Investment section */}
@@ -217,6 +262,9 @@ function Presupuesto() {
 					data={investmentData}
 					user={user}
 					onUpdateAllocated={updateAllocated}
+					canCreate={canCreate}
+					createLabel="Crear Plan de Inversión"
+					onCreateClick={() => setShowInvestmentPopup(true)}
 				/>
 			</div>
 		</div>
