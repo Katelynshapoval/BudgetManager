@@ -29,10 +29,12 @@ public class BudgetServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        // Get the filters sent from the frontend
         String yearParam = req.getParameter("year");
         String type = req.getParameter("type");
         String available = req.getParameter("available");
 
+        // Validate and convert the fiscal year
         int year;
         try {
             year = Integer.parseInt(yearParam);
@@ -41,14 +43,17 @@ public class BudgetServlet extends HttpServlet {
             return;
         }
 
+        // Prepare the response as JSON
         ResponseUtil.setupJsonResponse(resp);
 
+        // Return only departments that do not already have a budget for this year and type
         if ("true".equalsIgnoreCase(available)) {
             ArrayList<Department> departments = budgetDAO.getAvailableDepartments(year, type);
             ResponseUtil.sendJson(resp, departments);
             return;
         }
 
+        // Return the budget overview for the selected year and type
         ArrayList<BudgetOverview> data = budgetDAO.getBudgetOverview(year, type);
         ResponseUtil.sendJson(resp, data);
     }
@@ -57,8 +62,10 @@ public class BudgetServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        // Prepare the response as JSON
         ResponseUtil.setupJsonResponse(resp);
 
+        // Check that the user is logged in
         User user = AuthUtil.getUser(req);
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -66,35 +73,42 @@ public class BudgetServlet extends HttpServlet {
             return;
         }
 
+        // Allow only admins and department managers to create budgets
         if (!"admin".equalsIgnoreCase(user.getRoleName()) &&
-            !"jefe_departamento".equalsIgnoreCase(user.getRoleName())) {
+                !"jefe_departamento".equalsIgnoreCase(user.getRoleName())) {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             resp.getWriter().write("{\"error\": \"Not authorized\"}");
             return;
         }
 
         try {
+            // Read the request body sent from the frontend
             Map<String, Object> payload = gson.fromJson(req.getReader(), Map.class);
 
-            if (!payload.containsKey("allocated") || !payload.containsKey("departmentId") ||
-                !payload.containsKey("year") || !payload.containsKey("type")) {
+            // Check that all required fields are present
+            if (!payload.containsKey("allocated") ||
+                    !payload.containsKey("departmentId") ||
+                    !payload.containsKey("year") ||
+                    !payload.containsKey("type")) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("{\"error\": \"Incomplete payload\"}");
                 return;
             }
 
+            // Convert the request values to the correct types
             double allocated = ((Number) payload.get("allocated")).doubleValue();
             int departmentId = ((Number) payload.get("departmentId")).intValue();
             int fiscalYear = ((Number) payload.get("year")).intValue();
-            String notes = payload.getOrDefault("notes", "").toString();
             String type = payload.get("type").toString();
 
+            // Prevent creating another budget for the same department, year, and type
             if (budgetDAO.departmentHasBudget(departmentId, fiscalYear, type)) {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
                 resp.getWriter().write("{\"error\": \"Budget already exists for this department and year\"}");
                 return;
             }
 
+            // Get the database id for the selected budget type
             Integer budgetTypeId = budgetDAO.getBudgetTypeId(type);
             if (budgetTypeId == null) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -102,13 +116,15 @@ public class BudgetServlet extends HttpServlet {
                 return;
             }
 
-            BudgetOverview created = budgetDAO.createBudget(allocated, fiscalYear, notes, departmentId, budgetTypeId);
+            // Create the budget in the database
+            BudgetOverview created = budgetDAO.createBudget(allocated, fiscalYear, departmentId, budgetTypeId);
             if (created == null) {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 resp.getWriter().write("{\"error\": \"Failed to create budget\"}");
                 return;
             }
 
+            // Return the created budget
             resp.setStatus(HttpServletResponse.SC_CREATED);
             ResponseUtil.sendJson(resp, created);
 
@@ -123,8 +139,10 @@ public class BudgetServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        // Prepare the response as JSON
         ResponseUtil.setupJsonResponse(resp);
 
+        // Check that the user is logged in
         User user = AuthUtil.getUser(req);
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -132,13 +150,15 @@ public class BudgetServlet extends HttpServlet {
             return;
         }
 
+        // Allow only admins and department managers to update budgets
         if (!"admin".equalsIgnoreCase(user.getRoleName()) &&
-            !"jefe_departamento".equalsIgnoreCase(user.getRoleName())) {
+                !"jefe_departamento".equalsIgnoreCase(user.getRoleName())) {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             resp.getWriter().write("{\"error\": \"Not authorized\"}");
             return;
         }
 
+        // Get the budget id from the request path
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -146,7 +166,10 @@ public class BudgetServlet extends HttpServlet {
             return;
         }
 
-        String budgetIdStr = pathInfo.substring(1); // Remove leading "/"
+        // Remove the leading slash from the path
+        String budgetIdStr = pathInfo.substring(1);
+
+        // Validate and convert the budget id
         int budgetId;
         try {
             budgetId = Integer.parseInt(budgetIdStr);
@@ -157,16 +180,20 @@ public class BudgetServlet extends HttpServlet {
         }
 
         try {
+            // Read the request body sent from the frontend
             Map<String, Object> payload = gson.fromJson(req.getReader(), Map.class);
 
+            // Check that the allocated amount was sent
             if (!payload.containsKey("allocated")) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("{\"error\": \"Allocated amount required\"}");
                 return;
             }
 
+            // Convert the allocated amount to a number
             double allocated = Double.parseDouble(payload.get("allocated").toString());
 
+            // Update the allocated amount in the database
             BudgetOverview updated = budgetDAO.updateBudgetAllocated(budgetId, allocated);
             if (updated == null) {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -174,6 +201,7 @@ public class BudgetServlet extends HttpServlet {
                 return;
             }
 
+            // Return the updated budget
             resp.setStatus(HttpServletResponse.SC_OK);
             ResponseUtil.sendJson(resp, updated);
 

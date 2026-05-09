@@ -1,49 +1,43 @@
 export async function updateBudget(budgetId, allocated) {
-	const res = await fetch(`/api/budgets/${budgetId}`, {
-		method: "PUT",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ allocated }),
-	});
+  const res = await fetch(`/api/budgets/${budgetId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ allocated }),
+  });
 
-	if (!res.ok) throw new Error("Failed to update budget");
+  if (!res.ok) throw new Error("Failed to update budget");
 
-	return res.json();
+  return res.json();
 }
 
 export async function fetchBudgets(year, type) {
-	const res = await fetch(
-		`/api/budgets?year=${year}&type=${encodeURIComponent(type)}`,
-	);
-	return res.json();
+  const res = await fetch(
+    `/api/budgets?year=${year}&type=${encodeURIComponent(type)}`,
+  );
+  return res.json();
 }
 
 export async function fetchAvailableDepartments(year, type) {
-	const res = await fetch(
-		`/api/budgets?year=${year}&type=${encodeURIComponent(type)}&available=true`,
-	);
+  const res = await fetch(
+    `/api/budgets?year=${year}&type=${encodeURIComponent(type)}&available=true`,
+  );
 
-	if (!res.ok) throw new Error("Failed to fetch available departments");
+  if (!res.ok) throw new Error("Failed to fetch available departments");
 
-	return res.json();
+  return res.json();
 }
 
-export async function createBudget({
-	allocated,
-	departmentId,
-	year,
-	notes,
-	type,
-}) {
-	const res = await fetch("/api/budgets", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ allocated, departmentId, year, notes, type }),
-	});
+export async function createBudget({ allocated, departmentId, year, type }) {
+  const res = await fetch("/api/budgets", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ allocated, departmentId, year, type }),
+  });
 
-	if (!res.ok) {
-		const body = await res.json().catch(() => ({}));
-		throw new Error(body.error || "Failed to create budget");
-	}
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || "Failed to create budget");
+  }
 
-	return res.json();
+  return res.json();
 }

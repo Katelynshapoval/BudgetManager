@@ -2,201 +2,186 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Modal from "../../Modal/Modal";
 import {
-	createBudget,
-	fetchAvailableDepartments,
+  createBudget,
+  fetchAvailableDepartments,
 } from "../../../services/budgetService";
 
 function CreateBudgetPopup({ hidePopup, isOpen, type, year, onCreated }) {
-	const currentYear = new Date().getFullYear();
-	const fiscalStartYear = year ?? currentYear;
-	const yearOptions = [
-		fiscalStartYear,
-		fiscalStartYear + 1,
-		fiscalStartYear + 2,
-	];
+  // Set the fiscal year options based on the provided year or the current year
+  const currentYear = new Date().getFullYear();
+  const fiscalStartYear = year ?? currentYear;
+  const yearOptions = [
+    fiscalStartYear,
+    fiscalStartYear + 1,
+    fiscalStartYear + 2,
+  ];
 
-	const [allocated, setAllocated] = useState("");
-	const [departmentId, setDepartmentId] = useState("");
-	const [fiscalYear, setFiscalYear] = useState(fiscalStartYear);
-	const [notes, setNotes] = useState("");
-	const [departments, setDepartments] = useState([]);
-	const [loadingDepartments, setLoadingDepartments] = useState(false);
+  // Store the form values entered by the user
+  const [allocated, setAllocated] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
+  const [fiscalYear, setFiscalYear] = useState(fiscalStartYear);
 
-	const typeLabel =
-		type === "plan de inversiones" ? "Plan de Inversión" : "Presupuesto";
+  // Store the available departments and loading state
+  const [departments, setDepartments] = useState([]);
+  const [loadingDepartments, setLoadingDepartments] = useState(false);
 
-	const resetForm = () => {
-		setAllocated("");
-		setDepartmentId("");
-		setFiscalYear(fiscalStartYear);
-		setNotes("");
-	};
+  // Display the correct label depending on the budget type
+  const typeLabel =
+    type === "plan de inversiones" ? "Plan de Inversión" : "Presupuesto";
 
-	const loadDepartments = async (targetYear) => {
-		setLoadingDepartments(true);
+  // Clear the form fields when the popup is opened again
+  const resetForm = () => {
+    setAllocated("");
+    setDepartmentId("");
+    setFiscalYear(fiscalStartYear);
+  };
 
-		try {
-			const data = await fetchAvailableDepartments(targetYear, type);
-			setDepartments(data || []);
-			setDepartmentId(data?.[0]?.departmentId ?? "");
-		} catch (error) {
-			console.error("Error fetching available departments:", error);
-			toast.error("Error cargando departamentos disponibles.");
-		} finally {
-			setLoadingDepartments(false);
-		}
-	};
+  // Load departments available for the selected fiscal year and budget type
+  const loadDepartments = async (targetYear) => {
+    setLoadingDepartments(true);
 
-	useEffect(() => {
-		if (isOpen) {
-			resetForm();
-			loadDepartments(fiscalStartYear);
-		}
-	}, [isOpen, fiscalStartYear, type]);
+    try {
+      const data = await fetchAvailableDepartments(targetYear, type);
+      setDepartments(data || []);
+      setDepartmentId("");
+    } catch (error) {
+      console.error("Error fetching available departments:", error);
+      toast.error("Error cargando departamentos disponibles.");
+    } finally {
+      setLoadingDepartments(false);
+    }
+  };
 
-	useEffect(() => {
-		if (isOpen) {
-			loadDepartments(fiscalYear);
-		}
-	}, [fiscalYear, isOpen, type]);
+  // Reset the form and load departments when the popup opens
+  useEffect(() => {
+    if (isOpen) {
+      resetForm();
+      loadDepartments(fiscalStartYear);
+    }
+  }, [isOpen, fiscalStartYear, type]);
 
-	const handleSubmit = async (event) => {
-		event.preventDefault();
+  // Reload departments when the selected fiscal year changes
+  useEffect(() => {
+    if (isOpen) {
+      loadDepartments(fiscalYear);
+    }
+  }, [fiscalYear, isOpen, type]);
 
-		const parsedAllocated = Number(allocated);
-		const parsedYear = Number(fiscalYear);
+  // Validate the form and create the budget
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-		if (Number.isNaN(parsedAllocated) || parsedAllocated < 0) {
-			toast.error("Introduce un importe válido.");
-			return;
-		}
+    const parsedAllocated = Number(allocated);
+    const parsedYear = Number(fiscalYear);
 
-		if (!departmentId) {
-			toast.error("Selecciona un departamento.");
-			return;
-		}
+    if (Number.isNaN(parsedAllocated) || parsedAllocated < 0) {
+      toast.error("Introduce un importe válido.");
+      return;
+    }
 
-		if (Number.isNaN(parsedYear) || parsedYear < 2000) {
-			toast.error("Introduce un año fiscal válido.");
-			return;
-		}
+    if (!departmentId) {
+      toast.error("Selecciona un departamento.");
+      return;
+    }
 
-		try {
-			await createBudget({
-				allocated: parsedAllocated,
-				departmentId: Number(departmentId),
-				year: parsedYear,
-				notes: notes.trim(),
-				type,
-			});
+    if (Number.isNaN(parsedYear) || parsedYear < 2000) {
+      toast.error("Introduce un año fiscal válido.");
+      return;
+    }
 
-			toast.success(`${typeLabel} creado correctamente.`);
-			hidePopup();
-			onCreated?.();
-		} catch (error) {
-			console.error("Error creating budget:", error);
-			const errorMessage =
-				error?.response?.data?.error ||
-				`No se pudo crear ${typeLabel.toLowerCase()}.`;
-			toast.error(errorMessage);
-		}
-	};
+    try {
+      await createBudget({
+        allocated: parsedAllocated,
+        departmentId: Number(departmentId),
+        year: parsedYear,
+        type,
+      });
 
-	const footer = (
-		<div className="flex justify-center md:justify-end gap-4 mt-2">
-			<button
-				type="button"
-				className="popupButton border-primary outline-none text-primary hover:text-accent hover:border-accent"
-				onClick={hidePopup}>
-				Cancelar
-			</button>
-			<button
-				type="submit"
-				disabled={departments.length === 0}
-				className="popupButton border-none outline-none bg-accent text-text hover:bg-primary hover:text-background disabled:cursor-not-allowed disabled:opacity-60">
-				Crear
-			</button>
-		</div>
-	);
+      toast.success(`${typeLabel} creado correctamente.`);
+      hidePopup();
+      onCreated?.();
+    } catch (error) {
+      console.error("Error creating budget:", error);
 
-	return (
-		<Modal
-			title={`Crear ${typeLabel}`}
-			onClose={hidePopup}
-			isOpen={isOpen}
-			onSubmit={handleSubmit}
-			footer={footer}>
-			<div className="popupInputContainer">
-				<label htmlFor="allocatedAmount">Dinero asignado</label>
-				<input
-					id="allocatedAmount"
-					type="number"
-					min="0"
-					step="0.01"
-					className="input"
-					value={allocated}
-					onChange={(e) => setAllocated(e.target.value)}
-					placeholder="0.00"
-					required
-				/>
-			</div>
+      const errorMessage =
+        error?.response?.data?.error ||
+        `No se pudo crear ${typeLabel.toLowerCase()}.`;
 
-			<div className="popupInputContainer">
-				<label htmlFor="departmentSelect">Departamento</label>
-				<select
-					id="departmentSelect"
-					className="select"
-					value={departmentId}
-					onChange={(e) => setDepartmentId(e.target.value)}
-					disabled={loadingDepartments || departments.length === 0}
-					required>
-					{departments.length === 0 ? (
-						<option value="">No hay departamentos disponibles</option>
-					) : (
-						<>
-							<option value="">Selecciona un departamento</option>
-							{departments.map((department) => (
-								<option
-									key={department.departmentId}
-									value={department.departmentId}>
-									{department.name}
-								</option>
-							))}
-						</>
-					)}
-				</select>
-			</div>
+      toast.error(errorMessage);
+    }
+  };
 
-			<div className="popupInputContainer">
-				<label htmlFor="fiscalYear">Año fiscal</label>
-				<select
-					id="fiscalYear"
-					className="select"
-					value={fiscalYear}
-					onChange={(e) => setFiscalYear(Number(e.target.value))}
-					required>
-					<option value="">Selecciona un año fiscal</option>
-					{yearOptions.map((optionYear) => (
-						<option key={optionYear} value={optionYear}>
-							{optionYear}
-						</option>
-					))}
-				</select>
-			</div>
+  return (
+    <Modal
+      title={`Crear ${typeLabel}`}
+      onClose={hidePopup}
+      isOpen={isOpen}
+      onSubmit={handleSubmit}
+      submitLabel="Crear"
+    >
+      {/* Input for the allocated amount */}
+      <div className="popupInputContainer">
+        <label htmlFor="allocatedAmount">Dinero asignado</label>
+        <input
+          id="allocatedAmount"
+          type="number"
+          min="0"
+          step="0.01"
+          className="input"
+          value={allocated}
+          onChange={(event) => setAllocated(event.target.value)}
+          placeholder="0.00"
+          required
+        />
+      </div>
 
-			<div className="popupInputContainer">
-				<label htmlFor="budgetNotes">Notas</label>
-				<input
-					id="budgetNotes"
-					type="text"
-					className="input"
-					value={notes}
-					onChange={(e) => setNotes(e.target.value)}
-					placeholder="Descripción"
-				/>
-			</div>
-		</Modal>
-	);
+      {/* Select for choosing the department */}
+      <div className="popupInputContainer">
+        <label htmlFor="departmentSelect">Departamento</label>
+        <select
+          id="departmentSelect"
+          className="select"
+          value={departmentId}
+          onChange={(event) => setDepartmentId(event.target.value)}
+          disabled={loadingDepartments || departments.length === 0}
+          required
+        >
+          <option value="">
+            {loadingDepartments
+              ? "Cargando departamentos..."
+              : "Selecciona un departamento"}
+          </option>
+
+          {departments.map((department) => (
+            <option
+              key={department.departmentId}
+              value={department.departmentId}
+            >
+              {department.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Select for choosing the fiscal year */}
+      <div className="popupInputContainer">
+        <label htmlFor="fiscalYear">Año fiscal</label>
+        <select
+          id="fiscalYear"
+          className="select"
+          value={fiscalYear}
+          onChange={(event) => setFiscalYear(Number(event.target.value))}
+          required
+        >
+          {yearOptions.map((optionYear) => (
+            <option key={optionYear} value={optionYear}>
+              {optionYear}
+            </option>
+          ))}
+        </select>
+      </div>
+    </Modal>
+  );
 }
 
 export default CreateBudgetPopup;
