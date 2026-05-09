@@ -8,11 +8,13 @@ import com.budgetmanager.backend.model.User;
 import com.budgetmanager.backend.util.AuthUtil;
 import com.budgetmanager.backend.util.ResponseUtil;
 
-import jakarta.servlet.ServletException;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @WebServlet("/api/purchase-orders/*")
@@ -23,122 +25,194 @@ public class PurchaseOrderServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         ResponseUtil.setupJsonResponse(resp);
 
+        // Check if the user is logged in
         User user = AuthUtil.getUser(req);
 
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("{\"error\": \"Not authenticated\"}");
             return;
         }
 
         String path = req.getPathInfo();
 
-        // PREVIEW ENDPOINT
-        if (path != null && path.equals("/preview")) {
-            handlePreview(req, resp);
-            return;
+        // Return the next preview code before creating the purchase order
+        if ("/preview".equals(path)) {
+            try {
+                String budgetIdParam = req.getParameter("budgetId");
+
+                if (budgetIdParam == null || budgetIdParam.isEmpty()) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+
+                int budgetId = Integer.parseInt(budgetIdParam);
+                boolean isFungible = Boolean.parseBoolean(req.getParameter("isFungible"));
+
+                String code = purchaseOrderDAO.getNextOrderCodePreview(
+                        budgetId,
+                        isFungible
+                );
+
+                if (code == null) {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write("{\"code\": \"" + code + "\"}");
+                return;
+
+            } catch (NumberFormatException e) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+
+            } catch (Exception e) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                e.printStackTrace();
+                return;
+            }
         }
 
-        // NORMAL FETCH ORDERS
         ArrayList<PurchaseOrder> purchaseOrders;
-
         String role = user.getRoleName();
 
+        // Admins and accountants can see every purchase order
         if ("admin".equalsIgnoreCase(role) || "contable".equalsIgnoreCase(role)) {
             purchaseOrders = purchaseOrderDAO.getAllPurchaseOrders();
         } else {
             Integer departmentId = user.getDepartmentId();
 
+            // Regular users must belong to a department
             if (departmentId == null) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("{\"error\": \"User has no department\"}");
                 return;
             }
 
             purchaseOrders = purchaseOrderDAO.getPurchaseOrdersByDepartment(departmentId);
         }
 
-        // Attach invoices
-        for (PurchaseOrder po : purchaseOrders) {
+        // Add invoices to each purchase order before sending the response
+        for (PurchaseOrder purchaseOrder : purchaseOrders) {
             ArrayList<Invoice> invoices =
-                    invoiceDAO.getInvoicesByPurchaseOrderId(po.getPurchaseOrderId());
-            po.setInvoices(invoices);
+                    invoiceDAO.getInvoicesByPurchaseOrderId(
+                            purchaseOrder.getPurchaseOrderId()
+                    );
+
+            purchaseOrder.setInvoices(invoices);
         }
 
         ResponseUtil.sendJson(resp, purchaseOrders);
     }
 
-    // =========================
-    // PREVIEW HANDLER
-    // =========================
-    private void handlePreview(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-        try {
-            int budgetId = Integer.parseInt(req.getParameter("budgetId"));
-            boolean isFungible = Boolean.parseBoolean(req.getParameter("isFungible"));
-
-            String code = purchaseOrderDAO.getNextOrderCodePreview(budgetId, isFungible);
-
-            if (code == null) {
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                resp.getWriter().write("{\"error\": \"No preview available\"}");
-                return;
-            }
-
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write("{\"code\": \"" + code + "\"}");
-
-        } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"error\": \"Invalid parameters\"}");
-        }
-    }
-
     @Override
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        ResponseUtil.setupJsonResponse(response);
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        ResponseUtil.setupJsonResponse(resp);
 
-        User user = AuthUtil.getUser(request);
+        // Check if the user is logged in
+        User user = AuthUtil.getUser(req);
+
         if (user == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\": \"Not authenticated\"}");
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
+        // Only admins can delete purchase orders
         if (!"admin".equalsIgnoreCase(user.getRoleName())) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.getWriter().write("{\"error\": \"Not authorized\"}");
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
-        String idParam = request.getParameter("id");
+        String idParam = req.getParameter("id");
+
         if (idParam == null || idParam.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"error\": \"ID required\"}");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         try {
             int orderId = Integer.parseInt(idParam);
+
             boolean deleted = purchaseOrderDAO.deletePurchaseOrderById(orderId);
+
             if (!deleted) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write("{\"error\": \"Purchase order not found\"}");
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
 
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write("{\"success\": true}");
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.getWriter().write("{\"success\": true}");
+
         } catch (NumberFormatException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"error\": \"Invalid ID\"}");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Error deleting purchase order\"}");
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        ResponseUtil.setupJsonResponse(resp);
+
+        // Check if the user is logged in
+        User user = AuthUtil.getUser(req);
+
+        if (user == null) {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        try {
+            // Read the JSON sent from the frontend
+            Gson gson = new Gson();
+            JsonObject body = gson.fromJson(req.getReader(), JsonObject.class);
+
+            int supplierId = body.get("supplierId").getAsInt();
+            int departmentId = body.get("departmentId").getAsInt();
+            int budgetTypeId = body.get("budgetTypeId").getAsInt();
+            double amount = body.get("quantity").getAsDouble();
+            LocalDate orderDate = LocalDate.parse(body.get("orderDate").getAsString());
+            String notes = body.get("description").getAsString();
+            boolean isFungible = body.get("isFungible").getAsBoolean();
+
+            // This is only used for investment plan orders
+            String investmentCode = null;
+
+            if (body.has("investmentCode") && !body.get("investmentCode").isJsonNull()) {
+                String value = body.get("investmentCode").getAsString().trim();
+
+                if (!value.isEmpty()) {
+                    investmentCode = value;
+                }
+            }
+
+            int purchaseOrderId = purchaseOrderDAO.createPurchaseOrder(
+                    supplierId,
+                    departmentId,
+                    budgetTypeId,
+                    amount,
+                    orderDate,
+                    notes,
+                    isFungible,
+                    investmentCode,
+                    user.getUserId()
+            );
+
+            if (purchaseOrderId == 0) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            resp.setStatus(HttpServletResponse.SC_CREATED);
+            resp.getWriter().write(
+                    "{\"success\": true, \"purchaseOrderId\": " + purchaseOrderId + "}"
+            );
+
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
         }
     }

@@ -13,170 +13,172 @@ import { getOrders, deletePurchaseOrder } from "../../services/orderService";
 import { AuthContext } from "../../context/AuthContext";
 
 function Ordenes() {
-	// Get current user and determine role
-	const { user } = useContext(AuthContext);
-	const isAdmin = user.roleName === "admin";
+  // Get current user and determine role
+  const { user } = useContext(AuthContext);
+  const isAdmin = user.roleName === "admin";
 
-	// Search and department filter state
-	const [search, setSearch] = useState("");
-	const [filter, setFilter] = useState("");
+  // Search and department filter state
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("");
 
-	// Orders data and loading state
-	const [orders, setOrders] = useState([]);
-	const [loading, setLoading] = useState(true);
+  // Orders data and loading state
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-	// Popup state
-	const [addOrdenShow, setAddOrdenShow] = useState(false);
-	const [addInvoiceShow, setAddInvoiceShow] = useState(false);
-	const [showDetails, setShowDetails] = useState(false);
+  // Popup state
+  const [addOrdenShow, setAddOrdenShow] = useState(false);
+  const [addInvoiceShow, setAddInvoiceShow] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
-	// Currently selected order
-	const [selectedOrden, setSelectedOrden] = useState(null);
+  // Currently selected order
+  const [selectedOrden, setSelectedOrden] = useState(null);
 
-	// Normalize search input
-	const searchLower = search.toLowerCase();
+  // Normalize search input
+  const searchLower = search.toLowerCase();
 
-	// Apply search + department filter
-	const filteredOrdenes = orders.filter((order) => {
-		const matchesSearch =
-			!searchLower ||
-			order.notes?.toLowerCase().includes(searchLower) ||
-			order.generatedOrderCode?.toLowerCase().includes(searchLower) ||
-			order.investmentPlanCode?.toLowerCase().includes(searchLower);
+  // Apply search + department filter
+  const filteredOrdenes = orders.filter((order) => {
+    const matchesSearch =
+      !searchLower ||
+      order.notes?.toLowerCase().includes(searchLower) ||
+      order.generatedOrderCode?.toLowerCase().includes(searchLower) ||
+      order.investmentPlanCode?.toLowerCase().includes(searchLower);
 
-		const matchesDepartment = !filter || order.departmentId === Number(filter);
+    const matchesDepartment = !filter || order.departmentId === Number(filter);
 
-		return matchesSearch && matchesDepartment;
-	});
+    return matchesSearch && matchesDepartment;
+  });
 
-	// Fetch current year orders
-	const fetchOrders = async () => {
-		try {
-			setLoading(true);
+  // Fetch current year orders
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
 
-			const data = await getOrders();
-			const currentYear = new Date().getFullYear();
+      const data = await getOrders();
+      const currentYear = new Date().getFullYear();
 
-			const currentOrders = data.filter((order) => {
-				const year = new Date(order.orderDate).getFullYear();
-				return year === currentYear;
-			});
+      const currentOrders = data.filter((order) => {
+        const year = new Date(order.orderDate).getFullYear();
+        return year === currentYear;
+      });
 
-			setOrders(currentOrders);
-		} catch (err) {
-			console.error("Error fetching orders:", err);
-		} finally {
-			setLoading(false);
-		}
-	};
+      setOrders(currentOrders);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-	// Load data on mount
-	useEffect(() => {
-		fetchOrders();
-	}, []);
+  // Load data on mount
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
-	const handleDeleteOrder = async (order) => {
-		try {
-			await deletePurchaseOrder(order.purchaseOrderId);
-			toast.success("Orden eliminada correctamente");
-			await fetchOrders();
-		} catch (err) {
-			console.error("Error deleting order:", err);
-			toast.error("Error al eliminar la orden de compra");
-		}
-	};
+  const handleDeleteOrder = async (order) => {
+    try {
+      await deletePurchaseOrder(order.purchaseOrderId);
+      toast.success("Orden eliminada correctamente");
+      await fetchOrders();
+    } catch (err) {
+      console.error("Error deleting order:", err);
+      toast.error("Error al eliminar la orden de compra");
+    }
+  };
 
-	return (
-		<div className="page">
-			<h1>Panel de Órdenes de Compra</h1>
+  return (
+    <div className="page">
+      <h1>Panel de Órdenes de Compra</h1>
 
-			{/* Create order popup */}
-			{addOrdenShow && (
-				<NuevoOrdenDeCompra
-					hidePopup={() => setAddOrdenShow(false)}
-					isOpen={addOrdenShow}
-					user={user}
-				/>
-			)}
+      {/* Create order popup */}
+      {addOrdenShow && (
+        <NuevoOrdenDeCompra
+          hidePopup={() => setAddOrdenShow(false)}
+          isOpen={addOrdenShow}
+          user={user}
+          onCreated={fetchOrders}
+        />
+      )}
 
-			{/* Add invoice popup */}
-			{addInvoiceShow && selectedOrden && (
-				<AgregarFactura
-					hidePopup={() => setAddInvoiceShow(false)}
-					isOpen={addInvoiceShow}
-					data={selectedOrden.invoices}
-					purchaseOrderId={selectedOrden.purchaseOrderId}
-					onUploadSuccess={fetchOrders}
-				/>
-			)}
+      {/* Add invoice popup */}
+      {addInvoiceShow && selectedOrden && (
+        <AgregarFactura
+          hidePopup={() => setAddInvoiceShow(false)}
+          isOpen={addInvoiceShow}
+          data={selectedOrden.invoices}
+          purchaseOrderId={selectedOrden.purchaseOrderId}
+          onUploadSuccess={fetchOrders}
+        />
+      )}
 
-			{/* Order details popup */}
-			{showDetails && selectedOrden && (
-				<DetallesOrden
-					hidePopup={() => setShowDetails(false)}
-					isOpen={showDetails}
-					data={selectedOrden}
-				/>
-			)}
+      {/* Order details popup */}
+      {showDetails && selectedOrden && (
+        <DetallesOrden
+          hidePopup={() => setShowDetails(false)}
+          isOpen={showDetails}
+          data={selectedOrden}
+        />
+      )}
 
-			{/* Top controls: search + filters */}
-			<div className="flex flex-col lg:flex-row gap-4 md:items-center">
-				{/* Search input */}
-				<div className="order-2 md:order-1 md:max-w-full lg:max-w-100 searchBar">
-					<IoSearchOutline className="search-icon iconProveedores" />
-					<input
-						type="text"
-						placeholder="Buscar por código o descripción"
-						value={search}
-						onChange={(event) => setSearch(event.target.value)}
-					/>
-				</div>
+      {/* Top controls: search + filters */}
+      <div className="flex flex-col lg:flex-row gap-4 md:items-center">
+        {/* Search input */}
+        <div className="order-2 md:order-1 md:max-w-full lg:max-w-100 searchBar">
+          <IoSearchOutline className="search-icon iconProveedores" />
+          <input
+            type="text"
+            placeholder="Buscar por código o descripción"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </div>
 
-				{/* Filters and actions */}
-				<div className="flex flex-col md:flex-row gap-4 w-full md:w-auto md:ml-auto order-1 md:order-2">
-					{/* Department filter (admin only) */}
-					{isAdmin && (
-						<DepartmentFilter
-							id="ordenFilter"
-							value={filter}
-							onChange={setFilter}
-						/>
-					)}
+        {/* Filters and actions */}
+        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto md:ml-auto order-1 md:order-2">
+          {/* Department filter (admin only) */}
+          {isAdmin && (
+            <DepartmentFilter
+              id="ordenFilter"
+              value={filter}
+              onChange={setFilter}
+            />
+          )}
 
-					{/* Create order button */}
-					<button
-						className="addNewButton"
-						onClick={() => setAddOrdenShow(true)}>
-						Crear orden de compra
-					</button>
-				</div>
-			</div>
+          {/* Create order button */}
+          <button
+            className="addNewButton"
+            onClick={() => setAddOrdenShow(true)}
+          >
+            Crear orden de compra
+          </button>
+        </div>
+      </div>
 
-			{/* Content: loading, empty state, or table */}
-			{loading ? (
-				<LoadingSpinner />
-			) : filteredOrdenes.length === 0 ? (
-				<div className="mt-6 rounded-lg bg-secondary/60 p-6 text-center text-sm text-primary">
-					No se encontraron órdenes de compra
-				</div>
-			) : (
-				<OrdenesTable
-					ordenes={filteredOrdenes}
-					showEdit
-					showDelete={isAdmin}
-					onDelete={handleDeleteOrder}
-					onInvoices={(order) => {
-						setSelectedOrden(order);
-						setAddInvoiceShow(true);
-					}}
-					onViewDetails={(order) => {
-						setSelectedOrden(order);
-						setShowDetails(true);
-					}}
-				/>
-			)}
-		</div>
-	);
+      {/* Content: loading, empty state, or table */}
+      {loading ? (
+        <LoadingSpinner />
+      ) : filteredOrdenes.length === 0 ? (
+        <div className="mt-6 rounded-lg bg-secondary/60 p-6 text-center text-sm text-primary">
+          No se encontraron órdenes de compra
+        </div>
+      ) : (
+        <OrdenesTable
+          ordenes={filteredOrdenes}
+          showEdit
+          showDelete={isAdmin}
+          onDelete={handleDeleteOrder}
+          onInvoices={(order) => {
+            setSelectedOrden(order);
+            setAddInvoiceShow(true);
+          }}
+          onViewDetails={(order) => {
+            setSelectedOrden(order);
+            setShowDetails(true);
+          }}
+        />
+      )}
+    </div>
+  );
 }
 
 export default Ordenes;

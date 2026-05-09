@@ -1,158 +1,274 @@
-import Modal from "../../Modal/Modal";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import Modal from "../../Modal/Modal";
 import { getSuppliers } from "../../../services/supplierService";
 import { getBudgetTypes } from "../../../services/budgetTypesService";
-import { getOrderPreview } from "../../../services/orderService";
+import {
+  getOrderPreview,
+  createPurchaseOrder,
+} from "../../../services/orderService";
 import { fetchDepartments } from "../../../services/metaService";
 
-function NuevoOrdenDeCompra({ hidePopup, isOpen, user }) {
+function NuevoOrdenDeCompra({ hidePopup, isOpen, user, onCreated }) {
+  const isAdmin = user?.roleName === "admin";
+
+  // Select options
   const [proveedores, setProveedores] = useState([]);
   const [tiposPresupuesto, setTiposPresupuesto] = useState([]);
   const [departamentos, setDepartamentos] = useState([]);
 
-  const [selectedDept, setSelectedDept] = useState(null);
-  const [selectedTipo, setSelectedTipo] = useState("");
+  // Form values
+  const [selectedDept, setSelectedDept] = useState("");
   const [selectedProveedor, setSelectedProveedor] = useState("");
-  const [cantidad, setCantidad] = useState("");
+  const [selectedTipo, setSelectedTipo] = useState("");
+  const [importe, setImporte] = useState("");
   const [fechaOrden, setFechaOrden] = useState("");
   const [descripcion, setDescripcion] = useState("");
 
-  const isAdmin = user.roleName == "admin";
-
+  // Budget type specific values
   const [investmentCode, setInvestmentCode] = useState("");
   const [generatedCode, setGeneratedCode] = useState("");
-
   const [isFungible, setIsFungible] = useState(false);
 
-  // Load suppliers
-  const loadSuppliers = async () => {
-    try {
-      const data = await getSuppliers({ departmentId: selectedDept });
-      setProveedores(data);
-    } catch {
-      toast.error("Error cargando proveedores");
+  const selectedBudgetType = tiposPresupuesto.find(
+    (tipo) => tipo.name === selectedTipo,
+  );
+
+  const capitalize = (text) =>
+    text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
+
+  // Clear the form after creating an order
+  const resetForm = () => {
+    setSelectedProveedor("");
+    setSelectedTipo("");
+    setImporte("");
+    setFechaOrden("");
+    setDescripcion("");
+    setInvestmentCode("");
+    setGeneratedCode("");
+    setIsFungible(false);
+
+    if (isAdmin) {
+      setSelectedDept("");
     }
   };
 
-  // Load budget types
-  const loadBudgetTypes = async () => {
-    try {
-      const data = await getBudgetTypes();
-      setTiposPresupuesto(data);
-    } catch {
-      toast.error("Error cargando tipos de presupuesto");
-    }
-  };
-
-  // Load departments
-  const loadDepartments = async () => {
-    try {
-      const data = await fetchDepartments();
-      setDepartamentos(data);
-    } catch {
-      toast.error("Error cargando departamentos");
-    }
-  };
-
+  // Load fixed form data
   useEffect(() => {
-    loadSuppliers();
-  }, [selectedDept]);
+    const loadInitialData = async () => {
+      try {
+        const [budgetTypes, departments] = await Promise.all([
+          getBudgetTypes(),
+          fetchDepartments(),
+        ]);
 
-  useEffect(() => {
-    loadBudgetTypes();
-    loadDepartments();
+        setTiposPresupuesto(budgetTypes);
+        setDepartamentos(departments);
+      } catch {
+        toast.error("Error cargando datos del formulario");
+      }
+    };
+
+    loadInitialData();
   }, []);
 
+  // Regular users can only create orders for their department
   useEffect(() => {
     if (!isAdmin && user?.departmentId) {
-      setSelectedDept(user.departmentId);
+      setSelectedDept(String(user.departmentId));
     }
   }, [isAdmin, user]);
 
-  // Fetch preview code when "presupuesto"
+  // Load suppliers for the selected department
   useEffect(() => {
-    if (selectedTipo === "presupuesto") {
-      const fetchPreview = async () => {
-        try {
-          const budgetId = 1;
+    const loadSuppliers = async () => {
+      try {
+        const data = await getSuppliers({
+          departmentId: selectedDept || undefined,
+        });
 
-          const data = await getOrderPreview(budgetId, isFungible);
-          setGeneratedCode(data.code);
-        } catch {
-          setGeneratedCode("");
-        }
-      };
+        setProveedores(data);
+      } catch {
+        toast.error("Error cargando proveedores");
+      }
+    };
 
-      fetchPreview();
+    loadSuppliers();
+  }, [selectedDept]);
+
+  // Preview the generated code for budget orders
+  useEffect(() => {
+    if (selectedTipo !== "presupuesto") {
+      setGeneratedCode("");
+      return;
     }
-  }, [selectedTipo, isFungible]);
 
-  const capitalize = (str) =>
-    str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
+    const loadPreviewCode = async () => {
+      if (!selectedDept || !selectedBudgetType?.budgetTypeId) return;
+
+      try {
+        const data = await getOrderPreview(
+          selectedDept,
+          selectedBudgetType.budgetTypeId,
+          isFungible,
+        );
+
+        setGeneratedCode(data.code);
+      } catch {
+        setGeneratedCode("");
+      }
+    };
+
+    loadPreviewCode();
+  }, [
+    selectedTipo,
+    selectedDept,
+    selectedBudgetType?.budgetTypeId,
+    isFungible,
+  ]);
+
+  // Keep only validations that depend on app logic
+  const validateForm = () => {
+    if (!selectedBudgetType?.budgetTypeId) {
+      toast.error("Selecciona un origen de fondos");
+      return false;
+    }
+
+    if (selectedTipo === "plan de inversiones" && !investmentCode.trim()) {
+      toast.error("Ingresa el código de inversión");
+      return false;
+    }
+
+    return true;
+  };
+
+  // Changing department also changes the supplier list
+  const handleDepartmentChange = (departmentId) => {
+    setSelectedDept(departmentId);
+    setSelectedProveedor("");
+  };
+
+  // Clear fields that do not belong to the new budget type
+  const handleBudgetTypeChange = (budgetTypeName) => {
+    setSelectedTipo(budgetTypeName);
+    setInvestmentCode("");
+    setGeneratedCode("");
+  };
+
+  // Build the payload expected by the backend
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    const payload = {
+      supplierId: Number(selectedProveedor),
+      departmentId: Number(selectedDept),
+      budgetTypeId: Number(selectedBudgetType.budgetTypeId),
+      quantity: Number(importe),
+      orderDate: fechaOrden,
+      description: descripcion.trim(),
+      isFungible,
+      investmentCode:
+        selectedTipo === "plan de inversiones"
+          ? investmentCode.trim().toUpperCase()
+          : null,
+    };
+
+    try {
+      await createPurchaseOrder(payload);
+
+      toast.success("Orden de compra creada correctamente");
+      resetForm();
+
+      if (onCreated) {
+        await onCreated();
+      }
+
+      hidePopup();
+    } catch (error) {
+      toast.error(error.message || "Error creando la orden de compra");
+    }
+  };
 
   return (
-    <Modal title="Crear un Órden de Compra" onClose={hidePopup} isOpen={isOpen}>
+    <Modal
+      title="Crear una Orden de Compra"
+      onClose={hidePopup}
+      isOpen={isOpen}
+      onSubmit={handleSubmit}
+      submitLabel="Crear orden"
+    >
       <div className="flex flex-col gap-4">
-        {/* Row 1 */}
+        {/* Supplier and department */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Proveedor */}
           <div className="popupInputContainer">
             <label htmlFor="proveedor">Proveedor</label>
             <select
               id="proveedor"
               value={selectedProveedor}
-              onChange={(e) => setSelectedProveedor(Number(e.target.value))}
+              onChange={(e) => setSelectedProveedor(e.target.value)}
+              required
               className="input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg"
             >
               <option value="">Seleccionar proveedor</option>
-              {proveedores.map((p) => (
-                <option key={p.supplierId} value={p.supplierId}>
-                  {p.name}
+
+              {proveedores.map((proveedor) => (
+                <option key={proveedor.supplierId} value={proveedor.supplierId}>
+                  {proveedor.name}
                 </option>
               ))}
             </select>
           </div>
+
           <div className="popupInputContainer">
             <label htmlFor="departamento">Departamento</label>
             <select
               id="departamento"
-              value={selectedDept || ""}
-              onChange={(e) => setSelectedDept(Number(e.target.value))}
+              value={selectedDept}
+              onChange={(e) => handleDepartmentChange(e.target.value)}
               disabled={!isAdmin}
-              className={`input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg ${!isAdmin ? "opacity-70" : ""}`}
+              required
+              className={`input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg ${
+                !isAdmin ? "opacity-70" : ""
+              }`}
             >
               <option value="">Seleccionar departamento</option>
-              {departamentos.map((d) => (
-                <option key={d.departmentId} value={d.departmentId}>
-                  {d.name}
+
+              {departamentos.map((departamento) => (
+                <option
+                  key={departamento.departmentId}
+                  value={departamento.departmentId}
+                >
+                  {departamento.name}
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Row 2 */}
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-          {/* Tipo presupuesto */}
-          <div className="popupInputContainer">
-            <label htmlFor="tipoPresupuesto">Origen de Fondos</label>
-            <select
-              id="tipoPresupuesto"
-              value={selectedTipo}
-              onChange={(e) => setSelectedTipo(e.target.value)}
-              className="input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg"
-            >
-              <option value="">Seleccionar tipo</option>
-              {tiposPresupuesto.map((t) => (
-                <option key={t.budgetTypeId} value={t.name}>
-                  {capitalize(t.name)}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Budget type */}
+        <div className="popupInputContainer">
+          <label htmlFor="tipoPresupuesto">Origen de Fondos</label>
+          <select
+            id="tipoPresupuesto"
+            value={selectedTipo}
+            onChange={(e) => handleBudgetTypeChange(e.target.value)}
+            required
+            className="input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg"
+          >
+            <option value="">Seleccionar tipo</option>
+
+            {tiposPresupuesto.map((tipo) => (
+              <option key={tipo.budgetTypeId} value={tipo.name}>
+                {capitalize(tipo.name)}
+              </option>
+            ))}
+          </select>
         </div>
-        {/* Conditional fields */}
+
+        {/* Investment orders need a manual code */}
         {selectedTipo === "plan de inversiones" && (
           <div className="popupInputContainer">
             <label htmlFor="investmentCode">Código de inversión</label>
@@ -162,12 +278,14 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen, user }) {
               maxLength={7}
               value={investmentCode}
               onChange={(e) => setInvestmentCode(e.target.value.toUpperCase())}
+              required
               className="input uppercase tracking-widest"
               placeholder="Ej: 1234567"
             />
           </div>
         )}
 
+        {/* Budget orders show the backend preview code */}
         {selectedTipo === "presupuesto" && (
           <div className="popupInputContainer">
             <label htmlFor="generatedCode">Código generado</label>
@@ -181,15 +299,18 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen, user }) {
           </div>
         )}
 
-        {/* Row 3 */}
+        {/* Amount and order date */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="popupInputContainer">
-            <label htmlFor="cantidad">Cantidad</label>
+            <label htmlFor="importe">Importe</label>
             <input
-              id="cantidad"
+              id="importe"
               type="number"
-              value={cantidad}
-              onChange={(e) => setCantidad(e.target.value)}
+              min="1"
+              step="0.01"
+              value={importe}
+              onChange={(e) => setImporte(e.target.value)}
+              required
               className="input"
             />
           </div>
@@ -201,12 +322,13 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen, user }) {
               type="date"
               value={fechaOrden}
               onChange={(e) => setFechaOrden(e.target.value)}
+              required
               className="input"
             />
           </div>
         </div>
 
-        {/* Row 4 */}
+        {/* Order description */}
         <div className="popupInputContainer">
           <label htmlFor="descripcion">Descripción</label>
           <input
@@ -214,11 +336,12 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen, user }) {
             type="text"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
+            required
             className="input"
           />
         </div>
 
-        {/* Row 5 */}
+        {/* Fungible flag sent to the backend */}
         <div className="flex items-center gap-2 text-sm text-primary">
           <input
             id="fungible"
