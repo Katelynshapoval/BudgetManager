@@ -24,15 +24,8 @@ public class UserStatusServlet extends HttpServlet {
 
         ResponseUtil.setupJsonResponse(resp);
 
-        User currentUser = AuthUtil.getUser(req);
-
-        if (currentUser == null) {
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
-        if (!"admin".equals(currentUser.getRoleName())) {
-            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        // Check admin access
+        if (!AuthUtil.requireAdmin(req, resp)) {
             return;
         }
 

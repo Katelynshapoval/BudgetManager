@@ -2,7 +2,10 @@ package com.budgetmanager.backend.util;
 
 import com.budgetmanager.backend.model.User;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
 
 public class AuthUtil {
 
@@ -15,5 +18,21 @@ public class AuthUtil {
             return user;
         }
         return null;
+    }
+
+    public static boolean requireAdmin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        User currentUser = getUser(req);
+
+        if (currentUser == null) {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+
+        if (!"admin".equals(currentUser.getRoleName())) {
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return false;
+        }
+
+        return true;
     }
 }
