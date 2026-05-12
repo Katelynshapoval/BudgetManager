@@ -24,7 +24,7 @@ const NAV_ITEMS = [
   },
   {
     to: "/proveedores",
-    label: "Proveedores",
+    label: "Suppliers",
     icon: IoCubeOutline,
   },
   {
@@ -39,7 +39,7 @@ const NAV_ITEMS = [
   },
   {
     to: "/usuarios",
-    label: "Usuarios",
+    label: "Users",
     icon: IoPeopleOutline,
     roles: ["admin"],
   },

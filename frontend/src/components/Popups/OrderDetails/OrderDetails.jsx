@@ -1,9 +1,9 @@
 import Modal from "../../Modal/Modal";
-import "./DetallesOrden.css";
+import "./OrderDetails.css";
 import { formatDateTime } from "../../../utils/date";
 import { EUR } from "../../../utils/currency";
 
-function DetallesOrden({ hidePopup, isOpen, data }) {
+function OrderDetails({ hidePopup, isOpen, data }) {
   return (
     <Modal title="Info" onClose={hidePopup} isOpen={isOpen} footer={null}>
       {/* Order details */}
@@ -53,7 +53,7 @@ function DetallesOrden({ hidePopup, isOpen, data }) {
         {/* Funds origin */}
         <div className="detailsPopupField">
           <p>Origen de Fondos</p>
-          <span>{data.generatedOrderCode ? "Presupuesto" : "Inversión"}</span>
+          <span>{data.generatedOrderCode ? "Budget" : "Inversión"}</span>
         </div>
       </div>
 
@@ -66,4 +66,4 @@ function DetallesOrden({ hidePopup, isOpen, data }) {
   );
 }
 
-export default DetallesOrden;
+export default OrderDetails;

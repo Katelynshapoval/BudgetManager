@@ -6,7 +6,7 @@ import {
   fetchAvailableDepartments,
 } from "../../../services/budgetService";
 
-function CreateBudgetPopup({ hidePopup, isOpen, type, year, onCreated }) {
+function CreateBudget({ hidePopup, isOpen, type, year, onCreated }) {
   // Set the fiscal year options based on the provided year or the current year
   const currentYear = new Date().getFullYear();
   const fiscalStartYear = year ?? currentYear;
@@ -27,7 +27,7 @@ function CreateBudgetPopup({ hidePopup, isOpen, type, year, onCreated }) {
 
   // Display the correct label depending on the budget type
   const typeLabel =
-    type === "plan de inversiones" ? "Plan de Inversión" : "Presupuesto";
+    type === "plan de inversiones" ? "Plan de Inversión" : "Budget";
 
   // Clear the form fields when the popup is opened again
   const resetForm = () => {
@@ -184,4 +184,4 @@ function CreateBudgetPopup({ hidePopup, isOpen, type, year, onCreated }) {
   );
 }
 
-export default CreateBudgetPopup;
+export default CreateBudget;

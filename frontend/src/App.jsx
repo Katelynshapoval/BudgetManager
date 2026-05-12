@@ -1,9 +1,9 @@
 import Login from "./pages/Login/Login";
-import Proveedores from "./pages/Proveedores/Proveedores";
-import Presupuesto from "./pages/Presupuesto/Presupuesto";
-import Ordenes from "./pages/Ordenes/Ordenes";
-import Historico from "./pages/Historico/Historico";
-import Usuarios from "./pages/Usuarios/Usuarios";
+import Proveedores from "./pages/Suppliers/Suppliers.jsx";
+import Budget from "./pages/Budget/Budget.jsx";
+import Orders from "./pages/Orders/Orders.jsx";
+import History from "./pages/History/History.jsx";
+import Usuarios from "./pages/Users/Users.jsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
 import Signup from "./pages/Signup/Signup";
@@ -33,10 +33,10 @@ function App() {
             }
           >
             {/* Dashboard pages */}
-            <Route index element={<Presupuesto />} />
+            <Route index element={<Budget />} />
             <Route path="proveedores" element={<Proveedores />} />
-            <Route path="ordenes" element={<Ordenes />} />
-            <Route path="historico" element={<Historico />} />
+            <Route path="ordenes" element={<Orders />} />
+            <Route path="historico" element={<History />} />
             <Route path="usuarios" element={<Usuarios />} />
           </Route>
         </Routes>

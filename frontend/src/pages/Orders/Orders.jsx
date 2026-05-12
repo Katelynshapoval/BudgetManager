@@ -3,16 +3,16 @@ import { IoSearchOutline } from "react-icons/io5";
 import { toast } from "sonner";
 
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
-import NuevoOrdenDeCompra from "../../components/Popups/NuevoOrdenDeCompra/NuevoOrdenCompra";
-import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactura";
-import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
-import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
+import NuevoOrdenDeCompra from "../../components/Popups/NewPurchaseOrder/NewPurchaseOrder.jsx";
+import AddInvoice from "../../components/Popups/AddInvoice/AddInvoice.jsx";
+import OrderDetails from "../../components/Popups/OrderDetails/OrderDetails.jsx";
+import OrdersTable from "../../components/OrdersTable/OrdersTable";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 import { getOrders, deletePurchaseOrder } from "../../services/orderService";
 import { AuthContext } from "../../context/AuthContext";
 
-function Ordenes() {
+function Orders() {
   // Get current user and determine role
   const { user } = useContext(AuthContext);
   const isAdmin = user.roleName === "admin";
@@ -102,7 +102,7 @@ function Ordenes() {
 
       {/* Add invoice popup */}
       {addInvoiceShow && selectedOrden && (
-        <AgregarFactura
+        <AddInvoice
           hidePopup={() => setAddInvoiceShow(false)}
           isOpen={addInvoiceShow}
           data={selectedOrden.invoices}
@@ -113,7 +113,7 @@ function Ordenes() {
 
       {/* Order details popup */}
       {showDetails && selectedOrden && (
-        <DetallesOrden
+        <OrderDetails
           hidePopup={() => setShowDetails(false)}
           isOpen={showDetails}
           data={selectedOrden}
@@ -162,7 +162,7 @@ function Ordenes() {
           No se encontraron órdenes de compra
         </div>
       ) : (
-        <OrdenesTable
+        <OrdersTable
           ordenes={filteredOrdenes}
           showDelete={isAdmin}
           onDelete={handleDeleteOrder}
@@ -180,4 +180,4 @@ function Ordenes() {
   );
 }
 
-export default Ordenes;
+export default Orders;

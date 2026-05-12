@@ -2,15 +2,15 @@ import { useState, useEffect, useContext } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
-import AgregarFactura from "../../components/Popups/AgregarFactura/AgregarFactura";
-import DetallesOrden from "../../components/Popups/DetallesOrden/DetallesOrden";
-import OrdenesTable from "../../components/OrdenesTable/OrdenesTable";
+import AddInvoice from "../../components/Popups/AddInvoice/AddInvoice.jsx";
+import OrderDetails from "../../components/Popups/OrderDetails/OrderDetails.jsx";
+import OrdersTable from "../../components/OrdersTable/OrdersTable";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 import { getOrders } from "../../services/orderService";
 import { AuthContext } from "../../context/AuthContext";
 
-function Historico() {
+function History() {
   // Get current user and determine role
   const { user } = useContext(AuthContext);
   const isAdmin = user.roleName === "admin";
@@ -78,7 +78,7 @@ function Historico() {
 
       {/* Invoice popup (read-only mode) */}
       {addInvoiceShow && selectedOrden && (
-        <AgregarFactura
+        <AddInvoice
           hidePopup={() => setAddInvoiceShow(false)}
           isOpen={addInvoiceShow}
           data={selectedOrden.invoices}
@@ -88,7 +88,7 @@ function Historico() {
 
       {/* Order details popup */}
       {showDetails && selectedOrden && (
-        <DetallesOrden
+        <OrderDetails
           hidePopup={() => setShowDetails(false)}
           isOpen={showDetails}
           data={selectedOrden}
@@ -128,7 +128,7 @@ function Historico() {
           No se encontraron órdenes históricas
         </div>
       ) : (
-        <OrdenesTable
+        <OrdersTable
           ordenes={filteredOrdenes}
           onInvoices={(order) => {
             setSelectedOrden(order);
@@ -144,4 +144,4 @@ function Historico() {
   );
 }
 
-export default Historico;
+export default History;

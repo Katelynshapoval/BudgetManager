@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Modal from "../../Modal/Modal";
 
-function NuevoProveedor({ hidePopup, isOpen, onCreate }) {
+function NewSupplier({ hidePopup, isOpen, onCreate }) {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [phone, setPhone] = useState("");
@@ -108,4 +108,4 @@ function NuevoProveedor({ hidePopup, isOpen, onCreate }) {
 	);
 }
 
-export default NuevoProveedor;
+export default NewSupplier;

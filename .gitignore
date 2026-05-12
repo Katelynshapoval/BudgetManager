@@ -29,3 +29,8 @@ config.properties
 out/
 *.class
 *.jar
+
+# JetBrains IDE files
+.idea/
+frontend/.idea/
+backend/.idea/

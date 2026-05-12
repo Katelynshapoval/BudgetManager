@@ -8,8 +8,8 @@ import {
 } from "react-icons/io5";
 
 import AssignDepartment from "../../components/Popups/AssignDepartment/AssignDepartment";
-import NuevoProveedor from "../../components/Popups/NuevoProveedor/NuevoProveedor";
-import EditarProveedor from "../../components/Popups/EditarProveedor/EditarProveedor";
+import NewSupplier from "../../components/Popups/NewSupplier/NewSupplier.jsx";
+import EditSupplier from "../../components/Popups/EditSupplier/EditSupplier.jsx";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
 import {
@@ -257,7 +257,7 @@ function Proveedor() {
 
 			{/* Edit supplier popup */}
 			{editProveedorShow && selectedSupplier && (
-				<EditarProveedor
+				<EditSupplier
 					hidePopup={() => {
 						setEditProveedorShow(false);
 						setSelectedSupplier(null);
@@ -270,7 +270,7 @@ function Proveedor() {
 
 			{/* Create supplier popup */}
 			{addProveedorShow && (
-				<NuevoProveedor
+				<NewSupplier
 					hidePopup={() => setAddProveedorShow(false)}
 					isOpen={addProveedorShow}
 					onCreate={handleCreateSupplier}

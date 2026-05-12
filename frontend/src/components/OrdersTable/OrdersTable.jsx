@@ -1,7 +1,7 @@
 import { IoCreateOutline, IoEyeOutline, IoTrashOutline } from "react-icons/io5";
 import { EUR } from "../../utils/currency";
 
-function OrdenesTable({
+function OrdersTable({
   ordenes,
   onViewDetails,
   onInvoices,
@@ -72,7 +72,7 @@ function OrdenesTable({
             return (
               <tr key={row.purchaseOrderId}>
                 {/* Type */}
-                <td>{row.generatedOrderCode ? "Presupuesto" : "Inversión"}</td>
+                <td>{row.generatedOrderCode ? "Budget" : "Inversión"}</td>
 
                 {/* Code */}
                 <td>{row.generatedOrderCode || row.investmentPlanCode}</td>
@@ -121,4 +121,4 @@ function OrdenesTable({
   );
 }
 
-export default OrdenesTable;
+export default OrdersTable;

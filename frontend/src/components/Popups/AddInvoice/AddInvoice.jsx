@@ -163,7 +163,7 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
 }
 
 // Main invoice modal
-function AgregarFactura({
+function AddInvoice({
   hidePopup,
   isOpen,
   data,
@@ -275,4 +275,4 @@ function AgregarFactura({
   );
 }
 
-export default AgregarFactura;
+export default AddInvoice;

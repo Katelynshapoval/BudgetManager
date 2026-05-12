@@ -1,11 +1,11 @@
-import "./Presupuesto.css";
+import "./Budget.css";
 import { useEffect, useState, useContext } from "react";
 import { toast } from "sonner";
 
 import { IoCreateOutline } from "react-icons/io5";
 
 import Accordion from "../../components/Accordion/Accordion";
-import CreateBudgetPopup from "../../components/Popups/CreateBudgetPopup/CreateBudgetPopup";
+import CreateBudget from "../../components/Popups/CreateBudget/CreateBudget.jsx";
 import DepartmentFilter from "../../components/DepartmentFilter/DepartmentFilter";
 import EditableCell from "../../components/EditableCell/EditableCell";
 
@@ -52,7 +52,7 @@ function BudgetTable({ data, user, onUpdateAllocated }) {
 
     try {
       await onUpdateAllocated(budgetId, parsedValue);
-      toast.success("Presupuesto actualizado correctamente");
+      toast.success("Budget actualizado correctamente");
       cancelEditing();
     } catch (error) {
       console.error("Error updating allocated amount:", error);
@@ -175,7 +175,7 @@ function BudgetSection({
 }
 
 // MAIN PAGE
-function Presupuesto() {
+function Budget() {
   const { user } = useContext(AuthContext);
 
   const [budgetData, setBudgetData] = useState([]);
@@ -224,7 +224,7 @@ function Presupuesto() {
       <h1 className="text-2xl md:text-3xl">Panel de Presupuestos</h1>
 
       {showBudgetPopup && (
-        <CreateBudgetPopup
+        <CreateBudget
           isOpen={showBudgetPopup}
           hidePopup={() => setShowBudgetPopup(false)}
           type="presupuesto"
@@ -234,7 +234,7 @@ function Presupuesto() {
       )}
 
       {showInvestmentPopup && (
-        <CreateBudgetPopup
+        <CreateBudget
           isOpen={showInvestmentPopup}
           hidePopup={() => setShowInvestmentPopup(false)}
           type="plan de inversiones"
@@ -252,7 +252,7 @@ function Presupuesto() {
           user={user}
           onUpdateAllocated={updateAllocated}
           canCreate={canCreate}
-          createLabel="Crear Presupuesto"
+          createLabel="Crear Budget"
           onCreateClick={() => setShowBudgetPopup(true)}
         />
 
@@ -272,4 +272,4 @@ function Presupuesto() {
   );
 }
 
-export default Presupuesto;
+export default Budget;

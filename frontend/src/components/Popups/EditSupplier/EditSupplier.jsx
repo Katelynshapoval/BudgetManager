@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import Modal from "../../Modal/Modal";
 
-function EditarProveedor({ hidePopup, isOpen, proveedor, onUpdate }) {
+function EditSupplier({ hidePopup, isOpen, proveedor, onUpdate }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -103,4 +103,4 @@ function EditarProveedor({ hidePopup, isOpen, proveedor, onUpdate }) {
   );
 }
 
-export default EditarProveedor;
+export default EditSupplier;
