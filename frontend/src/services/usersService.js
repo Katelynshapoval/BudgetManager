@@ -1,10 +1,13 @@
+// Fetch all users
 export async function fetchUsers() {
-  const res = await fetch(`/api/users`);
-  return res.json();
+  const response = await fetch("/api/users");
+
+  return response.json();
 }
 
+// Update a user status
 export async function updateUserStatus({ userId, status }) {
-  const res = await fetch("/api/users/status", {
+  const response = await fetch("/api/users/status", {
     method: "PUT",
     credentials: "include",
     headers: {
@@ -12,19 +15,20 @@ export async function updateUserStatus({ userId, status }) {
     },
     body: JSON.stringify({
       userId,
-      status, // "active" | "inactive" | "pending"
+      status,
     }),
   });
 
-  if (!res.ok) {
+  if (!response.ok) {
     throw new Error("Failed to update user status");
   }
 
-  return res.json();
+  return response.json();
 }
 
+// Update a user password
 export async function updateUserPassword({ userId, newPassword }) {
-  const res = await fetch("/api/users/password", {
+  const response = await fetch("/api/users/password", {
     method: "PUT",
     credentials: "include",
     headers: {
@@ -36,9 +40,9 @@ export async function updateUserPassword({ userId, newPassword }) {
     }),
   });
 
-  if (!res.ok) {
+  if (!response.ok) {
     throw new Error("Failed to update password");
   }
 
-  return res.json();
+  return response.json();
 }

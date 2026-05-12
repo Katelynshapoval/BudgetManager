@@ -1,30 +1,32 @@
 import { useState, useEffect } from "react";
 import {
   IoDocumentTextOutline,
-  IoCreateOutline,
   IoTrashOutline,
   IoCloudUploadOutline,
 } from "react-icons/io5";
+import { toast } from "sonner";
 
 import Modal from "../../Modal/Modal";
 import { uploadInvoice, deleteInvoice } from "../../../services/invoiceService";
-import { toast } from "sonner";
 import { EUR } from "../../../utils/currency";
 
 // Single invoice item
 function InvoiceItem({ id, amount, onDelete }) {
+  // Open invoice pdf in a new tab
   const handleOpen = () => {
     window.open(`http://localhost:8080/api/invoices/file?id=${id}`, "_blank");
   };
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-primary bg-secondary/60 px-5 py-3 text-sm text-primary">
+      {/* Invoice icon */}
       <IoDocumentTextOutline className="text-lg" />
 
+      {/* Invoice info */}
       <div className="flex-1">
         <button
           onClick={handleOpen}
-          className="text-text hover:text-[#252323] text-left cursor-pointer"
+          className="cursor-pointer text-left text-text hover:text-[#252323]"
         >
           Ver factura #{id}
         </button>
@@ -32,6 +34,7 @@ function InvoiceItem({ id, amount, onDelete }) {
         <p className="font-light">Importe: {EUR.format(amount)}</p>
       </div>
 
+      {/* Delete action */}
       <div className="flex gap-1 text-lg">
         <IoTrashOutline
           className="tableActionIcon"
@@ -43,11 +46,12 @@ function InvoiceItem({ id, amount, onDelete }) {
   );
 }
 
-// Form to upload invoice
+// Form to upload a new invoice
 function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
   const [file, setFile] = useState(null);
   const [amount, setAmount] = useState("");
 
+  // Validate and upload invoice
   const handleSubmit = async () => {
     if (!file) {
       toast.error("Selecciona un PDF");
@@ -79,6 +83,22 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
     }
   };
 
+  // Validate selected file
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files?.[0];
+
+    if (!selectedFile) return;
+
+    if (selectedFile.type !== "application/pdf") {
+      toast.error("El archivo debe ser un PDF");
+      e.target.value = null;
+      setFile(null);
+      return;
+    }
+
+    setFile(selectedFile);
+  };
+
   return (
     <div className="flex flex-col justify-center gap-4 rounded-xl bg-secondary/60 p-5 md:justify-end">
       {/* File upload */}
@@ -88,6 +108,7 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
           className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-full border-2 border-dashed border-accent bg-secondary px-6 py-4 text-text transition hover:border-accent hover:bg-accent/10"
         >
           <IoCloudUploadOutline className="text-xl text-accent" />
+
           <span className="text-sm font-medium">
             {file ? file.name : "Seleccionar archivo..."}
           </span>
@@ -98,28 +119,16 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
           type="file"
           accept="application/pdf"
           className="hidden"
-          onChange={(e) => {
-            const selectedFile = e.target.files?.[0];
-
-            if (!selectedFile) return;
-
-            if (selectedFile.type !== "application/pdf") {
-              toast.error("El archivo debe ser un PDF");
-              e.target.value = null;
-              setFile(null);
-              return;
-            }
-
-            setFile(selectedFile);
-          }}
+          onChange={handleFileChange}
         />
       </div>
 
-      {/* Amount */}
+      {/* Amount input */}
       <div className="inputContainer">
         <label className="font-normal text-primary">
           Importe de la factura
         </label>
+
         <input
           type="number"
           step="0.01"
@@ -131,7 +140,7 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
         />
       </div>
 
-      {/* Actions */}
+      {/* Form actions */}
       <div className="flex gap-3">
         <button
           type="button"
@@ -153,7 +162,7 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
   );
 }
 
-// Main component
+// Main invoice modal
 function AgregarFactura({
   hidePopup,
   isOpen,
@@ -167,13 +176,31 @@ function AgregarFactura({
 
   const isHistorico = hide;
 
+  // Keep local invoices updated when data changes
   useEffect(() => {
     setInvoices(data);
   }, [data]);
 
-  // Calculate total amount
-  const total = invoices.reduce((sum, inv) => sum + (inv.amount || 0), 0);
+  // Calculate invoices total
+  const total = invoices.reduce((sum, invoice) => {
+    return sum + (invoice.amount || 0);
+  }, 0);
 
+  // Update invoices after upload or delete
+  const refreshInvoices = async () => {
+    const updatedOrders = await onUploadSuccess();
+    if (!updatedOrders) return;
+
+    const updatedOrder = updatedOrders.find(
+      (order) => order.purchaseOrderId === purchaseOrderId,
+    );
+
+    if (updatedOrder) {
+      setInvoices(updatedOrder.invoices);
+    }
+  };
+
+  // Delete invoice and refresh list
   const handleDelete = async (id) => {
     try {
       const promise = deleteInvoice(id);
@@ -185,20 +212,16 @@ function AgregarFactura({
       });
 
       await promise;
-
-      const updatedOrders = await onUploadSuccess();
-      if (!updatedOrders) return;
-
-      const updatedOrder = updatedOrders.find(
-        (o) => o.purchaseOrderId === purchaseOrderId,
-      );
-
-      if (updatedOrder) {
-        setInvoices(updatedOrder.invoices);
-      }
+      await refreshInvoices();
     } catch (err) {
       console.error(err);
     }
+  };
+
+  // Close upload form after successful upload
+  const handleUploadSuccess = async () => {
+    setShowAddFile(false);
+    await refreshInvoices();
   };
 
   return (
@@ -221,8 +244,8 @@ function AgregarFactura({
         </div>
       )}
 
-      {/* Total */}
-      <div className="mt-4 flex justify-between items-center text-sm text-primary border-t border-primary/20 pt-3">
+      {/* Invoices total */}
+      <div className="mt-4 flex items-center justify-between border-t border-primary/20 pt-3 text-sm text-primary">
         <span>Total facturas</span>
         <span className="font-medium">{EUR.format(total)}</span>
       </div>
@@ -234,20 +257,7 @@ function AgregarFactura({
             <AddInvoiceForm
               onCancel={() => setShowAddFile(false)}
               purchaseOrderId={purchaseOrderId}
-              onSuccess={async () => {
-                setShowAddFile(false);
-
-                const updatedOrders = await onUploadSuccess();
-                if (!updatedOrders) return;
-
-                const updatedOrder = updatedOrders.find(
-                  (o) => o.purchaseOrderId === purchaseOrderId,
-                );
-
-                if (updatedOrder) {
-                  setInvoices(updatedOrder.invoices);
-                }
-              }}
+              onSuccess={handleUploadSuccess}
             />
           ) : (
             <button

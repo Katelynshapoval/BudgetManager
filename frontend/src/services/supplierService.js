@@ -1,102 +1,120 @@
+// Fetch suppliers with optional filters
 export async function getSuppliers({ departmentId, all } = {}) {
-	let url = "/api/suppliers";
+  let url = "/api/suppliers";
+  const params = new URLSearchParams();
 
-	const params = new URLSearchParams();
+  // Add filter parameters when provided
+  if (departmentId) {
+    params.append("departmentId", departmentId);
+  }
 
-	if (departmentId) params.append("departmentId", departmentId);
-	if (all) params.append("all", "true");
+  if (all) {
+    params.append("all", "true");
+  }
 
-	if (params.toString()) {
-		url += `?${params.toString()}`;
-	}
+  // Add query parameters to the request url
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
 
-	const res = await fetch(url, {
-		credentials: "include",
-	});
+  const response = await fetch(url, {
+    credentials: "include",
+  });
 
-	if (!res.ok) throw new Error("Failed to fetch suppliers");
-	return res.json();
+  if (!response.ok) {
+    throw new Error("Failed to fetch suppliers");
+  }
+
+  return response.json();
 }
 
+// Create a new supplier
 export async function createSupplier({
-	name,
-	email,
-	phone,
-	taxId,
-	notes,
-	shared,
+  name,
+  email,
+  phone,
+  taxId,
+  notes,
+  shared,
 }) {
-	const res = await fetch("/api/suppliers", {
-		method: "POST",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			name,
-			email,
-			phone,
-			taxId,
-			notes,
-			shared,
-		}),
-	});
+  const response = await fetch("/api/suppliers", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name,
+      email,
+      phone,
+      taxId,
+      notes,
+      shared,
+    }),
+  });
 
-	if (!res.ok) {
-		throw new Error("Failed to create supplier");
-	}
+  if (!response.ok) {
+    throw new Error("Failed to create supplier");
+  }
 
-	return res.json();
+  return response.json();
 }
 
+// Update an existing supplier
 export async function updateSupplier(
-	supplierId,
-	{ name, email, phone, taxId, notes },
+  supplierId,
+  { name, email, phone, taxId, notes },
 ) {
-	const url = `/api/suppliers?id=${supplierId}`;
-	const res = await fetch(url, {
-		method: "PUT",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			name,
-			email,
-			phone,
-			taxId,
-			notes,
-		}),
-	});
+  const url = `/api/suppliers?id=${supplierId}`;
 
-	if (!res.ok) {
-		throw new Error("Failed to update supplier");
-	}
+  const response = await fetch(url, {
+    method: "PUT",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name,
+      email,
+      phone,
+      taxId,
+      notes,
+    }),
+  });
 
-	return res.json();
+  if (!response.ok) {
+    throw new Error("Failed to update supplier");
+  }
+
+  return response.json();
 }
 
+// Assign a provider to a department
 export async function assignProviderToDepartment({ providerId, departmentId }) {
-	const res = await fetch("/api/suppliers/assign", {
-		method: "POST",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			providerId,
-			departmentId: Number(departmentId),
-		}),
-	});
+  const response = await fetch("/api/suppliers/assign", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      providerId,
+      departmentId: Number(departmentId),
+    }),
+  });
 
-	const data = await res.json();
+  const data = await response.json();
 
-	if (!res.ok) {
-		if (res.status === 409) {
-			return { error: "already_assigned", message: data.error };
-		}
-		throw new Error("Failed to assign provider to department");
-	}
+  if (!response.ok) {
+    if (response.status === 409) {
+      return {
+        error: "already_assigned",
+        message: data.error,
+      };
+    }
 
-	return data;
+    throw new Error("Failed to assign provider to department");
+  }
+
+  return data;
 }

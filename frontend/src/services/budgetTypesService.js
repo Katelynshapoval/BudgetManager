@@ -1,3 +1,4 @@
+// Fetch all budget types
 export async function getBudgetTypes() {
   const res = await fetch("/api/budget-types", {
     credentials: "include",

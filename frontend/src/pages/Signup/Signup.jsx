@@ -15,14 +15,12 @@ import { fetchDepartments, fetchRoles } from "../../services/metaService";
 
 import "./Signup.css";
 
-// Role constants
 const ROLES = {
   ADMIN: 1,
   DEPARTMENT_HEAD: 2,
   ACCOUNTANT: 3,
 };
 
-// Labels for roles
 const ROLE_LABELS = {
   1: "Admin",
   2: "Jefe de departamento",

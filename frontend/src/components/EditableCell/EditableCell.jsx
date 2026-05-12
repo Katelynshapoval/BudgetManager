@@ -1,39 +1,29 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 function EditableCell({
   value,
   isEditing,
   editValue,
   setEditValue,
-  onSave,
   onCancel,
   onKeyDown,
 }) {
-  const ref = useRef(null);
+  const cellRef = useRef(null);
 
-  useEffect(() => {
-    if (!isEditing) return;
-
-    const handleClickOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) {
-        onCancel();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isEditing, onCancel]);
+  // Cancel editing when clicking outside the cell
+  useClickOutside(cellRef, isEditing, onCancel);
 
   return (
-    <td ref={ref} className="relative">
+    <td ref={cellRef} className="relative">
+      {/* Cell content */}
       <div className="relative">
+        {/* Display value */}
         <div className={`tabular-nums ${isEditing ? "opacity-0" : ""}`}>
           {value}
         </div>
 
+        {/* Edit input */}
         {isEditing && (
           <input
             type="number"

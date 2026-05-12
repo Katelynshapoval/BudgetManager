@@ -1,5 +1,7 @@
+// Prepare the login request data
 export async function loginRequest(username, password) {
   const formData = new URLSearchParams();
+
   formData.append("username", username);
   formData.append("password", password);
 
@@ -21,6 +23,7 @@ export async function loginRequest(username, password) {
   return data;
 }
 
+// Prepare the signup request data
 export async function signupRequest(form) {
   const formData = new URLSearchParams();
 
@@ -30,19 +33,22 @@ export async function signupRequest(form) {
   formData.append("passwordConf", form.passwordConf);
   formData.append("roleId", form.role);
 
+  // Add the department only when selected
   if (form.department) {
     formData.append("departmentId", form.department);
   }
 
-  const res = await fetch("http://localhost:8080/api/signup", {
+  const response = await fetch("/api/signup", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
     body: formData.toString(),
   });
 
-  const data = await res.json();
+  const data = await response.json();
 
-  if (!res.ok) {
+  if (!response.ok) {
     throw new Error(data.error || "Error al crear la cuenta");
   }
 

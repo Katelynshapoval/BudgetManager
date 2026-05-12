@@ -1,3 +1,4 @@
+// Fetch all departments
 export async function fetchDepartments() {
   const res = await fetch("/api/departments");
 
@@ -6,6 +7,7 @@ export async function fetchDepartments() {
   return res.json();
 }
 
+// Fetch all roles
 export async function fetchRoles() {
   const res = await fetch("/api/roles");
 

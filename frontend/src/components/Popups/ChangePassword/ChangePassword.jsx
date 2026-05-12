@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
-import Modal from "../../Modal/Modal";
+import { useState } from "react";
 import { IoRefreshOutline } from "react-icons/io5";
 
+import Modal from "../../Modal/Modal";
+
+// Generate a random strong password
 function generateStrongPassword() {
   const chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+
   let password = "";
+
   for (let i = 0; i < 12; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }
+
   return password;
 }
 
@@ -17,6 +22,7 @@ function ChangePassword({ isOpen, hidePopup, onSubmit }) {
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
 
+  // Validate and submit password
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -38,9 +44,11 @@ function ChangePassword({ isOpen, hidePopup, onSubmit }) {
     onSubmit(password);
   };
 
+  // Generate and set a new password
   const handleGenerate = () => {
-    const newPass = generateStrongPassword();
-    setPassword(newPass);
+    const newPassword = generateStrongPassword();
+
+    setPassword(newPassword);
     setError("");
   };
 
@@ -52,10 +60,10 @@ function ChangePassword({ isOpen, hidePopup, onSubmit }) {
       onSubmit={handleSubmit}
       submitLabel="Guardar"
     >
+      {/* Password field */}
       <div className="popupInputContainer">
         <label>Nueva contraseña</label>
 
-        {/* Password */}
         <div className="relative">
           <input
             type="text"
@@ -68,16 +76,17 @@ function ChangePassword({ isOpen, hidePopup, onSubmit }) {
             type="button"
             onClick={handleGenerate}
             title="Generar contraseña"
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-primary hover:text-accent cursor-pointer transition-colors"
+            className="absolute right-2 top-1/2 cursor-pointer -translate-y-1/2 p-1.5 text-primary transition-colors hover:text-accent"
           >
             <IoRefreshOutline className="text-xl" />
           </button>
         </div>
       </div>
 
-      {/* Confirm password */}
+      {/* Confirm password field */}
       <div className="popupInputContainer">
         <label>Confirmar contraseña</label>
+
         <input
           type="text"
           className="input"
@@ -86,7 +95,8 @@ function ChangePassword({ isOpen, hidePopup, onSubmit }) {
         />
       </div>
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {/* Error message */}
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </Modal>
   );
 }

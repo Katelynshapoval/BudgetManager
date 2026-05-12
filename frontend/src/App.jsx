@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Login from "./pages/Login/Login";
 import Proveedores from "./pages/Proveedores/Proveedores";
 import Presupuesto from "./pages/Presupuesto/Presupuesto";
@@ -16,10 +15,15 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        {/* Show toast notifications */}
         <Toaster position="top-center" />
+
         <Routes>
+          {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+
+          {/* Protected dashboard routes */}
           <Route
             path="/"
             element={
@@ -28,6 +32,7 @@ function App() {
               </ProtectedRoute>
             }
           >
+            {/* Dashboard pages */}
             <Route index element={<Presupuesto />} />
             <Route path="proveedores" element={<Proveedores />} />
             <Route path="ordenes" element={<Ordenes />} />

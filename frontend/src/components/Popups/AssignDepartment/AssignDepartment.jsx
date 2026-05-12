@@ -1,9 +1,11 @@
 import { useState } from "react";
+
 import Modal from "../../Modal/Modal";
 
 function AssignDepartment({ isOpen, hidePopup, onAssign, departments = [] }) {
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
+  // Assign selected department
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -20,8 +22,10 @@ function AssignDepartment({ isOpen, hidePopup, onAssign, departments = [] }) {
       onSubmit={handleSubmit}
       submitLabel="Asignar"
     >
+      {/* Department field */}
       <div className="popupInputContainer">
         <label htmlFor="departmentSelect">Departamento</label>
+
         <select
           id="departmentSelect"
           className="input"
@@ -31,9 +35,12 @@ function AssignDepartment({ isOpen, hidePopup, onAssign, departments = [] }) {
         >
           <option value="">Selecciona un departamento</option>
 
-          {departments.map((dept) => (
-            <option key={dept.departmentId} value={dept.departmentId}>
-              {dept.name}
+          {departments.map((department) => (
+            <option
+              key={department.departmentId}
+              value={department.departmentId}
+            >
+              {department.name}
             </option>
           ))}
         </select>

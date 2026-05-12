@@ -1,6 +1,10 @@
+// Format a date with time
 export const formatDateTime = (date) => {
-  if (!date) return "-";
+  if (!date) {
+    return "-";
+  }
 
+  // Return the date using Spanish format
   return new Date(date).toLocaleString("es-ES", {
     day: "2-digit",
     month: "2-digit",

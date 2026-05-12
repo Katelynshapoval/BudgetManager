@@ -1,3 +1,4 @@
+// Upload an invoice file
 export async function uploadInvoice({ file, amount, purchaseOrderId }) {
   const formData = new FormData();
 
@@ -5,22 +6,27 @@ export async function uploadInvoice({ file, amount, purchaseOrderId }) {
   formData.append("amount", amount);
   formData.append("purchase_order_id", purchaseOrderId);
 
-  const res = await fetch(`/api/invoices/file`, {
+  const response = await fetch("/api/invoices/file", {
     method: "POST",
     body: formData,
   });
 
-  if (!res.ok) throw new Error("Failed to upload invoice");
+  if (!response.ok) {
+    throw new Error("Failed to upload invoice");
+  }
 
-  return res.text();
+  return response.text();
 }
 
+// Delete an invoice file
 export async function deleteInvoice(id) {
-  const res = await fetch(`/api/invoices/file?id=${id}`, {
+  const response = await fetch(`/api/invoices/file?id=${id}`, {
     method: "DELETE",
   });
 
-  if (!res.ok) throw new Error("Failed to delete invoice");
+  if (!response.ok) {
+    throw new Error("Failed to delete invoice");
+  }
 
-  return res.text();
+  return response.text();
 }

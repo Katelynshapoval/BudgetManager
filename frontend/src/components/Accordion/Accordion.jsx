@@ -3,23 +3,41 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 
 function Accordion({ title, children, defaultOpen = false }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  // Toggle accordion content
+  const handleToggle = () => {
+    setIsOpen((currentState) => !currentState);
+  };
+
   return (
     <div
-      className={`w-full shadow-xl overflow-hidden rounded-xl ${isOpen ? "open" : ""}`}
+      className={`w-full overflow-hidden rounded-xl shadow-xl ${
+        isOpen ? "open" : ""
+      }`}
     >
+      {/* Accordion header */}
       <div
-        className={`flex items-center justify-between p-6 bg-secondary cursor-pointer ${isOpen ? "bg-accent" : ""}`}
-        onClick={() => setIsOpen(!isOpen)}
+        className={`flex cursor-pointer items-center justify-between bg-secondary p-6 ${
+          isOpen ? "bg-accent" : ""
+        }`}
+        onClick={handleToggle}
       >
+        {/* Header title */}
         <h2 className="text-lg font-medium md:text-2xl">{title}</h2>
+
+        {/* Toggle icon */}
         <span>
           <MdKeyboardArrowDown
-            className={`text-2xl transition-all duration-150 ease-in-out ${isOpen ? "rotate-180" : ""}`}
+            className={`text-2xl transition-all duration-150 ease-in-out ${
+              isOpen ? "rotate-180" : ""
+            }`}
           />
         </span>
       </div>
+
+      {/* Accordion content */}
       <div
-        className={`bg-background overflow-y-hidden transition-all duration-300 ease-in-out ${
+        className={`overflow-y-hidden bg-background transition-all duration-300 ease-in-out ${
           isOpen ? "max-h-screen" : "max-h-0"
         }`}
       >
