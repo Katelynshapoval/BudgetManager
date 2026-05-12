@@ -33,7 +33,6 @@ function InvoiceItem({ id, amount, onDelete }) {
       </div>
 
       <div className="flex gap-1 text-lg">
-        <IoCreateOutline className="tableActionIcon" title="Editar" />
         <IoTrashOutline
           className="tableActionIcon"
           onClick={() => onDelete(id)}

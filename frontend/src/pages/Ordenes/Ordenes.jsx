@@ -164,7 +164,6 @@ function Ordenes() {
       ) : (
         <OrdenesTable
           ordenes={filteredOrdenes}
-          showEdit
           showDelete={isAdmin}
           onDelete={handleDeleteOrder}
           onInvoices={(order) => {
