@@ -307,6 +307,7 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen, user, onCreated }) {
               id="importe"
               type="number"
               min="1"
+              max="9999999999"
               step="0.01"
               value={importe}
               onChange={(e) => setImporte(e.target.value)}

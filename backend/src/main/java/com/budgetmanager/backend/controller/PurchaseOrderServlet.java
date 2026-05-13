@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -162,6 +163,7 @@ public class PurchaseOrderServlet extends HttpServlet {
 
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write("{\"message\": \"No has iniciado sesión\"}");
             return;
         }
 
@@ -203,6 +205,7 @@ public class PurchaseOrderServlet extends HttpServlet {
 
             if (purchaseOrderId == 0) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("{\"message\": \"No se pudo crear la orden de compra\"}");
                 return;
             }
 
@@ -211,8 +214,24 @@ public class PurchaseOrderServlet extends HttpServlet {
                     "{\"success\": true, \"purchaseOrderId\": " + purchaseOrderId + "}"
             );
 
+        } catch (SQLException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+            String message = e.getMessage();
+
+            if (message == null || message.isBlank()) {
+                message = "Error de base de datos al crear la orden de compra";
+            }
+
+            resp.getWriter().write(
+                    "{\"message\": " + new Gson().toJson(message) + "}"
+            );
+
+            e.printStackTrace();
+
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"message\": \"Error interno creando la orden de compra\"}");
             e.printStackTrace();
         }
     }

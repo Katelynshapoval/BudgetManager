@@ -9,34 +9,11 @@ import java.util.ArrayList;
 
 public class PurchaseOrderDAO {
 
-    // Base query used to fetch purchase orders with related display names
+    // Base query used to fetch active purchase orders from the view
     private static final String BASE_SELECT = """
-            SELECT
-                po.purchase_order_id,
-                po.order_amount,
-                po.notes,
-                po.generated_order_code,
-                po.investment_plan_code,
-                po.is_fungible,
-                po.order_sequence,
-                po.order_date,
-                po.created_at,
-                po.locked_at,
-                po.supplier_id,
-                po.budget_id,
-                po.created_by,
-            
-                u.name AS created_by_name,
-                s.name AS supplier_name,
-                d.name AS department_name,
-                d.department_id
-            
-            FROM purchase_orders po
-            LEFT JOIN users u ON po.created_by = u.user_id
-            LEFT JOIN suppliers s ON po.supplier_id = s.supplier_id
-            LEFT JOIN budgets b ON po.budget_id = b.budget_id
-            LEFT JOIN departments d ON b.department_id = d.department_id
-            WHERE po.deleted_at IS NULL
+            SELECT *
+            FROM vw_purchase_orders
+            WHERE deleted_at IS NULL
             """;
 
     // Fetch all active purchase orders
@@ -44,7 +21,7 @@ public class PurchaseOrderDAO {
         ArrayList<PurchaseOrder> purchaseOrders = new ArrayList<>();
 
         String query = BASE_SELECT + """
-                ORDER BY po.order_date DESC;
+                ORDER BY order_date DESC;
                 """;
 
         try (Connection conn = DBConnection.getConnection();
@@ -52,35 +29,7 @@ public class PurchaseOrderDAO {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                PurchaseOrder purchaseOrder = new PurchaseOrder(
-                        rs.getInt("purchase_order_id"),
-                        rs.getDouble("order_amount"),
-                        rs.getString("notes"),
-                        rs.getString("generated_order_code"),
-                        rs.getString("investment_plan_code"),
-                        rs.getBoolean("is_fungible"),
-                        rs.getObject("order_sequence") != null
-                                ? rs.getInt("order_sequence")
-                                : null,
-                        rs.getDate("order_date").toLocalDate(),
-                        rs.getTimestamp("locked_at") != null
-                                ? rs.getTimestamp("locked_at").toLocalDateTime()
-                                : null,
-                        rs.getInt("supplier_id"),
-                        rs.getInt("budget_id"),
-                        rs.getInt("created_by"),
-                        rs.getTimestamp("created_at") != null
-                                ? rs.getTimestamp("created_at").toLocalDateTime()
-                                : null
-                );
-
-                // Add names used by the frontend
-                purchaseOrder.setCreatedByName(rs.getString("created_by_name"));
-                purchaseOrder.setSupplierName(rs.getString("supplier_name"));
-                purchaseOrder.setDepartmentName(rs.getString("department_name"));
-                purchaseOrder.setDepartmentId(rs.getInt("department_id"));
-
-                purchaseOrders.add(purchaseOrder);
+                purchaseOrders.add(mapPurchaseOrder(rs));
             }
 
         } catch (SQLException e) {
@@ -95,8 +44,8 @@ public class PurchaseOrderDAO {
         ArrayList<PurchaseOrder> purchaseOrders = new ArrayList<>();
 
         String query = BASE_SELECT + """
-                AND d.department_id = ?
-                ORDER BY po.order_date DESC;
+                AND department_id = ?
+                ORDER BY order_date DESC;
                 """;
 
         try (Connection conn = DBConnection.getConnection();
@@ -106,35 +55,7 @@ public class PurchaseOrderDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    PurchaseOrder purchaseOrder = new PurchaseOrder(
-                            rs.getInt("purchase_order_id"),
-                            rs.getDouble("order_amount"),
-                            rs.getString("notes"),
-                            rs.getString("generated_order_code"),
-                            rs.getString("investment_plan_code"),
-                            rs.getBoolean("is_fungible"),
-                            rs.getObject("order_sequence") != null
-                                    ? rs.getInt("order_sequence")
-                                    : null,
-                            rs.getDate("order_date").toLocalDate(),
-                            rs.getTimestamp("locked_at") != null
-                                    ? rs.getTimestamp("locked_at").toLocalDateTime()
-                                    : null,
-                            rs.getInt("supplier_id"),
-                            rs.getInt("budget_id"),
-                            rs.getInt("created_by"),
-                            rs.getTimestamp("created_at") != null
-                                    ? rs.getTimestamp("created_at").toLocalDateTime()
-                                    : null
-                    );
-
-                    // Add names used by the frontend
-                    purchaseOrder.setCreatedByName(rs.getString("created_by_name"));
-                    purchaseOrder.setSupplierName(rs.getString("supplier_name"));
-                    purchaseOrder.setDepartmentName(rs.getString("department_name"));
-                    purchaseOrder.setDepartmentId(rs.getInt("department_id"));
-
-                    purchaseOrders.add(purchaseOrder);
+                    purchaseOrders.add(mapPurchaseOrder(rs));
                 }
             }
 
@@ -152,11 +73,11 @@ public class PurchaseOrderDAO {
                     d.code,
                     b.fiscal_year,
                     COALESCE(bs.last_sequence, 0) + 1 AS next_seq
-                
+
                 FROM budgets b
                 JOIN departments d ON b.department_id = d.department_id
                 LEFT JOIN budget_sequences bs ON bs.budget_id = b.budget_id
-                
+
                 WHERE b.budget_id = ?;
                 """;
 
@@ -193,7 +114,8 @@ public class PurchaseOrderDAO {
         String query = """
                 UPDATE purchase_orders
                 SET deleted_at = NOW()
-                WHERE purchase_order_id = ?;
+                WHERE purchase_order_id = ?
+                  AND deleted_at IS NULL;
                 """;
 
         try (Connection conn = DBConnection.getConnection();
@@ -222,7 +144,7 @@ public class PurchaseOrderDAO {
             boolean isFungible,
             String investmentCode,
             int createdBy
-    ) {
+    ) throws SQLException {
         String call = "{CALL create_purchase_order(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = DBConnection.getConnection();
@@ -249,11 +171,41 @@ public class PurchaseOrderDAO {
                     return rs.getInt("purchase_order_id");
                 }
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         return 0;
+    }
+
+    // Convert one database row into a PurchaseOrder object
+    private PurchaseOrder mapPurchaseOrder(ResultSet rs) throws SQLException {
+        PurchaseOrder purchaseOrder = new PurchaseOrder(
+                rs.getInt("purchase_order_id"),
+                rs.getDouble("order_amount"),
+                rs.getString("notes"),
+                rs.getString("generated_order_code"),
+                rs.getString("investment_plan_code"),
+                rs.getBoolean("is_fungible"),
+                rs.getObject("order_sequence") != null
+                        ? rs.getInt("order_sequence")
+                        : null,
+                rs.getDate("order_date").toLocalDate(),
+                rs.getTimestamp("locked_at") != null
+                        ? rs.getTimestamp("locked_at").toLocalDateTime()
+                        : null,
+                rs.getInt("supplier_id"),
+                rs.getInt("budget_id"),
+                rs.getInt("created_by"),
+                rs.getTimestamp("created_at") != null
+                        ? rs.getTimestamp("created_at").toLocalDateTime()
+                        : null
+        );
+
+        // Add display names used by the frontend
+        purchaseOrder.setCreatedByName(rs.getString("created_by_name"));
+        purchaseOrder.setSupplierName(rs.getString("supplier_name"));
+        purchaseOrder.setDepartmentName(rs.getString("department_name"));
+        purchaseOrder.setDepartmentId(rs.getInt("department_id"));
+
+        return purchaseOrder;
     }
 }

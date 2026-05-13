@@ -45,9 +45,13 @@ function Signup() {
   const [roles, setRoles] = useState([]);
 
   // Update form fields
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === "username" ? value.toLowerCase() : value,
+    }));
   };
 
   // Load roles and departments on mount
@@ -113,14 +117,17 @@ function Signup() {
             <div className="inputWithIcon">
               <IoPersonOutline className="inputIcon" />
               <input
-                id="username"
-                name="username"
-                type="text"
-                placeholder="Ingresa tu usuario"
-                className="inputField"
-                value={form.username}
-                onChange={handleChange}
-                required
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Ingresa tu usuario"
+                  className="inputField"
+                  value={form.username}
+                  onChange={handleChange}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
+                  required
               />
             </div>
           </div>

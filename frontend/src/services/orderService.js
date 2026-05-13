@@ -31,7 +31,7 @@ export async function getOrderPreview(budgetId, isFungible) {
 
 // Send the purchase order data to the backend
 export async function createPurchaseOrder(payload) {
-  const res = await fetch("/api/purchase-orders", {
+  const response = await fetch("/api/purchase-orders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -40,12 +40,15 @@ export async function createPurchaseOrder(payload) {
     body: JSON.stringify(payload),
   });
 
-  if (!res.ok) {
-    const error = await res.json().catch(() => null);
-    throw new Error(error?.message || "Failed to create purchase order");
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+        data?.message || "Error creando la orden de compra"
+    );
   }
 
-  return res.json();
+  return data;
 }
 
 // Delete one purchase order by id

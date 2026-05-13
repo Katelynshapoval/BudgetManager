@@ -27,6 +27,9 @@ function EditableCell({
         {isEditing && (
           <input
             type="number"
+            max="9999999999"
+            step="0.01"
+            min="1"
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
             onKeyDown={onKeyDown}

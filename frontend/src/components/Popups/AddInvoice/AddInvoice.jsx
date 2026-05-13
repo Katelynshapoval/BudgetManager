@@ -144,6 +144,8 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
         <input
           type="number"
           step="0.01"
+          min="1"
+          max="9999999999"
           required
           className="bg-background p-2 text-sm"
           placeholder="0.00€"

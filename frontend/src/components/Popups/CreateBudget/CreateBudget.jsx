@@ -126,6 +126,7 @@ function CreateBudget({ hidePopup, isOpen, type, year, onCreated }) {
           id="allocatedAmount"
           type="number"
           min="1"
+          max="9999999999"
           step="0.01"
           className="input"
           value={allocated}

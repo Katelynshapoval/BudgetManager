@@ -24,7 +24,7 @@ function Login() {
 
     setForm((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "username" ? value.toLowerCase() : value,
     }));
   };
 
@@ -33,7 +33,9 @@ function Login() {
     event.preventDefault();
 
     try {
-      const data = await loginRequest(form.username, form.password);
+      const username = form.username.trim().toLowerCase();
+
+      const data = await loginRequest(username, form.password);
 
       // Save user in context
       login(data);
@@ -73,15 +75,19 @@ function Login() {
               <IoPersonOutline className="inputIcon" />
 
               <input
-                id="username"
-                name="username"
-                type="text"
-                placeholder="Ingresa tu usuario"
-                className="inputField"
-                value={form.username}
-                onChange={handleChange}
-                required
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Ingresa tu usuario"
+                  className="inputField"
+                  value={form.username}
+                  onChange={handleChange}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
+                  required
               />
+
             </div>
           </div>
 
