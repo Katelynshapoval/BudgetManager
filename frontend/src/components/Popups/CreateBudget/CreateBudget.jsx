@@ -125,7 +125,7 @@ function CreateBudget({ hidePopup, isOpen, type, year, onCreated }) {
         <input
           id="allocatedAmount"
           type="number"
-          min="0"
+          min="1"
           step="0.01"
           className="input"
           value={allocated}

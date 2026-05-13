@@ -63,6 +63,11 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
       return;
     }
 
+    if (Number(amount) <= 0) {
+      toast.error("El importe debe ser mayor que 0");
+      return;
+    }
+
     try {
       const promise = uploadInvoice({
         file,
@@ -91,6 +96,13 @@ function AddInvoiceForm({ onCancel, purchaseOrderId, onSuccess }) {
 
     if (selectedFile.type !== "application/pdf") {
       toast.error("El archivo debe ser un PDF");
+      e.target.value = null;
+      setFile(null);
+      return;
+    }
+
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      toast.error("El archivo no puede superar los 50 MB");
       e.target.value = null;
       setFile(null);
       return;
@@ -225,7 +237,7 @@ function AddInvoice({
   };
 
   return (
-    <Modal title="Facturas" onClose={hidePopup} isOpen={isOpen} footer={null}>
+    <Modal title="Facturas" onClose={hidePopup} isOpen={isOpen} submitLabel={null}>
       {/* Invoice list */}
       {invoices.length === 0 ? (
         <div className="rounded-lg bg-secondary/60 p-5 text-center text-sm font-normal">
