@@ -204,45 +204,45 @@ function NuevoOrdenDeCompra({ hidePopup, isOpen, user, onCreated }) {
         {/* Supplier and department */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="popupInputContainer">
-            <label htmlFor="proveedor">Proveedor</label>
+            <label htmlFor="departamento">Departamento</label>
             <select
-              id="proveedor"
-              value={selectedProveedor}
-              onChange={(e) => setSelectedProveedor(e.target.value)}
-              required
-              className="input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg"
+                id="departamento"
+                value={selectedDept}
+                onChange={(e) => handleDepartmentChange(e.target.value)}
+                disabled={!isAdmin}
+                required
+                className={`input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg ${
+                    !isAdmin ? "opacity-70" : ""
+                }`}
             >
-              <option value="">Seleccionar proveedor</option>
+              <option value="">Seleccionar departamento</option>
 
-              {proveedores.map((proveedor) => (
-                <option key={proveedor.supplierId} value={proveedor.supplierId}>
-                  {proveedor.name}
-                </option>
+              {departamentos.map((departamento) => (
+                  <option
+                      key={departamento.departmentId}
+                      value={departamento.departmentId}
+                  >
+                    {departamento.name}
+                  </option>
               ))}
             </select>
           </div>
 
           <div className="popupInputContainer">
-            <label htmlFor="departamento">Departamento</label>
+            <label htmlFor="proveedor">Proveedor</label>
             <select
-              id="departamento"
-              value={selectedDept}
-              onChange={(e) => handleDepartmentChange(e.target.value)}
-              disabled={!isAdmin}
-              required
-              className={`input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg ${
-                !isAdmin ? "opacity-70" : ""
-              }`}
+                id="proveedor"
+                value={selectedProveedor}
+                onChange={(e) => setSelectedProveedor(e.target.value)}
+                required
+                className="input appearance-none bg-secondary pr-10 cursor-pointer p-3 border border-primary rounded-lg"
             >
-              <option value="">Seleccionar departamento</option>
+              <option value="">Seleccionar proveedor</option>
 
-              {departamentos.map((departamento) => (
-                <option
-                  key={departamento.departmentId}
-                  value={departamento.departmentId}
-                >
-                  {departamento.name}
-                </option>
+              {proveedores.map((proveedor) => (
+                  <option key={proveedor.supplierId} value={proveedor.supplierId}>
+                    {proveedor.name}
+                  </option>
               ))}
             </select>
           </div>

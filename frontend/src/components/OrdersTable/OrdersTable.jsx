@@ -72,7 +72,7 @@ function OrdersTable({
             return (
               <tr key={row.purchaseOrderId}>
                 {/* Type */}
-                <td>{row.generatedOrderCode ? "Budget" : "Inversión"}</td>
+                <td>{row.generatedOrderCode ? "Presupuesto" : "Inversión"}</td>
 
                 {/* Code */}
                 <td>{row.generatedOrderCode || row.investmentPlanCode}</td>

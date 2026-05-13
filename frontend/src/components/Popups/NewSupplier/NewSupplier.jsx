@@ -2,6 +2,7 @@ import { useState } from "react";
 import Modal from "../../Modal/Modal";
 
 function NewSupplier({ hidePopup, isOpen, onCreate }) {
+	// Form state
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [phone, setPhone] = useState("");
@@ -9,6 +10,7 @@ function NewSupplier({ hidePopup, isOpen, onCreate }) {
 	const [notes, setNotes] = useState("");
 	const [shared, setShared] = useState(false);
 
+	// Submit supplier data
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
@@ -32,8 +34,9 @@ function NewSupplier({ hidePopup, isOpen, onCreate }) {
 			onClose={hidePopup}
 			isOpen={isOpen}
 			onSubmit={handleSubmit}
-			submitLabel="Añadir">
-
+			submitLabel="Añadir"
+		>
+			{/* Supplier details */}
 			<div className="popupInputContainer">
 				<label htmlFor="nombreProveedor">Nombre</label>
 				<input
@@ -58,7 +61,6 @@ function NewSupplier({ hidePopup, isOpen, onCreate }) {
 				/>
 			</div>
 
-
 			<div className="popupInputContainer">
 				<label htmlFor="telefonoProveedor">Teléfono</label>
 				<input
@@ -70,6 +72,7 @@ function NewSupplier({ hidePopup, isOpen, onCreate }) {
 				/>
 			</div>
 
+			{/* Fiscal information */}
 			<div className="popupInputContainer">
 				<label htmlFor="identificacionFiscal">Identificación fiscal</label>
 				<input
@@ -81,6 +84,7 @@ function NewSupplier({ hidePopup, isOpen, onCreate }) {
 				/>
 			</div>
 
+			{/* Additional information */}
 			<div className="popupInputContainer">
 				<label htmlFor="notasProveedor">Notas</label>
 				<input
@@ -92,6 +96,7 @@ function NewSupplier({ hidePopup, isOpen, onCreate }) {
 				/>
 			</div>
 
+			{/* Sharing option */}
 			<div className="flex items-center gap-2 text-sm text-primary">
 				<input
 					id="compartidoProveedor"

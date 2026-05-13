@@ -223,178 +223,35 @@ public class PurchaseOrderDAO {
             String investmentCode,
             int createdBy
     ) {
-        String findBudgetQuery = """
-                SELECT
-                    b.budget_id,
-                    b.fiscal_year,
-                    d.code AS department_code
-                
-                FROM budgets b
-                JOIN departments d ON b.department_id = d.department_id
-                
-                WHERE b.department_id = ?
-                  AND b.budget_type_id = ?
-                
-                ORDER BY b.fiscal_year DESC
-                LIMIT 1;
-                """;
+        String call = "{CALL create_purchase_order(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
-        String ensureSequenceQuery = """
-                INSERT INTO budget_sequences (budget_id, last_sequence)
-                VALUES (?, 0)
-                ON DUPLICATE KEY UPDATE budget_id = budget_id;
-                """;
+        try (Connection conn = DBConnection.getConnection();
+             CallableStatement stmt = conn.prepareCall(call)) {
 
-        String getSequenceQuery = """
-                SELECT last_sequence
-                FROM budget_sequences
-                WHERE budget_id = ?
-                FOR UPDATE;
-                """;
+            stmt.setInt(1, supplierId);
+            stmt.setInt(2, departmentId);
+            stmt.setInt(3, budgetTypeId);
+            stmt.setBigDecimal(4, java.math.BigDecimal.valueOf(amount));
+            stmt.setDate(5, java.sql.Date.valueOf(orderDate));
+            stmt.setString(6, notes);
+            stmt.setBoolean(7, isFungible);
 
-        String updateSequenceQuery = """
-                UPDATE budget_sequences
-                SET last_sequence = ?
-                WHERE budget_id = ?;
-                """;
-
-        String insertOrderQuery = """
-                INSERT INTO purchase_orders (
-                    order_amount,
-                    notes,
-                    generated_order_code,
-                    investment_plan_code,
-                    is_fungible,
-                    order_sequence,
-                    order_date,
-                    supplier_id,
-                    budget_id,
-                    created_by,
-                    created_at
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW());
-                """;
-
-        Connection conn = null;
-
-        try {
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
-
-            int budgetId;
-            int fiscalYear;
-            String departmentCode;
-
-            // Find the budget that belongs to the selected department and budget type
-            try (PreparedStatement stmt = conn.prepareStatement(findBudgetQuery)) {
-                stmt.setInt(1, departmentId);
-                stmt.setInt(2, budgetTypeId);
-
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (!rs.next()) {
-                        conn.rollback();
-                        return 0;
-                    }
-
-                    budgetId = rs.getInt("budget_id");
-                    fiscalYear = rs.getInt("fiscal_year");
-                    departmentCode = rs.getString("department_code");
-                }
+            if (investmentCode == null || investmentCode.trim().isEmpty()) {
+                stmt.setNull(8, java.sql.Types.CHAR);
+            } else {
+                stmt.setString(8, investmentCode.trim());
             }
 
-            String generatedCode = null;
-            Integer orderSequence = null;
+            stmt.setInt(9, createdBy);
 
-            // Only normal budget orders need an automatic generated code
-            if (investmentCode == null) {
-                try (PreparedStatement stmt = conn.prepareStatement(ensureSequenceQuery)) {
-                    stmt.setInt(1, budgetId);
-                    stmt.executeUpdate();
-                }
-
-                try (PreparedStatement stmt = conn.prepareStatement(getSequenceQuery)) {
-                    stmt.setInt(1, budgetId);
-
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        if (!rs.next()) {
-                            conn.rollback();
-                            return 0;
-                        }
-
-                        orderSequence = rs.getInt("last_sequence") + 1;
-                    }
-                }
-
-                try (PreparedStatement stmt = conn.prepareStatement(updateSequenceQuery)) {
-                    stmt.setInt(1, orderSequence);
-                    stmt.setInt(2, budgetId);
-                    stmt.executeUpdate();
-                }
-
-                String yearShort = String.valueOf(fiscalYear).substring(2);
-                String fungibleCode = isFungible ? "1" : "0";
-
-                generatedCode = departmentCode + "/"
-                        + String.format("%04d", orderSequence) + "/"
-                        + yearShort + "/"
-                        + fungibleCode;
-            }
-
-            // Save the purchase order
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    insertOrderQuery,
-                    Statement.RETURN_GENERATED_KEYS
-            )) {
-                stmt.setDouble(1, amount);
-                stmt.setString(2, notes);
-                stmt.setString(3, generatedCode);
-                stmt.setString(4, investmentCode);
-                stmt.setBoolean(5, isFungible);
-
-                if (orderSequence == null) {
-                    stmt.setNull(6, java.sql.Types.INTEGER);
-                } else {
-                    stmt.setInt(6, orderSequence);
-                }
-
-                stmt.setDate(7, java.sql.Date.valueOf(orderDate));
-                stmt.setInt(8, supplierId);
-                stmt.setInt(9, budgetId);
-                stmt.setInt(10, createdBy);
-
-                stmt.executeUpdate();
-
-                try (ResultSet keys = stmt.getGeneratedKeys()) {
-                    if (keys.next()) {
-                        int purchaseOrderId = keys.getInt(1);
-                        conn.commit();
-                        return purchaseOrderId;
-                    }
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("purchase_order_id");
                 }
             }
-
-            conn.rollback();
 
         } catch (SQLException e) {
             e.printStackTrace();
-
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException rollbackError) {
-                rollbackError.printStackTrace();
-            }
-
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
 
         return 0;
