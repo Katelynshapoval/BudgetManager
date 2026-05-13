@@ -34,3 +34,4 @@ out/
 .idea/
 frontend/.idea/
 backend/.idea/
+*.iml

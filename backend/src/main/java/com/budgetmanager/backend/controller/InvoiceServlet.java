@@ -27,6 +27,7 @@ public class InvoiceServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ResponseUtil.setupFileResponse(resp, "application/pdf");
 
+        // Get the requested invoice
         int invoiceId = Integer.parseInt(req.getParameter("id"));
         Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
 
@@ -36,6 +37,7 @@ public class InvoiceServlet extends HttpServlet {
             return;
         }
 
+        // Send the invoice file as the response
         resp.getOutputStream().write(invoice.getFile());
     }
 
@@ -44,29 +46,28 @@ public class InvoiceServlet extends HttpServlet {
         ResponseUtil.setupJsonResponse(resp);
 
         try {
-            // Read multipart form fields
+            // Read the uploaded invoice data
             Part amountPart = req.getPart("amount");
             Part purchaseOrderIdPart = req.getPart("purchase_order_id");
             Part filePart = req.getPart("file");
 
-            // Validate required fields
             if (amountPart == null || purchaseOrderIdPart == null || filePart == null) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("Missing invoice data");
                 return;
             }
 
-            // Convert text fields
+            // Convert form fields into usable values
             String amountText = new String(amountPart.getInputStream().readAllBytes()).trim();
             String purchaseOrderIdText = new String(purchaseOrderIdPart.getInputStream().readAllBytes()).trim();
 
             double amount = Double.parseDouble(amountText);
             int purchaseOrderId = Integer.parseInt(purchaseOrderIdText);
 
-            // Read uploaded file
+            // Create and save the invoice
             byte[] fileBytes = filePart.getInputStream().readAllBytes();
-
             Invoice invoice = new Invoice(0, fileBytes, amount, purchaseOrderId, null, null);
+
             boolean success = invoiceDAO.addInvoice(invoice);
 
             if (success) {
@@ -76,7 +77,6 @@ public class InvoiceServlet extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 resp.getWriter().write("Failed to upload invoice");
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -95,6 +95,7 @@ public class InvoiceServlet extends HttpServlet {
         ResponseUtil.setupJsonResponse(resp);
 
         try {
+            // Get the invoice to delete
             int invoiceId = Integer.parseInt(req.getParameter("id"));
             Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
 
@@ -104,6 +105,7 @@ public class InvoiceServlet extends HttpServlet {
                 return;
             }
 
+            // Delete the invoice and return the result
             boolean success = invoiceDAO.deleteInvoice(invoice);
 
             if (success) {
@@ -113,7 +115,6 @@ public class InvoiceServlet extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 resp.getWriter().write("Failed to delete invoice");
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

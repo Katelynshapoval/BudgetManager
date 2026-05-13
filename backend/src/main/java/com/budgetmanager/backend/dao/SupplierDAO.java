@@ -3,7 +3,11 @@ package com.budgetmanager.backend.dao;
 import com.budgetmanager.backend.model.Supplier;
 import com.budgetmanager.backend.util.DBConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class SupplierDAO {
@@ -16,10 +20,10 @@ public class SupplierDAO {
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
 
+            // Map all active suppliers
             while (rs.next()) {
                 suppliers.add(mapRow(rs));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -29,28 +33,30 @@ public class SupplierDAO {
 
     public ArrayList<Supplier> getSuppliersForUser(int departmentId) {
         ArrayList<Supplier> suppliers = new ArrayList<>();
+
         String query = """
-                    SELECT DISTINCT s.*
-                    FROM suppliers s
-                    LEFT JOIN supplier_department sd
-                        ON s.supplier_id = sd.supplier_id
-                    WHERE s.deleted_at IS NULL
-                      AND (
-                            s.is_shared = 1
-                            OR sd.department_id = ?
-                          )
+                SELECT DISTINCT s.*
+                FROM suppliers s
+                LEFT JOIN supplier_department sd
+                    ON s.supplier_id = sd.supplier_id
+                WHERE s.deleted_at IS NULL
+                  AND (
+                        s.is_shared = 1
+                        OR sd.department_id = ?
+                      )
                 """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
+            // Load shared and department suppliers
             stmt.setInt(1, departmentId);
-            ResultSet rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                suppliers.add(mapRow(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    suppliers.add(mapRow(rs));
+                }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -58,54 +64,71 @@ public class SupplierDAO {
         return suppliers;
     }
 
-	public Supplier createSupplier(Supplier supplier) {
-		String sql = "INSERT INTO suppliers (name, email, phone, tax_id, notes, is_shared, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
+    public Supplier createSupplier(Supplier supplier) {
+        String sql = """
+                INSERT INTO suppliers
+                    (name, email, phone, tax_id, notes, is_shared, created_at, updated_at)
+                VALUES
+                    (?, ?, ?, ?, ?, ?, NOW(), NOW())
+                """;
 
-		try (Connection conn = DBConnection.getConnection();
-		     PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-			stmt.setString(1, supplier.getName());
-			stmt.setString(2, supplier.getEmail());
-			stmt.setString(3, supplier.getPhone());
-			stmt.setString(4, supplier.getTaxId());
-			stmt.setString(5, supplier.getNotes());
-			stmt.setBoolean(6, supplier.isShared());
+            // Insert supplier data
+            stmt.setString(1, supplier.getName());
+            stmt.setString(2, supplier.getEmail());
+            stmt.setString(3, supplier.getPhone());
+            stmt.setString(4, supplier.getTaxId());
+            stmt.setString(5, supplier.getNotes());
+            stmt.setBoolean(6, supplier.isShared());
 
-			int affectedRows = stmt.executeUpdate();
-			if (affectedRows == 0) {
-				throw new SQLException("Creating supplier failed, no rows affected.");
-			}
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating supplier failed, no rows affected.");
+            }
 
-			try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-				if (generatedKeys.next()) {
-					int newId = generatedKeys.getInt(1);
-					return new Supplier(
-							newId,
-							supplier.getName(),
-							supplier.getEmail(),
-							supplier.getPhone(),
-							supplier.getTaxId(),
-							supplier.getNotes(),
-							supplier.isShared(),
-							null,
-							null
-					);
-				}
-			}
+            // Return the created supplier
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int newId = generatedKeys.getInt(1);
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+                    return new Supplier(
+                            newId,
+                            supplier.getName(),
+                            supplier.getEmail(),
+                            supplier.getPhone(),
+                            supplier.getTaxId(),
+                            supplier.getNotes(),
+                            supplier.isShared(),
+                            null,
+                            null
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
     public Supplier updateSupplier(Supplier supplier) {
-        String sql = "UPDATE suppliers SET name = ?, email = ?, phone = ?, tax_id = ?, notes = ?, updated_at = NOW() WHERE supplier_id = ?";
+        String sql = """
+                UPDATE suppliers
+                SET name = ?,
+                    email = ?,
+                    phone = ?,
+                    tax_id = ?,
+                    notes = ?,
+                    updated_at = NOW()
+                WHERE supplier_id = ?
+                """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Update supplier data
             stmt.setString(1, supplier.getName());
             stmt.setString(2, supplier.getEmail());
             stmt.setString(3, supplier.getPhone());
@@ -117,8 +140,8 @@ public class SupplierDAO {
             if (affectedRows == 0) {
                 return null;
             }
-            return supplier;
 
+            return supplier;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -132,42 +155,55 @@ public class SupplierDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Soft delete the supplier
             stmt.setInt(1, id);
             stmt.executeUpdate();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public String assignSupplierToDepartment(int supplierId, int departmentId) {
-        // Check if already assigned
-        String checkSql = "SELECT COUNT(*) FROM supplier_department WHERE supplier_id = ? AND department_id = ?";
+        String checkSql = """
+                SELECT COUNT(*)
+                FROM supplier_department
+                WHERE supplier_id = ?
+                  AND department_id = ?
+                """;
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
 
+            // Check if the supplier is already assigned
             checkStmt.setInt(1, supplierId);
             checkStmt.setInt(2, departmentId);
-            ResultSet rs = checkStmt.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) {
-                return "already_assigned";
-            }
 
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) > 0) {
+                    return "already_assigned";
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return "error";
         }
 
-        // Insert if not assigned
-        String insertSql = "INSERT INTO supplier_department (supplier_id, department_id) VALUES (?, ?)";
+        String insertSql = """
+                INSERT INTO supplier_department
+                    (supplier_id, department_id)
+                VALUES
+                    (?, ?)
+                """;
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(insertSql)) {
 
+            // Assign the supplier to the department
             stmt.setInt(1, supplierId);
             stmt.setInt(2, departmentId);
             stmt.executeUpdate();
-            return "assigned";
 
+            return "assigned";
         } catch (SQLException e) {
             e.printStackTrace();
             return "error";
@@ -175,6 +211,7 @@ public class SupplierDAO {
     }
 
     private Supplier mapRow(ResultSet rs) throws SQLException {
+        // Convert a database row into a supplier
         return new Supplier(
                 rs.getInt("supplier_id"),
                 rs.getString("name"),
