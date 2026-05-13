@@ -92,17 +92,16 @@ function NewSupplier({ hidePopup, isOpen, onCreate }) {
 				/>
 			</div>
 
-			<div className="flex items-center justify-end gap-3">
-				<label htmlFor="compartidoProveedor" className="text-sm text-primary">
-					Proveedor compartido
-				</label>
+			<div className="flex items-center gap-2 text-sm text-primary">
 				<input
 					id="compartidoProveedor"
 					type="checkbox"
 					checked={shared}
 					onChange={(e) => setShared(e.target.checked)}
-					className="focus:ring-0 w-4 h-4"
+					className="h-4 w-4"
 				/>
+
+				<label htmlFor="compartidoProveedor">Proveedor compartido</label>
 			</div>
 		</Modal>
 	);

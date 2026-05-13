@@ -252,7 +252,7 @@ function Budget() {
           user={user}
           onUpdateAllocated={updateAllocated}
           canCreate={canCreate}
-          createLabel="Crear Budget"
+          createLabel="Crear Presupuesto"
           onCreateClick={() => setShowBudgetPopup(true)}
         />
 

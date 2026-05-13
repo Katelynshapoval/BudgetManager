@@ -49,12 +49,14 @@ function Modal({
             Cancelar
           </button>
 
-          <button
-            className="popupButton border-none outline-none bg-accent text-text hover:bg-primary hover:text-background"
-            type="submit"
-          >
-            {submitLabel}
-          </button>
+          {submitLabel !== null && (
+              <button
+                  className="popupButton border-none outline-none bg-accent text-text hover:bg-primary hover:text-background"
+                  type="submit"
+              >
+                {submitLabel}
+              </button>
+          )}
         </div>
       </form>
     </div>

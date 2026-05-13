@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 import java.io.IOException;
 
@@ -43,10 +44,26 @@ public class InvoiceServlet extends HttpServlet {
         ResponseUtil.setupJsonResponse(resp);
 
         try {
-            double amount = Double.parseDouble(req.getParameter("amount"));
-            int purchaseOrderId = Integer.parseInt(req.getParameter("purchase_order_id"));
+            // Read multipart form fields
+            Part amountPart = req.getPart("amount");
+            Part purchaseOrderIdPart = req.getPart("purchase_order_id");
+            Part filePart = req.getPart("file");
 
-            var filePart = req.getPart("file");
+            // Validate required fields
+            if (amountPart == null || purchaseOrderIdPart == null || filePart == null) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Missing invoice data");
+                return;
+            }
+
+            // Convert text fields
+            String amountText = new String(amountPart.getInputStream().readAllBytes()).trim();
+            String purchaseOrderIdText = new String(purchaseOrderIdPart.getInputStream().readAllBytes()).trim();
+
+            double amount = Double.parseDouble(amountText);
+            int purchaseOrderId = Integer.parseInt(purchaseOrderIdText);
+
+            // Read uploaded file
             byte[] fileBytes = filePart.getInputStream().readAllBytes();
 
             Invoice invoice = new Invoice(0, fileBytes, amount, purchaseOrderId, null, null);

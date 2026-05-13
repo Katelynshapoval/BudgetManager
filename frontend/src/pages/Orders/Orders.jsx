@@ -63,8 +63,12 @@ function Orders() {
       });
 
       setOrders(currentOrders);
+
+      // Return updated orders for popups
+      return currentOrders;
     } catch (err) {
       console.error("Error fetching orders:", err);
+      return [];
     } finally {
       setLoading(false);
     }
