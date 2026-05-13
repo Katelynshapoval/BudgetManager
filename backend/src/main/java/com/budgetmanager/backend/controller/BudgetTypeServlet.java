@@ -3,7 +3,6 @@ package com.budgetmanager.backend.controller;
 import com.budgetmanager.backend.dao.BudgetTypeDAO;
 import com.budgetmanager.backend.model.BudgetType;
 import com.budgetmanager.backend.util.ResponseUtil;
-import com.google.gson.Gson;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,24 +15,21 @@ import java.util.ArrayList;
 public class BudgetTypeServlet extends HttpServlet {
 
     private final BudgetTypeDAO budgetTypeDAO = new BudgetTypeDAO();
-    private final Gson gson = new Gson();
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        ResponseUtil.setupJsonResponse(response);
 
-        ResponseUtil.setupJsonResponse(resp);
-
+        // Get all budget types
         ArrayList<BudgetType> types = budgetTypeDAO.getAllBudgetTypes();
 
-        String json = gson.toJson(types);
-        resp.getWriter().write(json);
+        ResponseUtil.sendJson(response, types);
     }
 
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         ResponseUtil.setupJsonResponse(response);
         response.setStatus(HttpServletResponse.SC_OK);
     }

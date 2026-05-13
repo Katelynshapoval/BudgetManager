@@ -1,7 +1,6 @@
 package com.budgetmanager.backend.controller;
 
 import com.budgetmanager.backend.dao.UserDAO;
-import com.budgetmanager.backend.model.User;
 import com.budgetmanager.backend.util.AuthUtil;
 import com.budgetmanager.backend.util.PasswordUtils;
 import com.budgetmanager.backend.util.ResponseUtil;
@@ -21,28 +20,29 @@ public class UserPasswordServlet extends HttpServlet {
     private final Gson gson = new Gson();
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
-        ResponseUtil.setupJsonResponse(resp);
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ResponseUtil.setupJsonResponse(response);
 
         // Check admin access
-        if (!AuthUtil.requireAdmin(req, resp)) {
+        if (!AuthUtil.requireAdmin(request, response)) {
             return;
         }
 
-        Map<String, Object> body = gson.fromJson(req.getReader(), Map.class);
+        // Read password update data
+        Map<String, Object> body = gson.fromJson(request.getReader(), Map.class);
 
         int userId = ((Double) body.get("userId")).intValue();
         String newPassword = (String) body.get("newPassword");
 
-        String hashed = PasswordUtils.hashPassword(newPassword);
-
-        boolean updated = userDAO.updateUserPassword(userId, hashed);
+        // Hash and update the password
+        String hashedPassword = PasswordUtils.hashPassword(newPassword);
+        boolean updated = userDAO.updateUserPassword(userId, hashedPassword);
 
         if (updated) {
-            ResponseUtil.sendJson(resp, Map.of("message", "Password updated"));
+            ResponseUtil.sendJson(response, Map.of("message", "Password updated"));
         } else {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ResponseUtil.sendJson(response, Map.of("error", "Failed to update password"));
         }
     }
 }

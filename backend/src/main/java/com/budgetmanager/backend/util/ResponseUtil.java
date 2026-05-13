@@ -21,26 +21,30 @@ public class ResponseUtil {
                     (src, typeOfSrc, context) -> new JsonPrimitive(src.toString()))
             .create();
 
-    public static void setupJsonResponse(HttpServletResponse resp) {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        applyCorsHeaders(resp);
+    public static void setupJsonResponse(HttpServletResponse response) {
+        // Prepare a JSON response
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        applyCorsHeaders(response);
     }
 
-    public static void setupFileResponse(HttpServletResponse resp, String contentType) {
-        resp.setContentType(contentType);
-        resp.setCharacterEncoding("UTF-8");
-        applyCorsHeaders(resp);
+    public static void setupFileResponse(HttpServletResponse response, String contentType) {
+        // Prepare a file response
+        response.setContentType(contentType);
+        response.setCharacterEncoding("UTF-8");
+        applyCorsHeaders(response);
     }
 
-    public static void sendJson(HttpServletResponse resp, Object data) throws IOException {
-        resp.getWriter().write(GSON.toJson(data));
+    public static void sendJson(HttpServletResponse response, Object data) throws IOException {
+        // Send data as JSON
+        response.getWriter().write(GSON.toJson(data));
     }
 
-    private static void applyCorsHeaders(HttpServletResponse resp) {
-        resp.setHeader("Access-Control-Allow-Origin", FRONTEND_ORIGIN);
-        resp.setHeader("Access-Control-Allow-Credentials", "true");
-        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    private static void applyCorsHeaders(HttpServletResponse response) {
+        // Apply common CORS headers
+        response.setHeader("Access-Control-Allow-Origin", FRONTEND_ORIGIN);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }
 }
