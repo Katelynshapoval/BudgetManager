@@ -32,23 +32,28 @@ function Login() {
   const handleLogin = async (event) => {
     event.preventDefault();
 
-    try {
-      const username = form.username.trim().toLowerCase();
+    const username = form.username.trim().toLowerCase();
 
-      const data = await loginRequest(username, form.password);
+    const loginPromise = loginRequest(username, form.password);
+
+    toast.promise(loginPromise, {
+      loading: "Iniciando sesión...",
+      success: "Bienvenido!",
+      error: (error) => error.message || "Error de conexión con el servidor",
+    });
+
+    try {
+      const data = await loginPromise;
 
       // Save user in context
       login(data);
 
-      toast.success("Bienvenido!");
-
-      // Redirect after short delay
+      // Redirect after successful login
       setTimeout(() => {
         navigate("/");
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);
-      toast.error(error.message || "Error de conexión con el servidor");
     }
   };
 
