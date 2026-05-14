@@ -37,10 +37,10 @@ public class UserStatusServlet extends HttpServlet {
         boolean updated = userDAO.updateUserStatus(userId, status);
 
         if (updated) {
-            ResponseUtil.sendJson(response, Map.of("message", "Status updated"));
+            ResponseUtil.sendJson(response, Map.of("message", "Estado actualizado correctamente"));
         } else {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ResponseUtil.sendJson(response, Map.of("error", "Failed to update status"));
+            ResponseUtil.sendJson(response, Map.of("error", "No se ha podido actualizar el estado"));
         }
     }
 }

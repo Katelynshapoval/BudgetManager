@@ -33,7 +33,7 @@ public class InvoiceServlet extends HttpServlet {
 
         if (invoice == null) {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            resp.getWriter().write("Invoice not found");
+            resp.getWriter().write("Factura no encontrada");
             return;
         }
 
@@ -53,7 +53,7 @@ public class InvoiceServlet extends HttpServlet {
 
             if (amountPart == null || purchaseOrderIdPart == null || filePart == null) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("Missing invoice data");
+                resp.getWriter().write("Faltan datos de la factura");
                 return;
             }
 
@@ -72,15 +72,15 @@ public class InvoiceServlet extends HttpServlet {
 
             if (success) {
                 resp.setStatus(HttpServletResponse.SC_CREATED);
-                resp.getWriter().write("Invoice uploaded successfully");
+                resp.getWriter().write("Factura subida correctamente");
             } else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resp.getWriter().write("Failed to upload invoice");
+                resp.getWriter().write("No se ha podido subir la factura");
             }
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("Invalid request");
+            resp.getWriter().write("Solicitud no válida");
         }
     }
 
@@ -101,7 +101,7 @@ public class InvoiceServlet extends HttpServlet {
 
             if (invoice == null) {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                resp.getWriter().write("Invoice not found");
+                resp.getWriter().write("Factura no encontrada");
                 return;
             }
 
@@ -110,15 +110,15 @@ public class InvoiceServlet extends HttpServlet {
 
             if (success) {
                 resp.setStatus(HttpServletResponse.SC_OK);
-                resp.getWriter().write("Invoice deleted successfully");
+                resp.getWriter().write("Factura eliminada correctamente");
             } else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resp.getWriter().write("Failed to delete invoice");
+                resp.getWriter().write("No se ha podido eliminar la factura");
             }
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("Invalid request");
+            resp.getWriter().write("Solicitud no válida");
         }
     }
 }

@@ -29,7 +29,7 @@ public class SupplierServlet extends HttpServlet {
         User user = AuthUtil.getUser(request);
         if (user == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            ResponseUtil.sendJson(response, Map.of("error", "Not authenticated"));
+            ResponseUtil.sendJson(response, Map.of("error", "No has iniciado sesión"));
             return;
         }
 
@@ -48,7 +48,7 @@ public class SupplierServlet extends HttpServlet {
                 suppliers = supplierDAO.getSuppliersForUser(departmentId);
             } catch (NumberFormatException e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                ResponseUtil.sendJson(response, Map.of("error", "Invalid departmentId"));
+                ResponseUtil.sendJson(response, Map.of("error", "El ID del departamento no es válido"));
                 return;
             }
         } else {
@@ -56,7 +56,7 @@ public class SupplierServlet extends HttpServlet {
 
             if (departmentId == null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                ResponseUtil.sendJson(response, Map.of("error", "User has no department"));
+                ResponseUtil.sendJson(response, Map.of("error", "El usuario no tiene ningún departamento asignado"));
                 return;
             }
 
@@ -82,7 +82,7 @@ public class SupplierServlet extends HttpServlet {
         User user = AuthUtil.getUser(request);
         if (user == null || !canManageSuppliers(user)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            ResponseUtil.sendJson(response, Map.of("error", "Not authorized"));
+            ResponseUtil.sendJson(response, Map.of("error", "No tienes permisos para realizar esta acción"));
             return;
         }
 
@@ -104,7 +104,7 @@ public class SupplierServlet extends HttpServlet {
 
             if (supplier == null) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                ResponseUtil.sendJson(response, Map.of("error", "Failed to create supplier"));
+                ResponseUtil.sendJson(response, Map.of("error", "No se ha podido crear el proveedor"));
                 return;
             }
 
@@ -120,7 +120,7 @@ public class SupplierServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ResponseUtil.sendJson(response, Map.of("error", "Error creating supplier"));
+            ResponseUtil.sendJson(response, Map.of("error", "Error al crear el proveedor"));
         }
     }
 
@@ -133,14 +133,14 @@ public class SupplierServlet extends HttpServlet {
         User user = AuthUtil.getUser(request);
         if (user == null || "contable".equalsIgnoreCase(user.getRoleName())) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            ResponseUtil.sendJson(response, Map.of("error", "Not authorized"));
+            ResponseUtil.sendJson(response, Map.of("error", "No tienes permisos para realizar esta acción"));
             return;
         }
 
         String idParam = request.getParameter("id");
         if (idParam == null || idParam.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ResponseUtil.sendJson(response, Map.of("error", "ID required"));
+            ResponseUtil.sendJson(response, Map.of("error", "El ID es obligatorio"));
             return;
         }
 
@@ -161,7 +161,7 @@ public class SupplierServlet extends HttpServlet {
 
             if (updatedSupplier == null) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                ResponseUtil.sendJson(response, Map.of("error", "Failed to update supplier"));
+                ResponseUtil.sendJson(response, Map.of("error", "No se ha podido actualizar el proveedor"));
                 return;
             }
 
@@ -169,11 +169,11 @@ public class SupplierServlet extends HttpServlet {
             ResponseUtil.sendJson(response, updatedSupplier);
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ResponseUtil.sendJson(response, Map.of("error", "Invalid ID"));
+            ResponseUtil.sendJson(response, Map.of("error", "El ID no es válido"));
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ResponseUtil.sendJson(response, Map.of("error", "Error updating supplier"));
+            ResponseUtil.sendJson(response, Map.of("error", "Error al actualizar el proveedor"));
         }
     }
 
@@ -186,14 +186,14 @@ public class SupplierServlet extends HttpServlet {
         User user = AuthUtil.getUser(request);
         if (user == null || "contable".equalsIgnoreCase(user.getRoleName())) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            ResponseUtil.sendJson(response, Map.of("error", "Not authorized"));
+            ResponseUtil.sendJson(response, Map.of("error", "No tienes permisos para realizar esta acción"));
             return;
         }
 
         String idParam = request.getParameter("id");
         if (idParam == null || idParam.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ResponseUtil.sendJson(response, Map.of("error", "ID required"));
+            ResponseUtil.sendJson(response, Map.of("error", "El ID es obligatorio"));
             return;
         }
 
@@ -206,10 +206,10 @@ public class SupplierServlet extends HttpServlet {
             ResponseUtil.sendJson(response, Map.of("success", true));
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ResponseUtil.sendJson(response, Map.of("error", "Invalid ID"));
+            ResponseUtil.sendJson(response, Map.of("error", "El ID no es válido"));
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ResponseUtil.sendJson(response, Map.of("error", "Error deleting supplier"));
+            ResponseUtil.sendJson(response, Map.of("error", "Error al eliminar el proveedor"));
         }
     }
 
@@ -226,7 +226,7 @@ public class SupplierServlet extends HttpServlet {
         User user = AuthUtil.getUser(request);
         if (user == null || !canManageSuppliers(user)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            ResponseUtil.sendJson(response, Map.of("error", "Not authorized"));
+            ResponseUtil.sendJson(response, Map.of("error", "No tienes permisos para realizar esta acción"));
             return;
         }
 
@@ -254,11 +254,11 @@ public class SupplierServlet extends HttpServlet {
                 ResponseUtil.sendJson(response, Map.of("success", true));
             } else {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                ResponseUtil.sendJson(response, Map.of("error", "Error assigning supplier"));
+                ResponseUtil.sendJson(response, Map.of("error", "Error al asignar el proveedor"));
             }
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ResponseUtil.sendJson(response, Map.of("error", "Error assigning supplier"));
+            ResponseUtil.sendJson(response, Map.of("error", "Error al asignar el proveedor"));
         }
     }
 

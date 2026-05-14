@@ -69,7 +69,7 @@ public class BudgetServlet extends HttpServlet {
         User user = AuthUtil.getUser(req);
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("{\"error\": \"Not authenticated\"}");
+            resp.getWriter().write("{\"error\": \"No has iniciado sesión\"}");
             return;
         }
 
@@ -77,7 +77,7 @@ public class BudgetServlet extends HttpServlet {
         if (!"admin".equalsIgnoreCase(user.getRoleName()) &&
                 !"jefe_departamento".equalsIgnoreCase(user.getRoleName())) {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            resp.getWriter().write("{\"error\": \"Not authorized\"}");
+            resp.getWriter().write("{\"error\": \"No tienes permisos para realizar esta acción\"}");
             return;
         }
 
@@ -91,7 +91,7 @@ public class BudgetServlet extends HttpServlet {
                     !payload.containsKey("year") ||
                     !payload.containsKey("type")) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("{\"error\": \"Incomplete payload\"}");
+                resp.getWriter().write("{\"error\": \"Faltan datos obligatorios\"}");
                 return;
             }
 
@@ -104,7 +104,7 @@ public class BudgetServlet extends HttpServlet {
             // Prevent creating another budget for the same department, year, and type
             if (budgetDAO.departmentHasBudget(departmentId, fiscalYear, type)) {
                 resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                resp.getWriter().write("{\"error\": \"Budget already exists for this department and year\"}");
+                resp.getWriter().write("{\"error\": \"Ya existe un presupuesto para este departamento y año\"}");
                 return;
             }
 
@@ -112,7 +112,7 @@ public class BudgetServlet extends HttpServlet {
             Integer budgetTypeId = budgetDAO.getBudgetTypeId(type);
             if (budgetTypeId == null) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("{\"error\": \"Invalid budget type\"}");
+                resp.getWriter().write("{\"error\": \"El tipo de presupuesto no es válid\"}");
                 return;
             }
 
@@ -120,7 +120,7 @@ public class BudgetServlet extends HttpServlet {
             BudgetOverview created = budgetDAO.createBudget(allocated, fiscalYear, departmentId, budgetTypeId);
             if (created == null) {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resp.getWriter().write("{\"error\": \"Failed to create budget\"}");
+                resp.getWriter().write("{\"error\": \"No se ha podido crear el presupuesto\"}");
                 return;
             }
 
@@ -130,7 +130,7 @@ public class BudgetServlet extends HttpServlet {
 
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"error\": \"Error creating budget\"}");
+            resp.getWriter().write("{\"error\": \"Error al crear el presupuesto\"}");
             e.printStackTrace();
         }
     }
@@ -146,7 +146,7 @@ public class BudgetServlet extends HttpServlet {
         User user = AuthUtil.getUser(req);
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().write("{\"error\": \"Not authenticated\"}");
+            resp.getWriter().write("{\"error\": \"No has iniciado sesión\"}");
             return;
         }
 
@@ -154,7 +154,7 @@ public class BudgetServlet extends HttpServlet {
         if (!"admin".equalsIgnoreCase(user.getRoleName()) &&
                 !"jefe_departamento".equalsIgnoreCase(user.getRoleName())) {
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            resp.getWriter().write("{\"error\": \"Not authorized\"}");
+            resp.getWriter().write("{\"error\": \"No has iniciado sesión\"}");
             return;
         }
 
@@ -162,7 +162,7 @@ public class BudgetServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"error\": \"Budget ID required\"}");
+            resp.getWriter().write("{\"error\": \"No has iniciado sesión\"}");
             return;
         }
 
@@ -175,7 +175,7 @@ public class BudgetServlet extends HttpServlet {
             budgetId = Integer.parseInt(budgetIdStr);
         } catch (NumberFormatException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"error\": \"Invalid budget ID\"}");
+            resp.getWriter().write("{\"error\": \"No has iniciado sesión\"}");
             return;
         }
 
@@ -186,7 +186,7 @@ public class BudgetServlet extends HttpServlet {
             // Check that the allocated amount was sent
             if (!payload.containsKey("allocated")) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("{\"error\": \"Allocated amount required\"}");
+                resp.getWriter().write("{\"error\": \"No has iniciado sesión\"}");
                 return;
             }
 
@@ -197,7 +197,7 @@ public class BudgetServlet extends HttpServlet {
             BudgetOverview updated = budgetDAO.updateBudgetAllocated(budgetId, allocated);
             if (updated == null) {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                resp.getWriter().write("{\"error\": \"Budget not found\"}");
+                resp.getWriter().write("{\"error\": \"Presupuesto no encontrado\"}");
                 return;
             }
 
@@ -207,7 +207,7 @@ public class BudgetServlet extends HttpServlet {
 
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"error\": \"Error updating budget\"}");
+            resp.getWriter().write("{\"error\": \"Error al actualizar el presupuesto\"}");
             e.printStackTrace();
         }
     }

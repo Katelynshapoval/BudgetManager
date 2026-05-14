@@ -39,10 +39,10 @@ public class UserPasswordServlet extends HttpServlet {
         boolean updated = userDAO.updateUserPassword(userId, hashedPassword);
 
         if (updated) {
-            ResponseUtil.sendJson(response, Map.of("message", "Password updated"));
+            ResponseUtil.sendJson(response, Map.of("message", "Contraseña actualizada correctamente"));
         } else {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            ResponseUtil.sendJson(response, Map.of("error", "Failed to update password"));
+            ResponseUtil.sendJson(response, Map.of("error", "No se ha podido actualizar la contraseña"));
         }
     }
 }

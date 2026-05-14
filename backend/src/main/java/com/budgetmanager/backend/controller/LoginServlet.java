@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet {
 
         if (username == null || password == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseMap.put("error", "Missing username or password");
+            responseMap.put("error", "Faltan el usuario o la contraseña");
             ResponseUtil.sendJson(resp, responseMap);
             return;
         }
@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
         User user = userDAO.getUserByUsername(username);
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            responseMap.put("error", "User not found");
+            responseMap.put("error", "Usuario no encontrado");
             ResponseUtil.sendJson(resp, responseMap);
             return;
         }
@@ -80,11 +80,11 @@ public class LoginServlet extends HttpServlet {
             userMap.put("departmentId", user.getDepartmentId());
             userMap.put("roleName", user.getRoleName());
 
-            responseMap.put("message", "Login successful");
+            responseMap.put("message", "Inicio de sesión correcto");
             responseMap.put("user", userMap);
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            responseMap.put("error", "Invalid password");
+            responseMap.put("error", "Contraseña incorrecta");
         }
         ResponseUtil.sendJson(resp, responseMap);
     }

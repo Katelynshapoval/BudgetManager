@@ -47,6 +47,7 @@ const deleteSupplier = async (id, setSuppliers) => {
 
 		if (response.ok) {
 			setSuppliers((prev) => prev.filter((s) => s.supplierId !== id));
+			toast.success("Proveedor eliminado correctamente");
 		} else {
 			toast.error("Error al eliminar el proveedor");
 		}
