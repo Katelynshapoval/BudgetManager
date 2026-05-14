@@ -32,26 +32,41 @@ public class SignupServlet extends HttpServlet {
         String departmentIdStr = req.getParameter("departmentId");
         String roleIdStr = req.getParameter("roleId");
 
-        // Validate
-        if (username == null || name == null || password == null || passwordConf == null) {
+        // Validate required fields
+        if (username == null || username.isBlank()
+                || name == null || name.isBlank()
+                || password == null || password.isBlank()
+                || passwordConf == null || passwordConf.isBlank()
+                || roleIdStr == null || roleIdStr.isBlank()) {
+
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseMap.put("error", "Missing required fields");
-            resp.getWriter().write(gson.toJson(responseMap));
+            responseMap.put("error", "Faltan campos obligatorios");
+            ResponseUtil.sendJson(resp, responseMap);
             return;
         }
 
+        // Validate password confirmation
         if (!password.equals(passwordConf)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            responseMap.put("error", "Passwords do not match");
-            resp.getWriter().write(gson.toJson(responseMap));
+            responseMap.put("error", "Las contraseñas no coinciden");
+            ResponseUtil.sendJson(resp, responseMap);
             return;
         }
+
         Integer departmentId = null;
         if (departmentIdStr != null && !departmentIdStr.isEmpty()) {
             departmentId = Integer.parseInt(departmentIdStr);
         }
 
         int roleId = Integer.parseInt(roleIdStr);
+
+        // Check if username already exists
+        if (userDAO.getUserByUsername(username) != null) {
+            resp.setStatus(HttpServletResponse.SC_CONFLICT);
+            responseMap.put("error", "El usuario ya existe");
+            ResponseUtil.sendJson(resp, responseMap);
+            return;
+        }
 
         // Hash password
         String hashedPassword = PasswordUtils.hashPassword(password);
@@ -64,10 +79,10 @@ public class SignupServlet extends HttpServlet {
 
         if (created) {
             resp.setStatus(HttpServletResponse.SC_OK);
-            responseMap.put("message", "User created successfully");
+            responseMap.put("message", "Usuario creado correctamente");
         } else {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            responseMap.put("error", "Failed to create user");
+            responseMap.put("error", "No se pudo crear el usuario");
         }
 
         ResponseUtil.sendJson(resp, responseMap);

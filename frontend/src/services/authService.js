@@ -94,6 +94,7 @@ export async function signupRequest(form) {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: formData.toString(),
+      credentials: "include",
     });
 
     const data = await readJsonSafely(response);
