@@ -41,18 +41,22 @@ public class PurchaseOrderServlet extends HttpServlet {
         // Return the next preview code before creating the purchase order
         if ("/preview".equals(path)) {
             try {
-                String budgetIdParam = req.getParameter("budgetId");
+                String departmentIdParam = req.getParameter("departmentId");
+                String budgetTypeIdParam = req.getParameter("budgetTypeId");
 
-                if (budgetIdParam == null || budgetIdParam.isEmpty()) {
+                if (departmentIdParam == null || departmentIdParam.isEmpty()
+                        || budgetTypeIdParam == null || budgetTypeIdParam.isEmpty()) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
 
-                int budgetId = Integer.parseInt(budgetIdParam);
+                int departmentId = Integer.parseInt(departmentIdParam);
+                int budgetTypeId = Integer.parseInt(budgetTypeIdParam);
                 boolean isFungible = Boolean.parseBoolean(req.getParameter("isFungible"));
 
                 String code = purchaseOrderDAO.getNextOrderCodePreview(
-                        budgetId,
+                        departmentId,
+                        budgetTypeId,
                         isFungible
                 );
 

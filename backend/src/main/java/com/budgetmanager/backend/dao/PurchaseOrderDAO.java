@@ -67,24 +67,31 @@ public class PurchaseOrderDAO {
     }
 
     // Preview the next generated order code without saving anything
-    public String getNextOrderCodePreview(int budgetId, boolean isFungible) {
+    public String getNextOrderCodePreview(
+            int departmentId,
+            int budgetTypeId,
+            boolean isFungible
+    ) {
         String query = """
-                SELECT
-                    d.code,
-                    b.fiscal_year,
-                    COALESCE(bs.last_sequence, 0) + 1 AS next_seq
+            SELECT
+                d.code,
+                b.fiscal_year,
+                COALESCE(bs.last_sequence, 0) + 1 AS next_seq
 
-                FROM budgets b
-                JOIN departments d ON b.department_id = d.department_id
-                LEFT JOIN budget_sequences bs ON bs.budget_id = b.budget_id
+            FROM budgets b
+            JOIN departments d ON b.department_id = d.department_id
+            LEFT JOIN budget_sequences bs ON bs.budget_id = b.budget_id
 
-                WHERE b.budget_id = ?;
-                """;
+            WHERE b.department_id = ?
+              AND b.budget_type_id = ?
+            LIMIT 1;
+            """;
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, budgetId);
+            stmt.setInt(1, departmentId);
+            stmt.setInt(2, budgetTypeId);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {

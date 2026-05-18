@@ -12,10 +12,11 @@ export async function getOrders() {
 }
 
 // Fetch the next generated order code before creating the order
-export async function getOrderPreview(budgetId, isFungible) {
+export async function getOrderPreview(departmentId, budgetTypeId, isFungible) {
   const params = new URLSearchParams({
-    budgetId,
-    isFungible,
+    departmentId: String(departmentId),
+    budgetTypeId: String(budgetTypeId),
+    isFungible: String(isFungible),
   });
 
   const res = await fetch(`/api/purchase-orders/preview?${params}`, {
