@@ -5,7 +5,7 @@ import { EUR } from "../../../utils/currency";
 
 function OrderDetails({ hidePopup, isOpen, data }) {
   return (
-    <Modal title="Info" onClose={hidePopup} isOpen={isOpen} footer={null}>
+    <Modal title="Info" onClose={hidePopup} isOpen={isOpen} footer={null} submitLabel={null}>
       {/* Order details */}
       <div className="grid grid-cols-2 gap-6 rounded-lg bg-secondary/60 p-5 text-sm">
         {/* Order id */}

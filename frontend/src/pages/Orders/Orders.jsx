@@ -149,12 +149,13 @@ function Orders() {
           )}
 
           {/* Create order button */}
-          <button
+          {user.roleName != "contable" &&
+            <button
             className="addNewButton"
             onClick={() => setAddOrdenShow(true)}
-          >
-            Crear orden de compra
-          </button>
+        >
+          Crear orden de compra
+        </button>}
         </div>
       </div>
 
